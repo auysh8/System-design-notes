@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3. Relational & SQL — System Design Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="toolbar">
+        <a href="../index.html" class="toolbar-title">
+            <svg class="pen-icon" viewBox="0 0 24 24">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+            GoodNotes Architect Journal
+        </a>
+        <div class="toolbar-actions">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search notes..." onkeyup="filterNotes()">
+            <button class="toggle-btn" onclick="togglePaperTheme()">
+                <span id="themeEmoji">🌙</span> <span id="themeModeText">Dark Paper</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="notebook-container">
+        <div class="tabs-header">
+            <a href="../index.html" class="tab-item">🏠 Table of Contents</a>
+            <a href="01-single-server.html" class="tab-item">1. Single Server</a>
+            <a href="02-selecting-db.html" class="tab-item">2. Selecting DB</a>
+            <a href="03-relational-sql.html" class="tab-item active">3. Relational & SQL</a>
+            <a href="04-acid-integrity.html" class="tab-item">4. ACID Integrity</a>
+            <a href="05-nosql-types.html" class="tab-item">5. NoSQL Types</a>
+            <a href="06-scaling-guide.html" class="tab-item">6. Scaling Guide</a>
+        </div>
+
+        <div class="paper-page">
+            <div class="planner-header">
+                <span class="planner-tag">System Design Chapter 3</span>
+                <h1>Relational DBs (RDBMS) & SQL Joins</h1>
+                <p class="planner-subtitle">Schemas, Foreign Keys, and Entity Relationships</p>
+            </div>
+
+            <div class="note-section">
+                <p>Relational databases use <mark class="hl-yellow">SQL (Structured Query Language)</mark> for data definition and manipulation. Data is organized strictly into rows and columns.</p>
+
+                <div class="code-sticker">
+                    <div class="code-sticker-header">
+                        <span>SQL: Create & Insert Example</span>
+                        <button class="copy-sticker-btn" onclick="copyCode(this)">Copy SQL</button>
+                    </div>
+                    <pre><code><span class="sql-kw">CREATE TABLE</span> <span class="sql-type">Customers</span> (
+    id <span class="sql-type">INTEGER PRIMARY KEY</span>,
+    name <span class="sql-type">VARCHAR(100)</span>,
+    age <span class="sql-type">INTEGER</span>,
+    email <span class="sql-type">VARCHAR(100)</span>
+);
+
+<span class="sql-kw">INSERT INTO</span> <span class="sql-type">Customers</span> (id, name, age, email)
+<span class="sql-kw">VALUES</span> (<span class="sql-num">123</span>, <span class="sql-str">'John Doe'</span>, <span class="sql-num">30</span>, <span class="sql-str">'johndoe@example.com'</span>);</code></pre>
+                </div>
+
+                <h3 style="font-family: var(--font-hand); font-size: 1.8rem; margin: 1.5rem 0 0.5rem 0;">🔗 Complex Join Operations & Foreign Keys</h3>
+                <p>SQL excels at joining related entities. For example, an <mark class="hl-blue">Orders</mark> table links to <mark class="hl-blue">Customers</mark> and <mark class="hl-blue">Products</mark> via Foreign Keys.</p>
+
+                <div class="code-sticker">
+                    <div class="code-sticker-header">
+                        <span>SQL: Orders Table Schema with Foreign Keys</span>
+                        <button class="copy-sticker-btn" onclick="copyCode(this)">Copy SQL</button>
+                    </div>
+                    <pre><code><span class="sql-kw">CREATE TABLE</span> <span class="sql-type">Orders</span> (
+    order_id <span class="sql-type">INT PRIMARY KEY</span>,
+    customer_id <span class="sql-type">INT</span>,
+    product_id <span class="sql-type">INT</span>,
+    quantity <span class="sql-type">INT</span>,
+    order_date <span class="sql-type">DATE</span>,
+    <span class="sql-kw">FOREIGN KEY</span> (customer_id) <span class="sql-kw">REFERENCES</span> Customers(id),
+    <span class="sql-kw">FOREIGN KEY</span> (product_id) <span class="sql-kw">REFERENCES</span> Products(id)
+);</code></pre>
+                </div>
+
+                <!-- ER Schema Diagram -->
+                <div class="er-box-container">
+                    <div class="er-card">
+                        <div class="er-head">Customers</div>
+                        <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
+                        <div class="er-item"><span>name</span> <span>String</span></div>
+                        <div class="er-item"><span>email</span> <span>String</span></div>
+                    </div>
+
+                    <div style="font-family: var(--font-hand); font-size: 1.5rem; font-weight: bold; color: var(--text-muted);">
+                        ──(1:N)──►
+                    </div>
+
+                    <div class="er-card" style="border-color: var(--pastel-pink-dark);">
+                        <div class="er-head" style="background: var(--pastel-pink);">Orders</div>
+                        <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
+                        <div class="er-item"><span>customer_id</span> <strong style="color:var(--pastel-blue-dark);">FK</strong></div>
+                        <div class="er-item"><span>product_id</span> <strong style="color:var(--pastel-blue-dark);">FK</strong></div>
+                        <div class="er-item"><span>order_date</span> <span>Date</span></div>
+                    </div>
+
+                    <div style="font-family: var(--font-hand); font-size: 1.5rem; font-weight: bold; color: var(--text-muted);">
+                        ◄──(N:1)──
+                    </div>
+
+                    <div class="er-card">
+                        <div class="er-head">Products</div>
+                        <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
+                        <div class="er-item"><span>name</span> <span>String</span></div>
+                        <div class="er-item"><span>price</span> <span>Decimal</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <p><a href="02-selecting-db.html" style="color:var(--pastel-blue-dark); text-decoration:none;">⬅️ 2. Selecting DB</a> | Next: <a href="04-acid-integrity.html" style="color:var(--pastel-blue-dark); text-decoration:none;">4. ACID Integrity ➔</a></p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/notebook.js"></script>
+</body>
+</html>
