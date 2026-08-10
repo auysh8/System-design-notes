@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7. Load Balancer Algorithms & Health Checks — System Design Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <!-- Top Planner Toolbar -->
+    <div class="toolbar">
+        <a href="../index.html" class="toolbar-title">
+            <svg class="pen-icon" viewBox="0 0 24 24">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+            GoodNotes Architect Journal
+        </a>
+        <div class="toolbar-actions">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search notes..." onkeyup="filterNotes()">
+            <button class="toggle-btn" onclick="togglePaperTheme()">
+                <span id="themeEmoji">🌙</span> <span id="themeModeText">Dark Paper</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- GoodNotes Notebook Container -->
+    <div class="notebook-container">
+        
+        <!-- Notebook Index Tabs -->
+        <div class="tabs-header">
+            <a href="../index.html" class="tab-item">🏠 Index</a>
+            <a href="01-single-server.html" class="tab-item">1. Single Server</a>
+            <a href="02-selecting-db.html" class="tab-item">2. Selecting DB</a>
+            <a href="03-relational-sql.html" class="tab-item">3. Relational & SQL</a>
+            <a href="04-acid-integrity.html" class="tab-item">4. ACID Integrity</a>
+            <a href="05-nosql-types.html" class="tab-item">5. NoSQL Types</a>
+            <a href="06-scaling-guide.html" class="tab-item">6. Scaling Guide</a>
+            <a href="07-load-balancing.html" class="tab-item active">7. Load Balancing</a>
+        </div>
+
+        <!-- Main Paper Page -->
+        <div class="paper-page">
+            
+            <!-- Planner Cover Title -->
+            <div class="planner-header">
+                <span class="planner-tag">System Design Chapter 7</span>
+                <h1>Load Balancer Algorithms & Health Checks</h1>
+                <p class="planner-subtitle">7 Traffic Routing Strategies, Session Persistence, & Failover Management</p>
+                <div style="margin-top: 0.75rem;">
+                    <span class="handwritten-annotation">★ Essential for high availability, fault tolerance & scaling!</span>
+                </div>
+            </div>
+
+            <!-- SECTION INTRO -->
+            <div class="note-section">
+                <p>A <mark class="hl-blue">Load Balancer</mark> distributes incoming client traffic across multiple backend servers to ensure no single server bears too much load, preventing bottlenecks and single points of failure (SPOF).</p>
+
+                <div class="sticky-note sky">
+                    <div class="sticky-title">❓ Core Question: How does a Load Balancer distribute traffic?</div>
+                    <p>Load balancers utilize <strong>7 core algorithms and strategies</strong> depending on server capacity, session requirements, and geographical proximity.</p>
+                </div>
+            </div>
+
+            <!-- SECTION: 7 ALGORITHMS -->
+            <div class="note-section">
+                <div class="section-title">
+                    <span class="title-badge" style="background: var(--pastel-yellow);">7</span>
+                    Load Balancing Strategies & Algorithms
+                </div>
+
+                <div class="card-grid">
+
+                    <!-- 1. Round Robin -->
+                    <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-pink-dark);">
+                        <h4>🔄 1. Round Robin</h4>
+                        <p>Redirects incoming requests in sequential cyclical order: <mark class="hl-pink">Server 1 ➔ Server 2 ➔ Server 3 ➔ Server 1</mark>.</p>
+                        <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                            💡 <strong>Best for:</strong> Environments where all servers have identical hardware specifications and request processing times are uniform.
+                        </div>
+                    </div>
+
+                    <!-- 2. Least Connections -->
+                    <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-blue-dark);">
+                        <h4>🔗 2. Least Connections</h4>
+                        <p>Redirects traffic to the server currently handling the <mark class="hl-blue">fewest active connections</mark>.</p>
+                        <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                            💡 <strong>Best for:</strong> Applications with long-lived persistent connections (e.g. WebSockets, streaming) where session lengths vary significantly.
+                        </div>
+                    </div>
+
+                    <!-- 3. Least Response Time -->
+                    <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-purple-dark);">
+                        <h4>⚡ 3. Least Response Time</h4>
+                        <p>Redirects traffic to the server that is most responsive and serving responses with the <mark class="hl-purple">lowest latency</mark>.</p>
+                        <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                            💡 <strong>Best for:</strong> Providing the fastest response times when backend servers have different performance specs.
+                        </div>
+                    </div>
+
+                    <!-- 4. IP-Hash -->
+                    <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-green-dark);">
+                        <h4>🔑 4. IP-Hash</h4>
+                        <p>Hashes the client's IP address to consistently map future requests from that IP to the <mark class="hl-green">exact same server</mark>.</p>
+                        <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                            💡 <strong>Best for:</strong> Session persistence (Sticky Sessions) when user state/session info is stored locally on a specific server and not synced across nodes.
+                        </div>
+                    </div>
+
+                    <!-- 5. Weighted Algorithms -->
+                    <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-yellow-dark);">
+                        <h4>⚖️ 5. Weighted Algorithms</h4>
+                        <p>Servers are assigned <mark class="hl-yellow">weights based on capacity</mark>. Higher-capacity servers receive a proportionally larger share of traffic.</p>
+                        <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                            💡 <strong>Best for:</strong> Heterogeneous server clusters where nodes have different CPU, RAM, or network bandwidth specifications.
+                        </div>
+                    </div>
+
+                    <!-- 6. Geographical Algorithms -->
+                    <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-orange);">
+                        <h4>🗺️ 6. Geographical Algorithms</h4>
+                        <p>Redirects traffic to the server located closest to the user's <mark class="hl-orange">Geographical IP location</mark>.</p>
+                        <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                            💡 <strong>Best for:</strong> Global applications requiring latency reduction and localized content delivery (Geo-DNS routing).
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 7. Consistent Hashing -->
+                <div class="sticky-note lavender" style="margin-top: 2rem;">
+                    <div class="sticky-title">⭕ 7. Consistent Hashing <span style="font-size:0.9rem; color:var(--pastel-purple-dark); font-weight:bold;">(Popular but Complex)</span></div>
+                    <p>In Consistent Hashing, both servers and requests are mapped onto a conceptual <mark class="hl-purple">Hash Ring</mark>. When a request passes through the hash function, the load balancer routes it to the server closest to that point on the ring.</p>
+                    <div style="margin-top: 0.75rem; font-size: 0.875rem;">
+                        <strong>Key Advantage:</strong> When adding or removing servers, only a fraction of keys need to be remapped (\(1/N\)), minimizing cache invalidation and re-sharding overhead across the cluster.
+                    </div>
+                </div>
+
+                <!-- Flow Diagram for Consistent Hashing & Least Response Routing -->
+                <div class="diagram-paper">
+                    <div style="text-align: center; font-family: var(--font-title); font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">
+                        ✏️ Consistent Hash Ring & Priority Routing Flow
+                    </div>
+
+                    <div class="flow-flex">
+                        <div class="flow-node highlight-blue" style="max-width: 140px;">
+                            <strong>👥 Client User</strong>
+                        </div>
+
+                        <div class="flow-arrow">➔ Request ➔</div>
+
+                        <div class="flow-node highlight-pink" style="max-width: 170px;">
+                            <strong>⚖️ Load Balancer</strong>
+                            <div style="font-size:0.75rem; margin-top:2px;">Hash Function Execution</div>
+                        </div>
+
+                        <div class="flow-arrow">➔ Route to Hash Ring ➔</div>
+
+                        <div style="display:flex; flex-direction:column; gap:0.5rem; flex:1;">
+                            <div class="flow-node highlight-green"><strong>Server 1</strong> <span style="font-size:0.75rem; color:var(--text-muted);">(1st Priority • High)</span></div>
+                            <div class="flow-node highlight-yellow"><strong>Server 3</strong> <span style="font-size:0.75rem; color:var(--text-muted);">(2nd Priority • Medium)</span></div>
+                            <div class="flow-node highlight-pink"><strong>Server 2</strong> <span style="font-size:0.75rem; color:var(--text-muted);">(3rd Priority • Low)</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: HEALTH CHECKS -->
+            <div class="note-section">
+                <div class="section-title">
+                    <span class="title-badge" style="background: var(--pastel-green);">🩺</span>
+                    Health Checks & Failover Management
+                </div>
+
+                <div class="sticky-note mint">
+                    <div class="sticky-title">❓ How does a Load Balancer know a server is offline?</div>
+                    <p>The load balancer constantly sends periodic <mark class="hl-green">Health Check ping requests</mark> (e.g., HTTP `/healthz` endpoints or TCP heartbeats) to all registered backend servers.</p>
+                    
+                    <ul style="margin: 0.75rem 0 0 1.25rem; font-size: 0.9rem;">
+                        <li><strong>Server Offline Detection:</strong> If a server fails to respond within a timeout window or returns error status codes, the load balancer automatically flags it as <mark class="hl-pink">UNHEALTHY</mark>.</li>
+                        <li><strong>Traffic Rerouting:</strong> It immediately stops sending traffic to the failed server and reroutes incoming requests to remaining active servers.</li>
+                        <li><strong>Auto-Recovery:</strong> It continues background probing, and once the server becomes active and healthy again, it re-introduces it into the server pool automatically.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <footer>
+                <p><a href="06-scaling-guide.html" style="color:var(--pastel-blue-dark); text-decoration:none;">⬅️ 6. Scaling Guide</a> | <a href="../index.html" style="color:var(--pastel-blue-dark); text-decoration:none;">🏠 Back to Index</a></p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/notebook.js"></script>
+</body>
+</html>
