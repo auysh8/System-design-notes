@@ -14,9 +14,12 @@ function togglePaperTheme() {
     }
 }
 
-// Load saved theme on boot
+// Load saved theme or inherit system preference on boot
 document.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('goodnotes_theme') === 'dark') {
+    const savedTheme = localStorage.getItem('goodnotes_theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
         document.body.classList.add('dark-mode');
         const modeText = document.getElementById('themeModeText');
         const themeEmoji = document.getElementById('themeEmoji');

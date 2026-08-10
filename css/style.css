@@ -275,35 +275,39 @@ mark.hl-yellow {
     background: linear-gradient(120deg, var(--pastel-yellow) 0%, var(--pastel-yellow) 100%);
     padding: 0.1em 0.4em;
     border-radius: 4px;
-    color: inherit;
+    color: #0f172a !important;
+    font-weight: 700;
 }
 
 mark.hl-pink {
     background: linear-gradient(120deg, var(--pastel-pink) 0%, var(--pastel-pink) 100%);
     padding: 0.1em 0.4em;
     border-radius: 4px;
-    color: inherit;
+    color: #0f172a !important;
+    font-weight: 700;
 }
 
 mark.hl-blue {
     background: linear-gradient(120deg, var(--pastel-blue) 0%, var(--pastel-blue) 100%);
     padding: 0.1em 0.4em;
     border-radius: 4px;
-    color: inherit;
+    color: #0f172a !important;
+    font-weight: 700;
 }
 
 mark.hl-green {
     background: linear-gradient(120deg, var(--pastel-green) 0%, var(--pastel-green) 100%);
     padding: 0.1em 0.4em;
     border-radius: 4px;
-    color: inherit;
+    color: #0f172a !important;
+    font-weight: 700;
 }
 
 .handwritten-annotation {
     font-family: var(--font-hand);
     font-size: 1.6rem;
     color: #2563eb;
-    transform: rotate(-2deg);
+    transform: none; /* Straight and clean font direction */
     display: inline-block;
 }
 
@@ -345,13 +349,17 @@ mark.hl-green {
 /* Sticky Note Callout Box */
 .sticky-note {
     background: var(--pastel-yellow);
+    color: #0f172a;
     border-radius: 12px;
     padding: 1.5rem;
     margin: 1.5rem 0;
     box-shadow: var(--shadow-card);
     position: relative;
-    transform: rotate(-0.5deg);
     border: 1px solid rgba(0,0,0,0.05);
+}
+
+.dark-mode .sticky-note {
+    color: #f8fafc;
 }
 
 .sticky-note::before {
@@ -369,17 +377,14 @@ mark.hl-green {
 
 .sticky-note.mint {
     background: var(--pastel-green);
-    transform: rotate(0.5deg);
 }
 
 .sticky-note.sky {
     background: var(--pastel-blue);
-    transform: rotate(-0.8deg);
 }
 
 .sticky-note.lavender {
     background: var(--pastel-purple);
-    transform: rotate(0.4deg);
 }
 
 .sticky-title {
@@ -403,11 +408,17 @@ mark.hl-green {
     border-radius: 14px;
     padding: 1.25rem;
     box-shadow: var(--shadow-card);
-    transition: transform 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 
-.goodnotes-card:hover {
-    transform: translateY(-2px);
+a.goodnotes-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-paper);
+    border-color: var(--pastel-blue-dark);
+    cursor: pointer;
 }
 
 .goodnotes-card h4 {
