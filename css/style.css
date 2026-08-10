@@ -672,10 +672,14 @@ li::marker {
 }
 
 .toc-number {
-    font-family: var(--font-hand);
-    font-size: 2rem;
-    font-weight: 700;
+    font-family: var(--font-title);
+    font-size: 1.8rem;
+    font-weight: 800;
     color: var(--pastel-blue-dark);
+}
+
+.dark-mode .toc-number {
+    color: #38bdf8;
 }
 
 .toc-title {
@@ -687,6 +691,45 @@ li::marker {
 .toc-desc {
     font-size: 0.875rem;
     color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.dark-mode .toc-desc {
+    color: #cbd5e1;
+}
+
+/* Card Accent Themes & High Contrast Action Links */
+.card-accent-pink { border-top: 5px solid #f472b6; }
+.card-accent-pink .toc-link { color: #db2777; }
+.dark-mode .card-accent-pink .toc-link { color: #f472b6; }
+
+.card-accent-blue { border-top: 5px solid #38bdf8; }
+.card-accent-blue .toc-link { color: #0284c7; }
+.dark-mode .card-accent-blue .toc-link { color: #38bdf8; }
+
+.card-accent-yellow { border-top: 5px solid #eab308; }
+.card-accent-yellow .toc-link { color: #b45309; }
+.dark-mode .card-accent-yellow .toc-link { color: #facc15; }
+
+.card-accent-purple { border-top: 5px solid #c084fc; }
+.card-accent-purple .toc-link { color: #7e22ce; }
+.dark-mode .card-accent-purple .toc-link { color: #c084fc; }
+
+.card-accent-green { border-top: 5px solid #4ade80; }
+.card-accent-green .toc-link { color: #15803d; }
+.dark-mode .card-accent-green .toc-link { color: #4ade80; }
+
+.card-accent-orange { border-top: 5px solid #fb923c; }
+.card-accent-orange .toc-link { color: #c2410c; }
+.dark-mode .card-accent-orange .toc-link { color: #fb923c; }
+
+.toc-link {
+    margin-top: 1.25rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 footer {
