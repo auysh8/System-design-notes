@@ -23,6 +23,7 @@ You can browse the live digital notebook here:
 4. **ACID Transactional Integrity**: Atomicity, Consistency, Isolation, and Durability explained.
 5. **NoSQL Classifications**: Document, Wide-Column, Graph, and Key-Value stores + comparison matrix.
 6. **System Scaling Strategies**: Vertical Scaling (Scale Up) vs. Horizontal Scaling (Scale Out) with Load Balancers.
+7. **Load Balancer Algorithms & Health Checks**: 7 traffic routing strategies (Round Robin, Least Conn, Consistent Hashing ring) & auto-failover probes.
 
 ---
 
