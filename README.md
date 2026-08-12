@@ -24,6 +24,8 @@ You can browse the live digital notebook here:
 5. **NoSQL Classifications**: Document, Wide-Column, Graph, and Key-Value stores + comparison matrix.
 6. **System Scaling Strategies**: Vertical Scaling (Scale Up) vs. Horizontal Scaling (Scale Out) with Load Balancers.
 7. **Load Balancer Algorithms & Health Checks**: 7 traffic routing strategies (Round Robin, Least Conn, Consistent Hashing ring) & auto-failover probes.
+8. **Single Point of Failure (SPOF) & High Availability**: Eliminating SPOFs via Redundancy, Load Balancer Probing, & Self-Healing Clusters.
+9. **API Design (REST, GraphQL, & gRPC)**: API Client-Server Contracts, REST Verbs, GraphQL Single Endpoint, & gRPC Protobuf binary streaming.
 
 ---
 

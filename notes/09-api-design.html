@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9. API Design: REST, GraphQL, & gRPC — System Design Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <!-- Top Planner Toolbar -->
+    <div class="toolbar">
+        <a href="../index.html" class="toolbar-title">
+            <svg class="pen-icon" viewBox="0 0 24 24">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+            GoodNotes Architect Journal
+        </a>
+        <div class="toolbar-actions">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search notes..." onkeyup="filterNotes()">
+            <button class="toggle-btn" onclick="togglePaperTheme()">
+                <span id="themeEmoji">🌙</span> <span id="themeModeText">Dark Paper</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- GoodNotes Notebook Container -->
+    <div class="notebook-container">
+        
+        <!-- Notebook Index Tabs -->
+        <div class="tabs-header">
+            <a href="../index.html" class="tab-item">🏠 Index</a>
+            <a href="01-single-server.html" class="tab-item">1. Single Server</a>
+            <a href="02-selecting-db.html" class="tab-item">2. Selecting DB</a>
+            <a href="03-relational-sql.html" class="tab-item">3. Relational & SQL</a>
+            <a href="04-acid-integrity.html" class="tab-item">4. ACID Integrity</a>
+            <a href="05-nosql-types.html" class="tab-item">5. NoSQL Types</a>
+            <a href="06-scaling-guide.html" class="tab-item">6. Scaling Guide</a>
+            <a href="07-load-balancing.html" class="tab-item">7. Load Balancing</a>
+            <a href="08-spof-resilience.html" class="tab-item">8. SPOF & HA</a>
+            <a href="09-api-design.html" class="tab-item active">9. API Design</a>
+        </div>
+
+        <!-- Main Paper Page -->
+        <div class="paper-page">
+            
+            <!-- Planner Cover Title -->
+            <div class="planner-header">
+                <span class="planner-tag">System Design Chapter 9</span>
+                <h1>API Design: REST, GraphQL, & gRPC</h1>
+                <p class="planner-subtitle">API Contracts, Abstraction, Service Boundaries, & Core Architectural Styles</p>
+                <div style="margin-top: 0.75rem;">
+                    <span class="handwritten-annotation">★ Essential for client-server communication & microservices!</span>
+                </div>
+            </div>
+
+            <!-- SECTION 1: WHAT IS AN API -->
+            <div class="note-section">
+                <div class="section-title">
+                    <span class="title-badge" style="background: var(--pastel-blue);">1</span>
+                    API Fundamentals & Contract
+                </div>
+
+                <p><mark class="hl-blue">API (Application Programming Interface)</mark> defines how software components interact and communicate with each other.</p>
+
+                <!-- API Contract Flow Diagram -->
+                <div class="diagram-paper" style="text-align: center;">
+                    <div style="font-family: var(--font-title); font-size: 1.2rem; font-weight: 800; margin-bottom: 1.25rem; color: var(--text-main);">
+                        ✏️ The API Client-Server Contract Architecture
+                    </div>
+
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5rem;">
+                        <div class="flow-node highlight-blue" style="max-width: 140px;">
+                            <strong>💻 Client</strong>
+                            <div style="font-size:0.75rem;">Browser / Mobile</div>
+                        </div>
+
+                        <div class="flow-arrow">➔ Request / Response ➔</div>
+
+                        <!-- API CONTRACT BOX -->
+                        <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 12px; padding: 1.25rem; text-align: left; box-shadow: 3px 3px 0px var(--text-main); max-width: 320px; flex: 1;">
+                            <div style="font-weight: 800; font-size: 1rem; color: var(--pastel-blue-dark); margin-bottom: 0.5rem; text-align: center;">
+                                📜 API Contract Defines:
+                            </div>
+                            <ul style="font-size: 0.85rem; margin: 0; padding-left: 1.2rem; color: var(--text-main);">
+                                <li style="margin-bottom:0.4rem;">What requests can be made</li>
+                                <li style="margin-bottom:0.4rem;">How to make requests</li>
+                                <li style="margin-bottom:0rem;">What response to expect</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">➔</div>
+
+                        <div class="flow-node highlight-green" style="max-width: 140px;">
+                            <strong>🖥️ Server</strong>
+                            <div style="font-size:0.75rem;">Backend Engine</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KEY CHARACTERISTICS CARDS -->
+                <div class="card-grid">
+                    <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-yellow-dark);">
+                        <h4>🧱 1. Abstraction Mechanism</h4>
+                        <p>Hides internal implementation details while safely exposing necessary business functionality to clients.</p>
+                    </div>
+
+                    <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-pink-dark);">
+                        <h4>🌐 2. Service Boundaries</h4>
+                        <p>Defines clear interfaces between system components, allowing decoupled systems (e.g. client browser & servers) to communicate.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: CORE API STYLES -->
+            <div class="note-section">
+                <div class="section-title">
+                    <span class="title-badge" style="background: var(--pastel-green);">2</span>
+                    Core API Architectural Styles
+                </div>
+
+                <!-- REST CARD -->
+                <div class="sticky-note sky" style="margin-bottom: 2rem;">
+                    <div class="sticky-title">🌐 REST (Representational State Transfer)</div>
+                    <p style="font-size: 0.95rem; margin-bottom: 0.75rem;">The most common API architectural style for web and mobile applications.</p>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div style="background: var(--paper-card); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                            <strong>📦 Resource-Based:</strong>
+                            <div style="font-size:0.85rem; margin-top:0.3rem;">Organized around data resources accessed via standard HTTP URLs and methods.</div>
+                        </div>
+
+                        <div style="background: var(--paper-card); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                            <strong>🔒 Stateless:</strong>
+                            <div style="font-size:0.85rem; margin-top:0.3rem;">Every request contains all context needed. No server session state is required to process requests.</div>
+                        </div>
+                    </div>
+
+                    <!-- REST HTTP METHODS TABLE -->
+                    <h4 style="font-family: var(--font-title); font-size: 1.1rem; margin: 1.25rem 0 0.5rem 0;">⚡ Standardized HTTP Methods:</h4>
+                    <table class="table-paper" style="margin-top:0.5rem;">
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Purpose</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><mark class="hl-blue">GET</mark></td>
+                                <td>Fetching Data</td>
+                                <td>Retrieves resource data without modifying server state.</td>
+                            </tr>
+                            <tr>
+                                <td><mark class="hl-green">POST</mark></td>
+                                <td>Storing / Creating Data</td>
+                                <td>Creates a new resource on the server.</td>
+                            </tr>
+                            <tr>
+                                <td><mark class="hl-yellow">PUT / PATCH</mark></td>
+                                <td>Updating Data</td>
+                                <td>Replaces (PUT) or partially modifies (PATCH) an existing resource.</td>
+                            </tr>
+                            <tr>
+                                <td><mark class="hl-pink">DELETE</mark></td>
+                                <td>Deleting Data</td>
+                                <td>Removes a specified resource from the server.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- GRAPHQL CARD -->
+                <div class="sticky-note lavender">
+                    <div class="sticky-title">🕸️ GraphQL (Minimal Round Trips)</div>
+                    <p style="font-size: 0.95rem; margin-bottom: 0.75rem;">A query language for APIs that allows clients to request <strong>exactly what they need</strong> and nothing more.</p>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div style="background: var(--paper-card); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                            <strong>🎯 Single Endpoint:</strong>
+                            <div style="font-size:0.85rem; margin-top:0.3rem;">Uses one single endpoint (e.g. <code>/graphql</code>) for all data operations.</div>
+                        </div>
+
+                        <div style="background: var(--paper-card); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                            <strong>⚡ 3 Core Operations:</strong>
+                            <ul style="font-size:0.85rem; margin:0.3rem 0 0 1rem; padding:0;">
+                                <li><code>Query</code> ➔ Read data</li>
+                                <li><code>Mutation</code> ➔ Write / Update data</li>
+                                <li><code>Subscription</code> ➔ Real-time data stream</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; font-size: 0.875rem;">
+                        💡 <strong>Recommended Choice for:</strong> Complex UIs and data-heavy dashboards where reducing network round-trips and avoiding over-fetching/under-fetching is critical.
+                    </div>
+                </div>
+
+                <!-- gRPC CARD -->
+                <div class="sticky-note yellow" style="margin-top: 2rem;">
+                    <div class="sticky-title">🚀 gRPC <span style="font-size:0.9rem; color:var(--text-muted); font-weight:bold;">(High Performance • Least Common on Web)</span></div>
+                    <p style="font-size: 0.95rem; margin-bottom: 0.75rem;">A high-performance Remote Procedure Call (RPC) framework optimized for ultra-fast inter-service communication.</p>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div style="background: var(--paper-card); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                            <strong>⚡ Protocol Buffers (Protobuf):</strong>
+                            <div style="font-size:0.85rem; margin-top:0.3rem;">Uses compact <strong>binary serialization</strong> with strict schema definitions instead of heavy text JSON.</div>
+                        </div>
+
+                        <div style="background: var(--paper-card); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                            <strong>📄 Service Definition:</strong>
+                            <div style="font-size:0.85rem; margin-top:0.3rem;">Methods and payload schemas are explicitly defined as RPC services inside <code>.proto</code> files.</div>
+                        </div>
+                    </div>
+
+                    <h4 style="font-family: var(--font-title); font-size: 1.05rem; margin: 1.25rem 0 0.5rem 0;">📡 4 Communication Streaming Types:</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem;">
+                        <div style="background: var(--paper-card); padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid var(--border-soft);">
+                            1️⃣ <strong>Unary</strong><br><span style="color:var(--text-muted);">Standard Request ➔ Response</span>
+                        </div>
+                        <div style="background: var(--paper-card); padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid var(--border-soft);">
+                            2️⃣ <strong>Server Streaming</strong><br><span style="color:var(--text-muted);">Single Req ➔ Stream Resp</span>
+                        </div>
+                        <div style="background: var(--paper-card); padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid var(--border-soft);">
+                            3️⃣ <strong>Client Streaming</strong><br><span style="color:var(--text-muted);">Stream Req ➔ Single Resp</span>
+                        </div>
+                        <div style="background: var(--paper-card); padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid var(--border-soft);">
+                            4️⃣ <strong>Bidirectional</strong><br><span style="color:var(--text-muted);">Two-way real-time stream</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; font-size: 0.875rem;">
+                        💡 <strong>Best Suited For:</strong> Microservices architecture and internal low-latency system-to-system communications.
+                    </div>
+                </div>
+
+            </div>
+
+            <footer>
+                <p><a href="08-spof-resilience.html" style="color:var(--pastel-blue-dark); text-decoration:none;">⬅️ 8. SPOF & HA</a> | <a href="../index.html" style="color:var(--pastel-blue-dark); text-decoration:none;">🏠 Back to Index</a></p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/notebook.js"></script>
+</body>
+</html>
