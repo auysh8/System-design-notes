@@ -162,8 +162,29 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             }
             window.addEventListener('DOMContentLoaded', () => {
                 updateThemeUI(isDark);
+                initTabsHeader();
             });
         })();
+
+        // Auto-scroll active bookmark into view & enable mouse wheel scrolling
+        function initTabsHeader() {
+            const tabsHeader = document.querySelector('.tabs-header');
+            if (!tabsHeader) return;
+
+            const activeTab = tabsHeader.querySelector('.tab-item.active');
+            if (activeTab) {
+                const targetScroll = (activeTab.offsetLeft + activeTab.offsetWidth / 2) - (tabsHeader.clientWidth / 2);
+                tabsHeader.scrollLeft = Math.max(0, targetScroll);
+            }
+
+            // Enable horizontal mouse wheel scrolling across bookmark tabs
+            tabsHeader.addEventListener('wheel', (e) => {
+                if (e.deltaY !== 0) {
+                    e.preventDefault();
+                    tabsHeader.scrollLeft += e.deltaY;
+                }
+            }, { passive: false });
+        }
 
         function copyCode(btn) {
             const container = btn.closest('.code-sticker');
