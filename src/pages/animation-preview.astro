@@ -16,12 +16,9 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&family=Caveat:wght@700&display=swap" rel="stylesheet">
 
-    <!-- StPageFlip CDN for Option 2 Interactive Flipbook -->
-    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js" is:inline></script>
-
     <style>
         :root {
-            --anim-speed: 600ms;
+            --anim-speed: 650ms;
         }
 
         body {
@@ -34,13 +31,13 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
         }
 
         .lab-container {
-            max-width: 1050px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
         .lab-header {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .lab-badge {
@@ -63,29 +60,29 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
 
         .lab-header h1 {
             font-family: var(--font-title);
-            font-size: 2.5rem;
+            font-size: 2.3rem;
             margin: 0 0 0.5rem 0;
         }
 
         .lab-header p {
             color: var(--text-muted);
-            font-size: 1.1rem;
-            max-width: 650px;
+            font-size: 1.05rem;
+            max-width: 620px;
             margin: 0 auto;
         }
 
-        /* Control Panel */
+        /* Controls Bar */
         .controls-bar {
             background: var(--paper-card);
             border: 2px solid var(--border-soft);
             border-radius: 16px;
-            padding: 1rem 1.5rem;
+            padding: 1rem 1.25rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             box-shadow: var(--shadow-card);
         }
 
@@ -99,10 +96,10 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             background: var(--paper-bg);
             border: 2px solid var(--border-soft);
             color: var(--text-main);
-            padding: 0.6rem 1.1rem;
+            padding: 0.55rem 1rem;
             border-radius: 10px;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -125,24 +122,20 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             box-shadow: 2px 2px 0px #38bdf8;
         }
 
-        .speed-control {
+        .controls-right {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--text-muted);
         }
 
-        /* Stage Display */
+        /* Stage Card */
         .stage-card {
             background: var(--paper-card);
             border: 2px solid var(--border-soft);
             border-radius: 20px;
-            padding: 2rem;
+            padding: 1.75rem 2rem 2.5rem 2rem;
             box-shadow: var(--shadow-paper);
-            position: relative;
-            min-height: 520px;
+            min-height: 560px;
             display: flex;
             flex-direction: column;
         }
@@ -153,16 +146,16 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             margin-bottom: 1.5rem;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             flex-wrap: wrap;
             gap: 1rem;
         }
 
         .stage-title {
             font-family: var(--font-title);
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 800;
-            margin: 0 0 0.35rem 0;
+            margin: 0 0 0.25rem 0;
             color: var(--text-main);
         }
 
@@ -170,19 +163,20 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             color: var(--text-muted);
             margin: 0;
             font-size: 0.95rem;
-            max-width: 600px;
+            max-width: 580px;
         }
 
         .stage-actions {
             display: flex;
             gap: 0.75rem;
+            align-items: center;
         }
 
         .action-btn {
             background: var(--paper-card);
             border: 2px solid var(--text-main);
             color: var(--text-main);
-            padding: 0.6rem 1.25rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 10px;
             font-weight: 800;
             font-size: 0.9rem;
@@ -213,40 +207,56 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             color: #0f172a;
         }
 
-        /* Paper Simulation Viewport */
-        .viewport-container {
+        /* Viewport */
+        .stage-viewport {
             flex: 1;
-            perspective: 1600px;
             position: relative;
+            min-height: 420px;
+            perspective: 1800px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 1rem;
+            justify-content: center;
             overflow: hidden;
+            border-radius: 14px;
         }
 
-        /* Demo Paper Sheet */
-        .demo-paper {
+        /* Paper Sheets */
+        .sheet {
             width: 100%;
             max-width: 720px;
+            min-height: 340px;
             background: var(--paper-bg);
             border: 2px solid var(--border-soft);
             border-radius: 14px;
-            padding: 2.25rem 2.5rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 2rem 2.5rem;
+            box-shadow: var(--shadow-paper);
+            box-sizing: border-box;
             position: absolute;
             transform-style: preserve-3d;
             backface-visibility: hidden;
-            transition: transform var(--anim-speed) cubic-bezier(0.25, 1, 0.5, 1), opacity var(--anim-speed) ease, box-shadow var(--anim-speed) ease;
+            pointer-events: none;
+            opacity: 0;
+            transition: none;
         }
 
-        .dark-mode .demo-paper {
+        .sheet.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 5;
+            transform: none;
+        }
+
+        .sheet.prev {
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .dark-mode .sheet {
             background: #1e2433;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* Spiral Rings Demo */
-        .demo-spiral-rings {
+        /* Spiral Rings on Left */
+        .sheet-rings {
             position: absolute;
             top: 20px;
             left: 12px;
@@ -263,105 +273,226 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             opacity: 0.4;
         }
 
-        /* -------------------------------------------------------------
-           OPTION 1: Curved 3D Paper Curl & Dynamic Glare
-           ------------------------------------------------------------- */
-        .demo-paper.opt1-exit-forward {
-            transform-origin: left center;
-            transform: perspective(1400px) rotateY(-85deg) skewY(-8deg) scale(0.92) translateX(-40px);
-            opacity: 0;
-            box-shadow: -35px 20px 45px rgba(0,0,0,0.35);
-        }
-
-        .demo-paper.opt1-enter-forward {
-            transform-origin: left center;
-            animation: opt1EnterFwd var(--anim-speed) cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        @keyframes opt1EnterFwd {
+        /* ========================================================
+           OPTION 1: Curved 3D Paper Curl with Directional Physics
+           ======================================================== */
+        @keyframes opt1_fwd_out {
             0% {
-                transform: perspective(1400px) rotateY(65deg) skewY(6deg) scale(0.92) translateX(40px);
+                transform: perspective(1600px) rotateY(0deg) skewY(0deg) scale(1);
+                opacity: 1;
+                transform-origin: left center;
+                box-shadow: var(--shadow-paper);
+            }
+            40% {
+                box-shadow: -25px 15px 35px rgba(0,0,0,0.3);
+            }
+            100% {
+                transform: perspective(1600px) rotateY(-80deg) skewY(-8deg) scale(0.92) translateX(-40px);
                 opacity: 0;
+                transform-origin: left center;
+            }
+        }
+
+        @keyframes opt1_fwd_in {
+            0% {
+                transform: perspective(1600px) rotateY(70deg) skewY(6deg) scale(0.92) translateX(40px);
+                opacity: 0;
+                transform-origin: left center;
             }
             60% {
                 opacity: 0.95;
             }
             100% {
-                transform: perspective(1400px) rotateY(0deg) skewY(0deg) scale(1) translateX(0);
+                transform: perspective(1600px) rotateY(0deg) skewY(0deg) scale(1) translateX(0);
                 opacity: 1;
+                transform-origin: left center;
+                box-shadow: var(--shadow-paper);
             }
         }
 
-        .demo-paper.opt1-exit-backward {
-            transform-origin: right center;
-            transform: perspective(1400px) rotateY(85deg) skewY(8deg) scale(0.92) translateX(40px);
-            opacity: 0;
-            box-shadow: 35px 20px 45px rgba(0,0,0,0.35);
-        }
-
-        .demo-paper.opt1-enter-backward {
-            transform-origin: right center;
-            animation: opt1EnterBwd var(--anim-speed) cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        @keyframes opt1EnterBwd {
+        @keyframes opt1_bwd_out {
             0% {
-                transform: perspective(1400px) rotateY(-65deg) skewY(-6deg) scale(0.92) translateX(-40px);
+                transform: perspective(1600px) rotateY(0deg) skewY(0deg) scale(1);
+                opacity: 1;
+                transform-origin: right center;
+                box-shadow: var(--shadow-paper);
+            }
+            40% {
+                box-shadow: 25px 15px 35px rgba(0,0,0,0.3);
+            }
+            100% {
+                transform: perspective(1600px) rotateY(80deg) skewY(8deg) scale(0.92) translateX(40px);
                 opacity: 0;
+                transform-origin: right center;
+            }
+        }
+
+        @keyframes opt1_bwd_in {
+            0% {
+                transform: perspective(1600px) rotateY(-70deg) skewY(-6deg) scale(0.92) translateX(-40px);
+                opacity: 0;
+                transform-origin: right center;
             }
             60% {
                 opacity: 0.95;
             }
             100% {
-                transform: perspective(1400px) rotateY(0deg) skewY(0deg) scale(1) translateX(0);
+                transform: perspective(1600px) rotateY(0deg) skewY(0deg) scale(1) translateX(0);
                 opacity: 1;
+                transform-origin: right center;
+                box-shadow: var(--shadow-paper);
             }
         }
 
-        /* -------------------------------------------------------------
+        .opt1-fwd-out { animation: opt1_fwd_out var(--anim-speed) cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .opt1-fwd-in  { animation: opt1_fwd_in var(--anim-speed) cubic-bezier(0.25, 1, 0.5, 1) forwards; z-index: 6; }
+        .opt1-bwd-out { animation: opt1_bwd_out var(--anim-speed) cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .opt1-bwd-in  { animation: opt1_bwd_in var(--anim-speed) cubic-bezier(0.25, 1, 0.5, 1) forwards; z-index: 6; }
+
+
+        /* ========================================================
+           OPTION 2: Interactive Real-Time Corner Peel & Curl
+           ======================================================== */
+        .opt2-container {
+            width: 100%;
+            max-width: 720px;
+            height: 360px;
+            position: relative;
+            user-select: none;
+            cursor: grab;
+        }
+
+        .opt2-container:active {
+            cursor: grabbing;
+        }
+
+        .peel-page-back {
+            position: absolute;
+            inset: 0;
+            background: var(--paper-bg);
+            border: 2px solid var(--border-soft);
+            border-radius: 14px;
+            padding: 2rem 2.5rem;
+            box-shadow: var(--shadow-paper);
+            box-sizing: border-box;
+            z-index: 1;
+        }
+
+        .peel-page-front {
+            position: absolute;
+            inset: 0;
+            background: var(--paper-bg);
+            border: 2px solid var(--border-soft);
+            border-radius: 14px;
+            padding: 2rem 2.5rem;
+            box-shadow: var(--shadow-paper);
+            box-sizing: border-box;
+            z-index: 3;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            transition: clip-path 0.1s ease-out;
+        }
+
+        .dark-mode .peel-page-back, .dark-mode .peel-page-front {
+            background: #1e2433;
+        }
+
+        .peel-fold-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(220,220,220,0.95) 50%, rgba(180,180,180,0.8) 100%);
+            box-shadow: -10px 10px 20px rgba(0,0,0,0.3);
+            border-bottom-left-radius: 12px;
+            z-index: 4;
+            pointer-events: none;
+            transition: width 0.1s ease-out, height 0.1s ease-out;
+        }
+
+        .dark-mode .peel-fold-overlay {
+            background: linear-gradient(135deg, #334155 0%, #1e293b 50%, #0f172a 100%);
+            box-shadow: -12px 12px 25px rgba(0,0,0,0.6);
+        }
+
+
+        /* ========================================================
            OPTION 3: Spiral Ring Lift & Turn
-           ------------------------------------------------------------- */
-        .demo-paper.opt3-exit-forward {
-            transform-origin: 15px center;
-            transform: perspective(1200px) rotateY(-110deg) rotateZ(-4deg) translateY(-25px) scale(0.88);
-            opacity: 0;
-            box-shadow: -40px 10px 50px rgba(0,0,0,0.4);
-        }
-
-        .demo-paper.opt3-enter-forward {
-            transform-origin: 15px center;
-            animation: opt3EnterFwd var(--anim-speed) cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
-        }
-
-        @keyframes opt3EnterFwd {
+           ======================================================== */
+        @keyframes opt3_fwd_out {
             0% {
-                transform: perspective(1200px) translateY(40px) scale(0.95);
+                transform: perspective(1400px) rotateY(0deg) rotateZ(0deg) translateY(0);
+                opacity: 1;
+                transform-origin: 15px center;
+            }
+            100% {
+                transform: perspective(1400px) rotateY(-115deg) rotateZ(-6deg) translateY(-30px) scale(0.9);
+                opacity: 0;
+                transform-origin: 15px center;
+            }
+        }
+
+        @keyframes opt3_fwd_in {
+            0% {
+                transform: perspective(1400px) translateY(50px) scale(0.94);
                 opacity: 0;
             }
             100% {
-                transform: perspective(1200px) translateY(0) scale(1);
+                transform: perspective(1400px) translateY(0) scale(1);
                 opacity: 1;
             }
         }
 
-        /* -------------------------------------------------------------
-           OPTION 4: Paper Stack Peel & Reveal (Diagonal Peel)
-           ------------------------------------------------------------- */
-        .demo-paper.opt4-exit-forward {
-            transform-origin: bottom right;
-            transform: rotate(-12deg) translate(-110%, -20%) scale(0.95);
-            opacity: 0;
-            box-shadow: -20px 30px 40px rgba(0,0,0,0.25);
-        }
-
-        .demo-paper.opt4-enter-forward {
-            animation: opt4EnterFwd var(--anim-speed) cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
-        }
-
-        @keyframes opt4EnterFwd {
+        @keyframes opt3_bwd_out {
             0% {
-                transform: scale(0.93) translateY(15px);
-                opacity: 0.6;
+                transform: perspective(1400px) translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: perspective(1400px) translateY(50px) scale(0.94);
+                opacity: 0;
+            }
+        }
+
+        @keyframes opt3_bwd_in {
+            0% {
+                transform: perspective(1400px) rotateY(-115deg) rotateZ(-6deg) translateY(-30px) scale(0.9);
+                opacity: 0;
+                transform-origin: 15px center;
+            }
+            100% {
+                transform: perspective(1400px) rotateY(0deg) rotateZ(0deg) translateY(0) scale(1);
+                opacity: 1;
+                transform-origin: 15px center;
+            }
+        }
+
+        .opt3-fwd-out { animation: opt3_fwd_out var(--anim-speed) cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .opt3-fwd-in  { animation: opt3_fwd_in var(--anim-speed) cubic-bezier(0.25, 1, 0.5, 1) forwards; z-index: 6; }
+        .opt3-bwd-out { animation: opt3_bwd_out var(--anim-speed) cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .opt3-bwd-in  { animation: opt3_bwd_in var(--anim-speed) cubic-bezier(0.25, 1, 0.5, 1) forwards; z-index: 6; }
+
+
+        /* ========================================================
+           OPTION 4: Layered Paper Stack Peel & Reveal
+           ======================================================== */
+        @keyframes opt4_fwd_out {
+            0% {
+                transform: rotate(0deg) translate(0, 0) scale(1);
+                opacity: 1;
+                transform-origin: bottom right;
+            }
+            100% {
+                transform: rotate(-14deg) translate(-115%, -25%) scale(0.95);
+                opacity: 0;
+                transform-origin: bottom right;
+            }
+        }
+
+        @keyframes opt4_fwd_in {
+            0% {
+                transform: scale(0.93) translateY(20px);
+                opacity: 0.5;
             }
             100% {
                 transform: scale(1) translateY(0);
@@ -369,27 +500,34 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             }
         }
 
-        /* Option 2 StPageFlip container */
-        #flipbookContainer {
-            width: 100%;
-            display: flex;
-            justify-content: center;
+        @keyframes opt4_bwd_out {
+            0% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.93) translateY(20px);
+                opacity: 0.5;
+            }
         }
 
-        .flipbook-sheet {
-            background: var(--paper-bg);
-            border: 2px solid var(--border-soft);
-            padding: 2rem;
-            box-sizing: border-box;
-            border-radius: 8px;
-            height: 100%;
-            overflow: hidden;
+        @keyframes opt4_bwd_in {
+            0% {
+                transform: rotate(-14deg) translate(-115%, -25%) scale(0.95);
+                opacity: 0;
+                transform-origin: bottom right;
+            }
+            100% {
+                transform: rotate(0deg) translate(0, 0) scale(1);
+                opacity: 1;
+                transform-origin: bottom right;
+            }
         }
 
-        .dark-mode .flipbook-sheet {
-            background: #1e2433;
-            color: #f1f5f9;
-        }
+        .opt4-fwd-out { animation: opt4_fwd_out var(--anim-speed) cubic-bezier(0.2, 0.9, 0.3, 1) forwards; }
+        .opt4-fwd-in  { animation: opt4_fwd_in var(--anim-speed) cubic-bezier(0.2, 0.9, 0.3, 1) forwards; z-index: 6; }
+        .opt4-bwd-out { animation: opt4_bwd_out var(--anim-speed) cubic-bezier(0.2, 0.9, 0.3, 1) forwards; }
+        .opt4-bwd-in  { animation: opt4_bwd_in var(--anim-speed) cubic-bezier(0.2, 0.9, 0.3, 1) forwards; z-index: 6; }
 
         .back-nav-link {
             display: inline-flex;
@@ -414,82 +552,66 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
         <div class="lab-header">
             <span class="lab-badge">Interactive Physics Laboratory</span>
             <h1>Page-Turn Animation Showcase</h1>
-            <p>Compare and test all 4 realistic notebook page-turning animations live with interactive controls before deciding on your preferred design.</p>
+            <p>Test and compare all 4 realistic notebook page-turning animations live with interactive controls before deciding on your preferred design.</p>
         </div>
 
         <!-- Controls Bar -->
         <div class="controls-bar">
             <div class="option-tabs">
-                <button class="option-tab active" onclick="switchOption(1)">
-                    🎨 Option 1: 3D Paper Curl & Glare
+                <button class="option-tab active" onclick="switchTab(1)">
+                    🎨 Option 1: 3D Paper Curl
                 </button>
-                <button class="option-tab" onclick="switchOption(2)">
-                    📖 Option 2: Drag-to-Peel Flipbook
+                <button class="option-tab" onclick="switchTab(2)">
+                    📖 Option 2: Drag-to-Peel
                 </button>
-                <button class="option-tab" onclick="switchOption(3)">
-                    📑 Option 3: Spiral Ring Lift & Turn
+                <button class="option-tab" onclick="switchTab(3)">
+                    📑 Option 3: Spiral Ring Lift
                 </button>
-                <button class="option-tab" onclick="switchOption(4)">
-                    🗂️ Option 4: Layered Paper Stack Peel
+                <button class="option-tab" onclick="switchTab(4)">
+                    🗂️ Option 4: Layered Stack Peel
                 </button>
             </div>
 
-            <div class="speed-control">
-                <span>Speed:</span>
-                <select id="speedSelect" onchange="changeSpeed(this.value)" style="background:var(--paper-bg); color:var(--text-main); border:1px solid var(--border-soft); padding:0.3rem 0.6rem; border-radius:6px; font-weight:700;">
-                    <option value="900ms">0.5x (Slow Motion)</option>
-                    <option value="600ms" selected>1.0x (Natural Speed)</option>
-                    <option value="350ms">1.5x (Snappy)</option>
+            <div class="controls-right">
+                <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">Speed:</span>
+                <select id="speedSelect" onchange="changeSpeed(this.value)" style="background:var(--paper-bg); color:var(--text-main); border:1px solid var(--border-soft); padding:0.35rem 0.6rem; border-radius:6px; font-weight:700; cursor:pointer;">
+                    <option value="950ms">0.5x Slow Motion</option>
+                    <option value="650ms" selected>1.0x Natural Speed</option>
+                    <option value="380ms">1.5x Snappy Speed</option>
                 </select>
-                <button class="action-btn" onclick="document.body.classList.toggle('dark-mode')" style="padding:0.4rem 0.8rem; font-size:0.8rem;">
-                    🌓 Toggle Dark
+                <button class="action-btn" onclick="document.body.classList.toggle('dark-mode')" style="padding:0.35rem 0.75rem; font-size:0.82rem;">
+                    🌓 Dark Mode
                 </button>
             </div>
         </div>
 
-        <!-- Simulation Stage -->
+        <!-- Stage Card -->
         <div class="stage-card">
             
             <div class="stage-info">
                 <div>
-                    <h2 class="stage-title" id="stageTitle">Option 1: Curved 3D Paper Curl & Glare</h2>
+                    <h2 class="stage-title" id="stageTitle">Option 1: Curved 3D Paper Curl with Directional Physics</h2>
                     <p class="stage-desc" id="stageDesc">
                         Uses non-linear perspective deformation (skew + rotate) and directional physics so the page bends organically like flexible notebook paper instead of swinging like a flat board.
                     </p>
                 </div>
 
                 <div class="stage-actions" id="standardActions">
-                    <button class="action-btn" onclick="triggerFlip('backward')">
+                    <button class="action-btn" onclick="runTransition('backward')">
                         ⬅️ Previous Page
                     </button>
-                    <button class="action-btn primary" onclick="triggerFlip('forward')">
+                    <button class="action-btn primary" onclick="runTransition('forward')">
                         Next Page ➡️
                     </button>
                 </div>
             </div>
 
-            <!-- Viewport for CSS Options (1, 3, 4) -->
-            <div class="viewport-container" id="cssViewport">
+            <!-- Standard Viewport (Options 1, 3, 4) -->
+            <div class="stage-viewport" id="standardViewport">
                 
-                <!-- Underneath / Next Page (Chapter 4) -->
-                <div class="demo-paper" id="paperUnder" style="z-index: 1;">
-                    <div class="demo-spiral-rings"></div>
-                    <span class="planner-tag" style="background:var(--pastel-yellow); color:#854d0e; font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:8px; font-weight:800;">CHAPTER 4</span>
-                    <h2 style="font-family:var(--font-title); margin:0.5rem 0 0.75rem 0; font-size:1.6rem;">ACID Transactions & Data Integrity</h2>
-                    <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6;">
-                        Atomicity, Consistency, Isolation, and Durability guarantees in distributed relational clusters.
-                    </p>
-                    <div style="margin-top: 1.25rem;">
-                        <mark class="hl-yellow">Atomicity</mark>
-                        <mark class="hl-pink">Consistency</mark>
-                        <mark class="hl-blue">Isolation</mark>
-                        <mark class="hl-green">Durability</mark>
-                    </div>
-                </div>
-
-                <!-- Active / Top Page (Chapter 3) -->
-                <div class="demo-paper" id="paperTop" style="z-index: 2;">
-                    <div class="demo-spiral-rings"></div>
+                <!-- Page 1: Chapter 3 -->
+                <div class="sheet active" id="sheet1">
+                    <div class="sheet-rings"></div>
                     <span class="planner-tag" style="background:var(--pastel-blue); color:#0369a1; font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:8px; font-weight:800;">CHAPTER 3</span>
                     <h2 style="font-family:var(--font-title); margin:0.5rem 0 0.75rem 0; font-size:1.6rem;">Relational Databases & SQL Joins</h2>
                     <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6;">
@@ -506,31 +628,68 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
                     </div>
                 </div>
 
+                <!-- Page 2: Chapter 4 -->
+                <div class="sheet prev" id="sheet2">
+                    <div class="sheet-rings"></div>
+                    <span class="planner-tag" style="background:var(--pastel-yellow); color:#854d0e; font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:8px; font-weight:800;">CHAPTER 4</span>
+                    <h2 style="font-family:var(--font-title); margin:0.5rem 0 0.75rem 0; font-size:1.6rem;">ACID Transactions & Data Integrity</h2>
+                    <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6;">
+                        Atomicity, Consistency, Isolation, and Durability guarantees across relational databases.
+                    </p>
+                    <div style="margin-top: 1.25rem;">
+                        <mark class="hl-yellow">Atomicity</mark>
+                        <mark class="hl-pink">Consistency</mark>
+                        <mark class="hl-blue">Isolation</mark>
+                        <mark class="hl-green">Durability</mark>
+                    </div>
+                    <div style="margin-top: 1.5rem; padding: 0.8rem; border-radius: 8px; background: var(--paper-card); border: 2px dashed var(--border-soft); font-family: var(--font-hand); font-size: 1.2rem; color: var(--text-muted);">
+                        ⚡ "All or nothing: either the transaction commits completely or rolls back."
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Viewport for Option 2 (StPageFlip Canvas) -->
-            <div id="flipbookViewport" style="display: none; width: 100%; justify-content: center; align-items: center; padding: 2rem 0;">
-                <div id="flipbookContainer" style="width: 600px; height: 380px;">
-                    <div class="flipbook-sheet">
-                        <span class="planner-tag" style="background:var(--pastel-blue); color:#0369a1; font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:8px; font-weight:800;">CHAPTER 3</span>
-                        <h3 style="font-family:var(--font-title); margin:0.5rem 0;">Relational Databases</h3>
-                        <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
-                            👉 <strong>Click & Drag this page corner with your mouse</strong> to peel the paper organically!
-                        </p>
-                        <div style="margin-top:1rem;">
-                            <mark class="hl-blue">MySQL</mark> <mark class="hl-blue">PostgreSQL</mark>
-                        </div>
-                    </div>
-                    <div class="flipbook-sheet">
+            <!-- Interactive Drag Viewport (Option 2) -->
+            <div class="stage-viewport" id="dragViewport" style="display: none;">
+                <div class="opt2-container" id="peelContainer">
+                    
+                    <!-- Back Sheet (Chapter 4) -->
+                    <div class="peel-page-back">
+                        <div class="sheet-rings"></div>
                         <span class="planner-tag" style="background:var(--pastel-yellow); color:#854d0e; font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:8px; font-weight:800;">CHAPTER 4</span>
-                        <h3 style="font-family:var(--font-title); margin:0.5rem 0;">ACID Transactions</h3>
-                        <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
-                            All four ACID principles guarantee mission-critical financial correctness.
+                        <h2 style="font-family:var(--font-title); margin:0.5rem 0 0.75rem 0; font-size:1.6rem;">ACID Transactions & Data Integrity</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6;">
+                            Atomicity, Consistency, Isolation, and Durability guarantees across relational databases.
                         </p>
-                        <div style="margin-top:1rem;">
-                            <mark class="hl-yellow">Atomicity</mark> <mark class="hl-pink">Durability</mark>
+                        <div style="margin-top: 1.25rem;">
+                            <mark class="hl-yellow">Atomicity</mark>
+                            <mark class="hl-pink">Consistency</mark>
+                            <mark class="hl-blue">Isolation</mark>
+                            <mark class="hl-green">Durability</mark>
                         </div>
                     </div>
+
+                    <!-- Front Sheet (Chapter 3) -->
+                    <div class="peel-page-front" id="peelFront">
+                        <div class="sheet-rings"></div>
+                        <span class="planner-tag" style="background:var(--pastel-blue); color:#0369a1; font-size:0.75rem; padding:0.2rem 0.6rem; border-radius:8px; font-weight:800;">CHAPTER 3</span>
+                        <h2 style="font-family:var(--font-title); margin:0.5rem 0 0.75rem 0; font-size:1.6rem;">Relational Databases & SQL Joins</h2>
+                        <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6;">
+                            👉 <strong>Click & Drag anywhere on this card</strong> (or drag the top-right corner) to peel the page like real paper!
+                        </p>
+                        <div style="margin-top: 1.25rem;">
+                            <mark class="hl-blue">MySQL</mark>
+                            <mark class="hl-blue">PostgreSQL</mark>
+                            <mark class="hl-blue">SQLite</mark>
+                        </div>
+                        <div style="margin-top: 1.5rem; padding: 0.7rem; border-radius: 8px; background: var(--paper-card); border: 2px dashed var(--border-soft); font-family: var(--font-hand); font-size: 1.15rem; color: var(--pastel-blue-dark);">
+                            ✨ Move mouse to peel paper corner in real-time
+                        </div>
+                    </div>
+
+                    <!-- Corner Fold Overlay -->
+                    <div class="peel-fold-overlay" id="peelFold"></div>
+
                 </div>
             </div>
 
@@ -538,20 +697,19 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
 
     </div>
 
-    <!-- Interactive Laboratory Logic -->
     <script is:inline>
-        let currentOption = 1;
-        let isPageTopVisible = true;
-        let pageFlipInstance = null;
+        let currentTab = 1;
+        let currentPage = 1;
+        let isAnimating = false;
 
-        const optionData = {
+        const tabMetadata = {
             1: {
-                title: "Option 1: Curved 3D Paper Curl & Glare",
+                title: "Option 1: Curved 3D Paper Curl with Directional Physics",
                 desc: "Uses non-linear perspective deformation (skew + rotate) and directional physics so the page bends organically like flexible notebook paper instead of swinging like a flat board."
             },
             2: {
-                title: "Option 2: Drag-to-Peel Interactive Flipbook",
-                desc: "True physics-based mesh deformation. Click and drag the corner with your mouse to peel, curl, and turn the page in real-time."
+                title: "Option 2: Drag-to-Peel Interactive Corner Simulation",
+                desc: "Click and drag across the page to peel, bend, and curl the corner with dynamic realistic paper fold lighting in real-time."
             },
             3: {
                 title: "Option 3: Spiral Ring Lift & Turn",
@@ -563,32 +721,30 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             }
         };
 
-        function switchOption(opt) {
-            currentOption = opt;
+        function switchTab(tabNum) {
+            currentTab = tabNum;
 
-            // Update Tab UI
-            document.querySelectorAll('.option-tab').forEach((tab, i) => {
-                tab.classList.toggle('active', i + 1 === opt);
+            document.querySelectorAll('.option-tab').forEach((t, i) => {
+                t.classList.toggle('active', i + 1 === tabNum);
             });
 
-            // Update Description
-            document.getElementById('stageTitle').textContent = optionData[opt].title;
-            document.getElementById('stageDesc').textContent = optionData[opt].desc;
+            document.getElementById('stageTitle').textContent = tabMetadata[tabNum].title;
+            document.getElementById('stageDesc').textContent = tabMetadata[tabNum].desc;
 
-            const cssViewport = document.getElementById('cssViewport');
-            const flipbookViewport = document.getElementById('flipbookViewport');
+            const standardViewport = document.getElementById('standardViewport');
+            const dragViewport = document.getElementById('dragViewport');
             const standardActions = document.getElementById('standardActions');
 
-            if (opt === 2) {
-                cssViewport.style.display = 'none';
-                flipbookViewport.style.display = 'flex';
+            if (tabNum === 2) {
+                standardViewport.style.display = 'none';
+                dragViewport.style.display = 'flex';
                 standardActions.style.display = 'none';
-                initFlipbook();
+                initPeelDrag();
             } else {
-                cssViewport.style.display = 'flex';
-                flipbookViewport.style.display = 'none';
+                standardViewport.style.display = 'flex';
+                dragViewport.style.display = 'none';
                 standardActions.style.display = 'flex';
-                resetSheets();
+                resetStandardSheets();
             }
         }
 
@@ -596,68 +752,125 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             document.documentElement.style.setProperty('--anim-speed', val);
         }
 
-        function resetSheets() {
-            const top = document.getElementById('paperTop');
-            const under = document.getElementById('paperUnder');
-            top.className = 'demo-paper';
-            under.className = 'demo-paper';
-            top.style.zIndex = '2';
-            under.style.zIndex = '1';
-            isPageTopVisible = true;
+        function resetStandardSheets() {
+            const s1 = document.getElementById('sheet1');
+            const s2 = document.getElementById('sheet2');
+            s1.className = 'sheet active';
+            s2.className = 'sheet prev';
+            currentPage = 1;
+            isAnimating = false;
         }
 
-        function triggerFlip(direction) {
-            const top = document.getElementById('paperTop');
-            const under = document.getElementById('paperUnder');
-            
-            const exitClass = `opt${currentOption}-exit-${direction}`;
-            const enterClass = `opt${currentOption}-enter-${direction}`;
+        function runTransition(direction) {
+            if (isAnimating) return;
+            isAnimating = true;
 
-            if (isPageTopVisible) {
-                top.classList.add(exitClass);
-                under.classList.add(enterClass);
-                setTimeout(() => {
-                    top.style.zIndex = '1';
-                    under.style.zIndex = '2';
-                    isPageTopVisible = false;
-                }, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--anim-speed')));
-            } else {
-                top.classList.remove(exitClass);
-                under.classList.remove(enterClass);
-                top.classList.add(enterClass);
-                under.classList.add(exitClass);
-                setTimeout(() => {
-                    top.style.zIndex = '2';
-                    under.style.zIndex = '1';
-                    isPageTopVisible = true;
-                }, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--anim-speed')));
-            }
+            const s1 = document.getElementById('sheet1');
+            const s2 = document.getElementById('sheet2');
+
+            const currentSheet = currentPage === 1 ? s1 : s2;
+            const nextSheet = currentPage === 1 ? s2 : s1;
+
+            const outClass = `opt${currentTab}-${direction === 'forward' ? 'fwd' : 'bwd'}-out`;
+            const inClass = `opt${currentTab}-${direction === 'forward' ? 'fwd' : 'bwd'}-in`;
+
+            currentSheet.className = `sheet ${outClass}`;
+            nextSheet.className = `sheet ${inClass}`;
+
+            const duration = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--anim-speed')) || 650;
+
+            setTimeout(() => {
+                currentSheet.className = 'sheet prev';
+                nextSheet.className = 'sheet active';
+                currentPage = currentPage === 1 ? 2 : 1;
+                isAnimating = false;
+            }, duration);
         }
 
-        function initFlipbook() {
-            if (pageFlipInstance) return;
-            try {
-                const target = document.getElementById('flipbookContainer');
-                if (!target || !window.St || !window.St.PageFlip) return;
-                
-                pageFlipInstance = new St.PageFlip(target, {
-                    width: 300,
-                    height: 380,
-                    size: 'stretch',
-                    minWidth: 280,
-                    maxWidth: 500,
-                    minHeight: 350,
-                    maxHeight: 600,
-                    showCover: false,
-                    drawShadow: true,
-                    maxShadowOpacity: 0.5,
-                    usePortrait: true
-                });
+        /* -------------------------------------------------------------
+           Option 2 Interactive Corner Drag Logic
+           ------------------------------------------------------------- */
+        let isDragging = false;
+        let peelInitialized = false;
 
-                pageFlipInstance.loadFromHTML(document.querySelectorAll('.flipbook-sheet'));
-            } catch(e) {
-                console.error("Flipbook init error:", e);
+        function initPeelDrag() {
+            if (peelInitialized) return;
+            peelInitialized = true;
+
+            const container = document.getElementById('peelContainer');
+            const front = document.getElementById('peelFront');
+            const fold = document.getElementById('peelFold');
+
+            function handleMove(clientX, clientY) {
+                const rect = container.getBoundingClientRect();
+                const x = clientX - rect.left;
+                const y = clientY - rect.top;
+
+                const dx = Math.max(0, rect.width - x);
+                const dy = Math.max(0, y);
+                const peelSize = Math.min(Math.hypot(dx, dy) * 1.15, rect.width);
+
+                if (peelSize > 10) {
+                    const pctX = Math.max(0, 100 - (peelSize / rect.width * 100));
+                    const pctY = Math.min(100, (peelSize / rect.height * 100));
+                    front.style.clipPath = `polygon(0 0, ${pctX}% 0, 100% ${pctY}%, 100% 100%, 0 100%)`;
+                    fold.style.width = `${peelSize}px`;
+                    fold.style.height = `${peelSize}px`;
+                } else {
+                    front.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
+                    fold.style.width = '0px';
+                    fold.style.height = '0px';
+                }
             }
+
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                handleMove(e.clientX, e.clientY);
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                handleMove(e.clientX, e.clientY);
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                // Animate back to open
+                front.style.transition = 'clip-path 0.4s ease';
+                fold.style.transition = 'width 0.4s ease, height 0.4s ease';
+                front.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
+                fold.style.width = '0px';
+                fold.style.height = '0px';
+                setTimeout(() => {
+                    front.style.transition = 'none';
+                    fold.style.transition = 'none';
+                }, 400);
+            });
+
+            // Touch support
+            container.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                handleMove(e.touches[0].clientX, e.touches[0].clientY);
+            });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                handleMove(e.touches[0].clientX, e.touches[0].clientY);
+            });
+
+            window.addEventListener('touchend', () => {
+                isDragging = false;
+                front.style.transition = 'clip-path 0.4s ease';
+                fold.style.transition = 'width 0.4s ease, height 0.4s ease';
+                front.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
+                fold.style.width = '0px';
+                fold.style.height = '0px';
+                setTimeout(() => {
+                    front.style.transition = 'none';
+                    fold.style.transition = 'none';
+                }, 400);
+            });
         }
     </script>
 </body>
