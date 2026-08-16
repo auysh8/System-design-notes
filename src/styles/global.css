@@ -212,6 +212,22 @@ body {
     backface-visibility: hidden;
 }
 
+/* Reader Page Transparent Canvas */
+.reader-mode .paper-page {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 1rem 0 !important;
+}
+
+.reader-mode .paper-page::before {
+    display: none !important;
+}
+
+.reader-mode .chapter-nav-footer {
+    display: none !important;
+}
+
 /* GoodNotes 3D Page Turn Transition Animations */
 @keyframes pageTurnExit {
     0% {

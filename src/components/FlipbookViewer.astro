@@ -40,47 +40,49 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     </button>
 
     <!-- The StPageFlip Book Container -->
-    <div id="goodnotesBook" class="goodnotes-book">
-      
-      {renderedNotes.map(({ note, Content }, idx) => (
-        <div class="flip-sheet" data-slug={note.id} data-chapter={note.data.chapterNumber}>
-          <div class="sheet-inner-scroll">
-            
-            <!-- Spiral Binder Rings -->
-            <div class="sheet-spine-rings"></div>
-            
-            <!-- Page Header -->
-            <div class="sheet-header">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span class="sheet-tag">Chapter {note.data.chapterNumber}</span>
-                <span class="sheet-page-num">#{note.data.chapterNumber} / {allNotes.length}</span>
-              </div>
-              <h1 class="sheet-title">{note.data.title}</h1>
-              {note.data.subtitle && <p class="sheet-subtitle">{note.data.subtitle}</p>}
-              {note.data.handwrittenAnnotation && (
-                <div style="margin-top: 0.5rem;">
-                  <span class="handwritten-annotation">{note.data.handwrittenAnnotation}</span>
+    <div id="goodnotesBookWrapper" class="book-viewport-wrapper">
+      <div id="goodnotesBook" class="goodnotes-book">
+        
+        {renderedNotes.map(({ note, Content }, idx) => (
+          <div class="flip-sheet" data-slug={note.id} data-chapter={note.data.chapterNumber}>
+            <div class="sheet-inner-scroll">
+              
+              <!-- Spiral Binder Rings -->
+              <div class="sheet-spine-rings"></div>
+              
+              <!-- Page Header -->
+              <div class="sheet-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <span class="sheet-tag">Chapter {note.data.chapterNumber}</span>
+                  <span class="sheet-page-num">#{note.data.chapterNumber} / {allNotes.length}</span>
                 </div>
-              )}
-            </div>
+                <h1 class="sheet-title">{note.data.title}</h1>
+                {note.data.subtitle && <p class="sheet-subtitle">{note.data.subtitle}</p>}
+                {note.data.handwrittenAnnotation && (
+                  <div style="margin-top: 0.5rem;">
+                    <span class="handwritten-annotation">{note.data.handwrittenAnnotation}</span>
+                  </div>
+                )}
+              </div>
 
-            <!-- Page Content Body -->
-            <div class="sheet-body">
-              <Content />
-            </div>
+              <!-- Page Content Body -->
+              <div class="sheet-body">
+                <Content />
+              </div>
 
-            <!-- Sheet Footer Corner Note -->
-            <div class="sheet-footer-note">
-              <span>System Design Architecture Journal</span>
-              <span style="font-family: var(--font-hand); font-size: 1.1rem; color: var(--pastel-blue-dark);">
-                👉 Drag corner to flip page
-              </span>
-            </div>
+              <!-- Sheet Footer Corner Note -->
+              <div class="sheet-footer-note">
+                <span>System Design Architecture Journal</span>
+                <span style="font-family: var(--font-hand); font-size: 1.15rem; color: var(--pastel-blue-dark); font-weight: bold;">
+                  👉 Click & drag corner to flip page
+                </span>
+              </div>
 
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
+      </div>
     </div>
 
     <!-- Right Navigation Arrow -->
@@ -128,7 +130,7 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     flex-direction: column;
     align-items: center;
     width: 100%;
-    margin: 1rem 0 3rem 0;
+    margin: 0.5rem 0 2.5rem 0;
     position: relative;
   }
 
@@ -145,8 +147,8 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     background: var(--paper-card);
     border: 2px solid var(--border-soft);
     color: var(--text-main);
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -154,8 +156,8 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     cursor: pointer;
     box-shadow: var(--shadow-card);
     transition: all 0.2s ease;
-    z-index: 10;
-    margin: 0 0.75rem;
+    z-index: 20;
+    margin: 0 1rem;
     flex-shrink: 0;
   }
 
@@ -165,13 +167,19 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     box-shadow: var(--shadow-paper);
   }
 
-  .stage-nav-arrow:active {
-    transform: scale(0.95);
-  }
-
   .dark-mode .stage-nav-arrow {
     background: #1e2433;
     border-color: #334155;
+  }
+
+  /* Viewport Wrapper */
+  .book-viewport-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    max-width: 100%;
+    overflow: visible;
   }
 
   /* Book Container */
@@ -195,10 +203,12 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     position: relative;
     border-radius: 14px;
     box-shadow: inset 0 0 30px rgba(0,0,0,0.02);
+    width: 100%;
+    height: 100%;
   }
 
   .dark-mode .flip-sheet {
-    background-color: #1a202c;
+    background-color: #1e2433;
     border-color: #334155;
     box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
   }
@@ -206,7 +216,7 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
   .sheet-inner-scroll {
     height: 100%;
     overflow-y: auto;
-    padding: 2.25rem 2.75rem 2.5rem 3.25rem;
+    padding: 2.25rem 2.5rem 2.5rem 3rem;
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: var(--border-soft) transparent;
@@ -310,7 +320,7 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     border: 2px solid var(--border-soft);
     border-radius: 30px;
     padding: 0.6rem 1.25rem;
-    margin-top: 1.75rem;
+    margin-top: 1.5rem;
     box-shadow: var(--shadow-card);
     flex-wrap: wrap;
     justify-content: center;
@@ -405,29 +415,36 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
   function initGoodNotesBook() {
     const root = document.querySelector('.flipbook-root') as HTMLElement;
     const container = document.getElementById('goodnotesBook');
-    if (!root || !container || pageFlipInstance) return;
+    if (!root || !container) return;
+
+    if (pageFlipInstance) {
+      try {
+        pageFlipInstance.destroy();
+      } catch(e) {}
+      pageFlipInstance = null;
+    }
 
     const initialIdx = parseInt(root.dataset.initialIndex || '0', 10);
     const baseUrl = root.dataset.baseUrl || '/';
 
-    const isMobile = window.innerWidth < 850;
-    const bookWidth = isMobile ? Math.min(window.innerWidth - 32, 540) : 580;
-    const bookHeight = isMobile ? 620 : 720;
+    const isMobile = window.innerWidth < 900;
+    const bookWidth = isMobile ? Math.min(window.innerWidth - 40, 520) : 560;
+    const bookHeight = isMobile ? 650 : 780;
 
     pageFlipInstance = new PageFlip(container, {
       width: bookWidth,
       height: bookHeight,
-      size: 'stretch',
-      minWidth: 320,
+      size: 'fixed',
+      minWidth: 300,
       maxWidth: 700,
-      minHeight: 520,
-      maxHeight: 880,
+      minHeight: 500,
+      maxHeight: 900,
       showCover: false,
       drawShadow: true,
       maxShadowOpacity: 0.55,
       usePortrait: isMobile,
       startPage: initialIdx,
-      flippingTime: 750,
+      flippingTime: 700,
       useMouseEvents: true,
       swipeDistance: 30,
       mobileScrollSupport: false
@@ -456,8 +473,8 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
           const tabHref = tab.getAttribute('href') || '';
           if (slug && tabHref.includes(slug)) {
             tab.classList.add('active');
-          } else if (tabHref.endsWith('/notes/') || tabHref.endsWith('/')) {
-            tab.classList.remove('active');
+          } else if (tabHref.includes('/reader/')) {
+            tab.classList.add('active');
           } else {
             tab.classList.remove('active');
           }
@@ -474,12 +491,12 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     });
 
     // Control Buttons
-    document.getElementById('flipPrevBtn')?.addEventListener('click', () => pageFlipInstance.flipPrev());
-    document.getElementById('flipNextBtn')?.addEventListener('click', () => pageFlipInstance.flipNext());
-    document.getElementById('btnPrevPage')?.addEventListener('click', () => pageFlipInstance.flipPrev());
-    document.getElementById('btnNextPage')?.addEventListener('click', () => pageFlipInstance.flipNext());
-    document.getElementById('btnFirstPage')?.addEventListener('click', () => pageFlipInstance.flip(0));
-    document.getElementById('btnLastPage')?.addEventListener('click', () => pageFlipInstance.flip(sheets.length - 1));
+    document.getElementById('flipPrevBtn')?.addEventListener('click', () => pageFlipInstance?.flipPrev());
+    document.getElementById('flipNextBtn')?.addEventListener('click', () => pageFlipInstance?.flipNext());
+    document.getElementById('btnPrevPage')?.addEventListener('click', () => pageFlipInstance?.flipPrev());
+    document.getElementById('btnNextPage')?.addEventListener('click', () => pageFlipInstance?.flipNext());
+    document.getElementById('btnFirstPage')?.addEventListener('click', () => pageFlipInstance?.flip(0));
+    document.getElementById('btnLastPage')?.addEventListener('click', () => pageFlipInstance?.flip(sheets.length - 1));
 
     // Fullscreen Toggle
     document.getElementById('btnFullscreenToggle')?.addEventListener('click', () => {
@@ -493,14 +510,14 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     // Keyboard Arrow Keys
     window.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === 'PageDown') {
-        pageFlipInstance.flipNext();
+        pageFlipInstance?.flipNext();
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        pageFlipInstance.flipPrev();
+        pageFlipInstance?.flipPrev();
       }
     });
 
-    // Connect top tabs to flip
-    document.querySelectorAll('.tab-item').forEach((tab, index) => {
+    // Connect top tabs to flip directly
+    document.querySelectorAll('.tab-item').forEach((tab) => {
       tab.addEventListener('click', (e) => {
         const href = tab.getAttribute('href') || '';
         if (href.includes('/notes/')) {
@@ -509,7 +526,7 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             const targetIdx = Array.from(sheets).findIndex(
               (s) => (s as HTMLElement).dataset.slug === matchSlug
             );
-            if (targetIdx >= 0) {
+            if (targetIdx >= 0 && pageFlipInstance) {
               e.preventDefault();
               pageFlipInstance.flip(targetIdx);
             }
@@ -519,12 +536,9 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     });
   }
 
-  // Mount on DOM Ready and on View Transitions
+  // Mount on DOM Ready and on Astro View Transitions
   document.addEventListener('DOMContentLoaded', initGoodNotesBook);
-  document.addEventListener('astro:page-load', () => {
-    pageFlipInstance = null;
-    initGoodNotesBook();
-  });
+  document.addEventListener('astro:page-load', initGoodNotesBook);
   if (document.readyState !== 'loading') {
     initGoodNotesBook();
   }
