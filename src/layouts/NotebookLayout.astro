@@ -98,22 +98,37 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             <slot />
 
             <!-- Planner Navigation Footer -->
-            <footer>
-                <p>
-                    {prevNote && (
-                        <a href={`${baseUrl}notes/${prevNote.id}/`} style="color:var(--pastel-blue-dark); text-decoration:none; margin-right: 1rem;">
-                            ⬅️ {prevNote.data.chapterNumber}. {prevNote.data.shortTitle || prevNote.data.title}
+            <footer class="chapter-nav-footer">
+                <div class="nav-footer-inner">
+                    {prevNote ? (
+                        <a href={`${baseUrl}notes/${prevNote.id}/`} class="nav-btn prev-btn">
+                            <span class="nav-btn-arrow">⬅️</span>
+                            <div class="nav-btn-text">
+                                <span class="nav-btn-label">Previous Chapter</span>
+                                <span class="nav-btn-title">{prevNote.data.shortTitle || `${prevNote.data.chapterNumber}. ${prevNote.data.title}`}</span>
+                            </div>
                         </a>
+                    ) : (
+                        <div class="nav-btn-placeholder"></div>
                     )}
-                    <a href={baseUrl} style="color:var(--pastel-blue-dark); text-decoration:none;">
-                        🏠 Index
+
+                    <a href={baseUrl} class="nav-btn index-btn">
+                        <span class="nav-btn-arrow">🏠</span>
+                        <span class="nav-btn-title">Index</span>
                     </a>
-                    {nextNote && (
-                        <a href={`${baseUrl}notes/${nextNote.id}/`} style="color:var(--pastel-blue-dark); text-decoration:none; margin-left: 1rem;">
-                            {nextNote.data.chapterNumber}. {nextNote.data.shortTitle || nextNote.data.title} ➡️
+
+                    {nextNote ? (
+                        <a href={`${baseUrl}notes/${nextNote.id}/`} class="nav-btn next-btn">
+                            <div class="nav-btn-text" style="text-align: right;">
+                                <span class="nav-btn-label">Next Chapter</span>
+                                <span class="nav-btn-title">{nextNote.data.shortTitle || `${nextNote.data.chapterNumber}. ${nextNote.data.title}`}</span>
+                            </div>
+                            <span class="nav-btn-arrow">➡️</span>
                         </a>
+                    ) : (
+                        <div class="nav-btn-placeholder"></div>
                     )}
-                </p>
+                </div>
             </footer>
         </div>
     </div>

@@ -740,12 +740,124 @@ li::marker {
     gap: 4px;
 }
 
-footer {
-    text-align: center;
-    margin-top: 3rem;
-    font-family: var(--font-hand);
-    font-size: 1.5rem;
+/* Chapter Navigation Footer */
+.chapter-nav-footer {
+    margin-top: 3.5rem;
+    padding-top: 1.75rem;
+    border-top: 2px dashed var(--border-soft);
+}
+
+.nav-footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.nav-btn {
+    background: var(--paper-card);
+    border: 2px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text-main);
+    box-shadow: var(--shadow-card);
+    transition: all 0.2s ease;
+    flex: 1;
+    max-width: 320px;
+}
+
+.nav-btn.index-btn {
+    flex: 0 0 auto;
+    max-width: none;
+    justify-content: center;
+    border-radius: 20px;
+    padding: 0.6rem 1.25rem;
+    background: var(--pastel-yellow);
+    border-color: var(--text-main);
+}
+
+.dark-mode .nav-btn.index-btn {
+    background: #423b16;
+    border-color: #eab308;
+    color: #facc15;
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-paper);
+    border-color: var(--pastel-blue-dark);
+}
+
+.nav-btn.prev-btn {
+    justify-content: flex-start;
+}
+
+.nav-btn.next-btn {
+    justify-content: flex-end;
+}
+
+.nav-btn-placeholder {
+    flex: 1;
+    max-width: 320px;
+}
+
+.nav-btn-arrow {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.nav-btn-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-btn-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--text-muted);
+}
+
+.dark-mode .nav-btn-label {
+    color: #94a3b8;
+}
+
+.nav-btn-title {
+    font-family: var(--font-title);
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dark-mode .nav-btn-title {
+    color: #f8fafc;
+}
+
+@media (max-width: 768px) {
+    .nav-footer-inner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .nav-btn, .nav-btn-placeholder {
+        max-width: 100%;
+    }
+
+    .nav-btn.next-btn {
+        justify-content: space-between;
+    }
+
+    .nav-btn.prev-btn {
+        justify-content: flex-start;
+    }
 }
 
 /* Network Stack Visualization */
