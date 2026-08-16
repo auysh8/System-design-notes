@@ -624,8 +624,17 @@ li::marker {
     color: var(--text-main);
 }
 
+.er-head.orders-head {
+    background: var(--pastel-pink);
+    color: var(--text-main);
+}
+
 .dark-mode .er-head {
-    color: #f1f5f9;
+    color: #e9d5ff;
+}
+
+.dark-mode .er-head.orders-head {
+    color: #fbcfe8;
 }
 
 .er-item {
