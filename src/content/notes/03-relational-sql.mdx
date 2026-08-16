@@ -47,34 +47,36 @@ CREATE TABLE Orders (
 
     {/* ER Schema Diagram */}
     <div class="er-box-container">
-        <div class="er-card">
-            <div class="er-head">Customers</div>
-            <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
-            <div class="er-item"><span>name</span> <span>String</span></div>
-            <div class="er-item"><span>email</span> <span>String</span></div>
-        </div>
+        <div class="er-flow-flex">
+            <div class="er-card">
+                <div class="er-head">Customers</div>
+                <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
+                <div class="er-item"><span>name</span> <span>String</span></div>
+                <div class="er-item"><span>email</span> <span>String</span></div>
+            </div>
 
-        <div style="font-family: var(--font-hand); font-size: 1.5rem; font-weight: bold; color: var(--text-muted);">
-            ──(1:N)──►
-        </div>
+            <div class="er-arrow">
+                ──(1:N)──►
+            </div>
 
-        <div class="er-card" style="border-color: var(--pastel-pink-dark);">
-            <div class="er-head" style="background: var(--pastel-pink);">Orders</div>
-            <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
-            <div class="er-item"><span>customer_id</span> <strong style="color:var(--pastel-blue-dark);">FK</strong></div>
-            <div class="er-item"><span>product_id</span> <strong style="color:var(--pastel-blue-dark);">FK</strong></div>
-            <div class="er-item"><span>order_date</span> <span>Date</span></div>
-        </div>
+            <div class="er-card" style="border-color: var(--pastel-pink-dark);">
+                <div class="er-head" style="background: var(--pastel-pink); color: #1e293b;">Orders</div>
+                <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
+                <div class="er-item"><span>customer_id</span> <strong style="color:var(--pastel-blue-dark);">FK</strong></div>
+                <div class="er-item"><span>product_id</span> <strong style="color:var(--pastel-blue-dark);">FK</strong></div>
+                <div class="er-item"><span>order_date</span> <span>Date</span></div>
+            </div>
 
-        <div style="font-family: var(--font-hand); font-size: 1.5rem; font-weight: bold; color: var(--text-muted);">
-            ◄──(N:1)──
-        </div>
+            <div class="er-arrow">
+                ◄──(N:1)──
+            </div>
 
-        <div class="er-card">
-            <div class="er-head">Products</div>
-            <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
-            <div class="er-item"><span>name</span> <span>String</span></div>
-            <div class="er-item"><span>price</span> <span>Decimal</span></div>
+            <div class="er-card">
+                <div class="er-head">Products</div>
+                <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
+                <div class="er-item"><span>name</span> <span>String</span></div>
+                <div class="er-item"><span>price</span> <span>Decimal</span></div>
+            </div>
         </div>
     </div>
 </div>

@@ -604,23 +604,28 @@ li::marker {
 
 /* ER Diagram Boxes */
 .er-box-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    justify-content: center;
-    align-items: center;
     padding: 1.5rem;
     background: var(--paper-bg);
     border-radius: 12px;
     border: 2px dashed var(--border-soft);
     margin: 1.5rem 0;
+    overflow-x: auto;
+}
+
+.er-flow-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    min-width: 640px;
 }
 
 .er-card {
     background: var(--paper-card);
     border: 2px solid var(--text-main);
     border-radius: 10px;
-    min-width: 190px;
+    flex: 1;
+    min-width: 170px;
     box-shadow: 3px 3px 0px var(--text-main);
     overflow: hidden;
 }
@@ -632,15 +637,34 @@ li::marker {
     text-align: center;
     border-bottom: 2px solid var(--text-main);
     font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.dark-mode .er-head {
+    color: #f1f5f9;
 }
 
 .er-item {
-    padding: 0.4rem 0.75rem;
+    padding: 0.45rem 0.75rem;
     font-family: var(--font-code);
     font-size: 0.8rem;
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid var(--border-soft);
+    color: var(--text-main);
+}
+
+.er-arrow {
+    font-family: var(--font-hand);
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--text-muted);
+    white-space: nowrap;
+    text-align: center;
+}
+
+.dark-mode .er-arrow {
+    color: #94a3b8;
 }
 
 /* Index Table of Contents Cards */
