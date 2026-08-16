@@ -1,0 +1,12 @@
+# Local Project Management & Notes
+TODO.md
+TODO*.md
+roadmap-private.md
+
+# OS & Editor Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
