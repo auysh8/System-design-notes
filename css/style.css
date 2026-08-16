@@ -159,12 +159,14 @@ body {
     position: relative;
 }
 
-/* Top Binder Bookmark Tabs */
+/* ==========================================
+   Authentic Physical Planner Bookmark Tabs
+   ========================================== */
 .tabs-header {
     display: flex;
-    gap: 6px;
-    padding-left: 1.5rem;
-    margin-bottom: -2px;
+    gap: 4px;
+    padding-left: 2rem;
+    margin-bottom: -3px;
     overflow-x: auto;
     scrollbar-width: none;
     position: relative;
@@ -172,93 +174,102 @@ body {
     align-items: flex-end;
 }
 
+.tabs-header::-webkit-scrollbar {
+    display: none;
+}
+
 .tab-item {
-    background: var(--paper-bg);
-    border: 2px solid var(--border-soft);
-    border-bottom: 2px solid var(--border-soft);
-    border-radius: 10px 10px 0 0;
-    padding: 0.45rem 1.15rem;
-    font-size: 0.85rem;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0.45rem 1.15rem 0.35rem 1.15rem;
+    font-size: 0.82rem;
     font-weight: 700;
-    color: var(--text-muted);
     text-decoration: none;
     white-space: nowrap;
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    opacity: 0.78;
+    border-radius: 8px 8px 0 0;
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    border-bottom: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 -2px 5px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 0.82;
     cursor: pointer;
 }
 
+/* Physical Colored Bookmark Tab Dividers (Light Mode) */
+.tab-item:nth-child(6n+1) { background: #ffe4e6; color: #9f1239; border-color: #fda4af; }
+.tab-item:nth-child(6n+2) { background: #e0f2fe; color: #075985; border-color: #7dd3fc; }
+.tab-item:nth-child(6n+3) { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+.tab-item:nth-child(6n+4) { background: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; }
+.tab-item:nth-child(6n+5) { background: #dcfce7; color: #166534; border-color: #86efac; }
+.tab-item:nth-child(6n+6) { background: #ffedd5; color: #9a3412; border-color: #fdba74; }
+
 .tab-item:hover {
     opacity: 1;
-    color: var(--text-main);
-    transform: translateY(-4px);
-    background: var(--paper-card);
+    transform: translateY(-5px);
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Active Lifted Bookmark Tab */
+/* Prominently Lifted Active Bookmark Tab */
 .tab-item.active {
     opacity: 1;
-    color: var(--text-main);
-    background: var(--paper-card);
     font-weight: 800;
     font-size: 0.88rem;
-    transform: translateY(-6px);
-    padding-top: 0.65rem;
-    padding-bottom: 0.55rem;
-    border-color: var(--border-soft);
-    border-bottom: none;
-    box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.08);
-    z-index: 15;
+    transform: translateY(-10px);
+    padding-top: 0.75rem;
+    padding-bottom: 0.65rem;
+    box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.12), inset 0 2px 0 rgba(255, 255, 255, 0.8);
+    z-index: 25;
 }
 
-/* Seamless bridge removing the separating line between the bookmark and paper page */
+/* Bookmark Tab Top Tape Stitch / Pin */
+.tab-item.active::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* Seamless bridge removing separating line between bookmark and page */
 .tab-item.active::after {
     content: '';
     position: absolute;
-    bottom: -4px;
-    left: 0;
-    right: 0;
-    height: 8px;
-    background: var(--paper-card);
-    z-index: 20;
+    bottom: -6px;
+    left: -2px;
+    right: -2px;
+    height: 10px;
+    background: inherit;
+    z-index: 30;
 }
 
+/* Physical Colored Bookmark Tab Dividers (Dark Mode) */
 .dark-mode .tab-item {
-    background: #0f172a;
-    border-color: #334155;
-    color: #94a3b8;
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 -2px 6px rgba(0, 0, 0, 0.3);
 }
 
-.dark-mode .tab-item:hover {
-    background: #1e293b;
-    color: #f8fafc;
-}
+.dark-mode .tab-item:nth-child(6n+1) { background: #4c1d2f; color: #fecdd3; border-color: #fb7185; }
+.dark-mode .tab-item:nth-child(6n+2) { background: #133b5c; color: #bae6fd; border-color: #38bdf8; }
+.dark-mode .tab-item:nth-child(6n+3) { background: #4a3d12; color: #fef08a; border-color: #facc15; }
+.dark-mode .tab-item:nth-child(6n+4) { background: #3b1e54; color: #e9d5ff; border-color: #c084fc; }
+.dark-mode .tab-item:nth-child(6n+5) { background: #14442a; color: #bbf7d0; border-color: #4ade80; }
+.dark-mode .tab-item:nth-child(6n+6) { background: #4e2712; color: #fed7aa; border-color: #fb923c; }
 
 .dark-mode .tab-item.active {
-    background: var(--paper-card);
-    color: #f8fafc;
-    border-color: #475569;
-    box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 -8px 22px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.3);
 }
 
-.dark-mode .tab-item.active::after {
-    background: var(--paper-card);
+.dark-mode .tab-item.active::before {
+    background: rgba(255, 255, 255, 0.35);
 }
-
-.tab-item:nth-child(6n+1) { border-top: 4px solid var(--pastel-pink-dark); }
-.tab-item:nth-child(6n+2) { border-top: 4px solid var(--pastel-blue-dark); }
-.tab-item:nth-child(6n+3) { border-top: 4px solid var(--pastel-yellow-dark); }
-.tab-item:nth-child(6n+4) { border-top: 4px solid var(--pastel-purple-dark); }
-.tab-item:nth-child(6n+5) { border-top: 4px solid var(--pastel-green-dark); }
-.tab-item:nth-child(6n+6) { border-top: 4px solid var(--pastel-orange); }
-
-.tab-item.active:nth-child(6n+1) { border-top: 5px solid var(--pastel-pink-dark); box-shadow: 0 -6px 16px rgba(244, 114, 182, 0.25); }
-.tab-item.active:nth-child(6n+2) { border-top: 5px solid var(--pastel-blue-dark); box-shadow: 0 -6px 16px rgba(56, 189, 248, 0.25); }
-.tab-item.active:nth-child(6n+3) { border-top: 5px solid var(--pastel-yellow-dark); box-shadow: 0 -6px 16px rgba(250, 204, 21, 0.25); }
-.tab-item.active:nth-child(6n+4) { border-top: 5px solid var(--pastel-purple-dark); box-shadow: 0 -6px 16px rgba(168, 85, 247, 0.25); }
-.tab-item.active:nth-child(6n+5) { border-top: 5px solid var(--pastel-green-dark); box-shadow: 0 -6px 16px rgba(74, 222, 128, 0.25); }
-.tab-item.active:nth-child(6n+6) { border-top: 5px solid var(--pastel-orange); box-shadow: 0 -6px 16px rgba(251, 146, 60, 0.25); }
 
 /* Main Paper Page */
 .paper-page {
