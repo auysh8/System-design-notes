@@ -164,11 +164,11 @@ body {
    Planner Binder Tabs (Image 2) & Ribbon Bookmark (Image 1)
    =================================================== */
 /* ===================================================
-   Planner Binder Tabs (Image 2) & Ribbon Bookmark (Image 1)
+   GoodNotes Planner Binder Tabs & Ribbon Bookmark
    =================================================== */
 .tabs-header {
     display: flex;
-    gap: 5px;
+    gap: 6px;
     padding-left: 1.75rem;
     margin-bottom: -32px;
     overflow-x: auto;
@@ -191,33 +191,41 @@ body {
     height: 50px;
     padding: 0 1.15rem 8px 1.15rem;
     font-family: var(--font-title);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     color: #ffffff !important;
     text-decoration: none;
     white-space: nowrap;
-    border-radius: 7px 7px 0 0;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    opacity: 0.88;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-bottom: none;
+    background: linear-gradient(180deg, var(--tab-top, #334155) 0%, var(--tab-bg, #1e293b) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 1px 0 0 rgba(255, 255, 255, 0.08);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0.85;
     cursor: pointer;
-    border: none;
     z-index: 10;
 }
 
-/* Rich Planner Leather & Matte Palette */
-.tab-item:nth-child(6n+1) { background: #881337; } /* Maroon (Index) */
-.tab-item:nth-child(6n+2) { background: #1e3a5f; } /* Dark Slate Blue */
-.tab-item:nth-child(6n+3) { background: #b45309; } /* Amber / Camel */
-.tab-item:nth-child(6n+4) { background: #581c87; } /* Deep Purple */
-.tab-item:nth-child(6n+5) { background: #1e4b47; } /* Dark Emerald Teal */
-.tab-item:nth-child(6n+6) { background: #7c2d12; } /* Terracotta / Rust */
+/* Curated 11-Color Architect Journal Palette with Dynamic Subtle Top Sheen */
+.tab-item:nth-child(11n+1) { --tab-bg: #881337; --tab-top: #9f1239; } /* Crimson Wine (Index) */
+.tab-item:nth-child(11n+2) { --tab-bg: #1e3a5f; --tab-top: #254b7a; } /* Slate Navy */
+.tab-item:nth-child(11n+3) { --tab-bg: #b45309; --tab-top: #d97706; } /* Warm Ochre Amber */
+.tab-item:nth-child(11n+4) { --tab-bg: #581c87; --tab-top: #7c3aed; } /* Royal Purple */
+.tab-item:nth-child(11n+5) { --tab-bg: #0f766e; --tab-top: #14b8a6; } /* Emerald Teal */
+.tab-item:nth-child(11n+6) { --tab-bg: #9a3412; --tab-top: #c2410c; } /* Terracotta Copper */
+.tab-item:nth-child(11n+7) { --tab-bg: #0369a1; --tab-top: #0284c7; } /* Cerulean Blue */
+.tab-item:nth-child(11n+8) { --tab-bg: #9d174d; --tab-top: #be185d; } /* Rose Plum */
+.tab-item:nth-child(11n+9) { --tab-bg: #166534; --tab-top: #15803d; } /* Pine Green */
+.tab-item:nth-child(11n+10) { --tab-bg: #3730a3; --tab-top: #4f46e5; } /* Indigo */
+.tab-item:nth-child(11n+11) { --tab-bg: #701a75; --tab-top: #a21caf; } /* Fuchsia Violet */
 
 .tab-item:hover {
     opacity: 1;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 -4px 10px rgba(0, 0, 0, 0.25);
 }
 
 /* Active State: Hanging Ribbon Bookmark - Drapes over front of paper */
@@ -226,16 +234,22 @@ body {
     z-index: 30;
     height: 78px;
     padding: 0 1.25rem 30px 1.25rem;
+    font-size: 0.78rem;
+    font-weight: 800;
     color: #ffffff !important;
-    border-radius: 4px 4px 0 0;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-bottom: none;
+    background: linear-gradient(180deg, var(--tab-top, #334155) 0%, var(--tab-bg, #1e293b) 60%, var(--tab-bg, #1e293b) 100%);
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 15px), 0 100%);
-    filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35));
-    box-shadow: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 1px 0 0 rgba(255, 255, 255, 0.15);
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     transform: none;
 }
 
 .tab-item.active:hover {
     transform: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 /* Main Paper Page - Sits in front of inactive tabs, behind active ribbon */
