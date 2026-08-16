@@ -71,6 +71,9 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
         <!-- Dynamic Notebook Tabs Header -->
         <div class="tabs-header">
             <a href={baseUrl} class={`tab-item ${activeSlug === 'index' ? 'active' : ''}`}>🏠 Index</a>
+            <a href={`${baseUrl}reader/`} class={`tab-item ${activeSlug === 'reader' ? 'active' : ''}`} style="border-top-color: #ec4899; font-weight: 800;">
+                📖 Interactive Flipbook
+            </a>
             {allNotes.map((note) => (
                 <a
                   href={`${baseUrl}notes/${note.id}/`}

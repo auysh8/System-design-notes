@@ -1,0 +1,531 @@
+---
+import { getCollection, render } from 'astro:content';
+import '../styles/global.css';
+
+interface Props {
+  initialSlug?: string;
+}
+
+const { initialSlug = '' } = Astro.props;
+
+const rawNotes = await getCollection('notes');
+const allNotes = rawNotes.sort((a, b) => a.data.chapterNumber - b.data.chapterNumber);
+
+const renderedNotes = await Promise.all(
+  allNotes.map(async (note) => {
+    const { Content } = await render(note);
+    return { note, Content };
+  })
+);
+
+const initialIndex = initialSlug
+  ? allNotes.findIndex((n) => n.id === initialSlug)
+  : 0;
+
+const baseUrl = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<div class="flipbook-root" data-initial-index={initialIndex >= 0 ? initialIndex : 0} data-base-url={baseUrl}>
+  
+  <!-- Interactive Book Viewport -->
+  <div class="flipbook-stage">
+    
+    <!-- Left Navigation Arrow -->
+    <button class="stage-nav-arrow prev-arrow" id="flipPrevBtn" title="Previous Page (Left Arrow)">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+      </svg>
+    </button>
+
+    <!-- The StPageFlip Book Container -->
+    <div id="goodnotesBook" class="goodnotes-book">
+      
+      {renderedNotes.map(({ note, Content }, idx) => (
+        <div class="flip-sheet" data-slug={note.id} data-chapter={note.data.chapterNumber}>
+          <div class="sheet-inner-scroll">
+            
+            <!-- Spiral Binder Rings -->
+            <div class="sheet-spine-rings"></div>
+            
+            <!-- Page Header -->
+            <div class="sheet-header">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span class="sheet-tag">Chapter {note.data.chapterNumber}</span>
+                <span class="sheet-page-num">#{note.data.chapterNumber} / {allNotes.length}</span>
+              </div>
+              <h1 class="sheet-title">{note.data.title}</h1>
+              {note.data.subtitle && <p class="sheet-subtitle">{note.data.subtitle}</p>}
+              {note.data.handwrittenAnnotation && (
+                <div style="margin-top: 0.5rem;">
+                  <span class="handwritten-annotation">{note.data.handwrittenAnnotation}</span>
+                </div>
+              )}
+            </div>
+
+            <!-- Page Content Body -->
+            <div class="sheet-body">
+              <Content />
+            </div>
+
+            <!-- Sheet Footer Corner Note -->
+            <div class="sheet-footer-note">
+              <span>System Design Architecture Journal</span>
+              <span style="font-family: var(--font-hand); font-size: 1.1rem; color: var(--pastel-blue-dark);">
+                👉 Drag corner to flip page
+              </span>
+            </div>
+
+          </div>
+        </div>
+      ))}
+
+    </div>
+
+    <!-- Right Navigation Arrow -->
+    <button class="stage-nav-arrow next-arrow" id="flipNextBtn" title="Next Page (Right Arrow)">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+      </svg>
+    </button>
+
+  </div>
+
+  <!-- Bottom Floating Control Bar -->
+  <div class="flipbook-controls">
+    <button class="control-btn" id="btnFirstPage" title="First Chapter">
+      ⏮️ First
+    </button>
+    <button class="control-btn" id="btnPrevPage" title="Previous Chapter">
+      ⬅️ Prev
+    </button>
+    
+    <div class="page-indicator">
+      <span id="pageCurrentDisplay">1</span> / <span id="pageTotalDisplay">{allNotes.length}</span>
+      <span class="page-chapter-label" id="currentChapterName">Chapter 1: Single Server</span>
+    </div>
+
+    <button class="control-btn primary" id="btnNextPage" title="Next Chapter">
+      Next ➡️
+    </button>
+    <button class="control-btn" id="btnLastPage" title="Last Chapter">
+      Last ⏭️
+    </button>
+
+    <div class="control-divider"></div>
+
+    <button class="control-btn" id="btnFullscreenToggle" title="Toggle Fullscreen">
+      ⛶ Fullscreen
+    </button>
+  </div>
+
+</div>
+
+<style>
+  .flipbook-root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 1rem 0 3rem 0;
+    position: relative;
+  }
+
+  .flipbook-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    padding: 0.5rem 0;
+  }
+
+  .stage-nav-arrow {
+    background: var(--paper-card);
+    border: 2px solid var(--border-soft);
+    color: var(--text-main);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    transition: all 0.2s ease;
+    z-index: 10;
+    margin: 0 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .stage-nav-arrow:hover {
+    transform: scale(1.1);
+    border-color: var(--pastel-blue-dark);
+    box-shadow: var(--shadow-paper);
+  }
+
+  .stage-nav-arrow:active {
+    transform: scale(0.95);
+  }
+
+  .dark-mode .stage-nav-arrow {
+    background: #1e2433;
+    border-color: #334155;
+  }
+
+  /* Book Container */
+  .goodnotes-book {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    border-radius: 16px;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .dark-mode .goodnotes-book {
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.65);
+  }
+
+  /* Sheet Page */
+  .flip-sheet {
+    background-color: var(--paper-bg);
+    border: 2px solid var(--border-soft);
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    border-radius: 14px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.02);
+  }
+
+  .dark-mode .flip-sheet {
+    background-color: #1a202c;
+    border-color: #334155;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
+  }
+
+  .sheet-inner-scroll {
+    height: 100%;
+    overflow-y: auto;
+    padding: 2.25rem 2.75rem 2.5rem 3.25rem;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-soft) transparent;
+  }
+
+  .sheet-inner-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sheet-inner-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-soft);
+    border-radius: 4px;
+  }
+
+  /* Spine Rings on Left */
+  .sheet-spine-rings {
+    position: absolute;
+    top: 25px;
+    left: 12px;
+    bottom: 25px;
+    width: 8px;
+    background: repeating-linear-gradient(
+      to bottom,
+      #94a3b8 0px,
+      #94a3b8 10px,
+      transparent 10px,
+      transparent 28px
+    );
+    border-radius: 4px;
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  /* Header */
+  .sheet-header {
+    margin-bottom: 1.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px dashed var(--border-soft);
+  }
+
+  .sheet-tag {
+    background: var(--pastel-yellow);
+    color: var(--text-main);
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.2rem 0.65rem;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .dark-mode .sheet-tag {
+    background: #423b16;
+    color: #facc15;
+  }
+
+  .sheet-page-num {
+    font-family: var(--font-code);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+
+  .sheet-title {
+    font-family: var(--font-title);
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0.35rem 0 0.25rem 0;
+    line-height: 1.25;
+  }
+
+  .sheet-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .sheet-body {
+    line-height: 1.65;
+    color: var(--text-main);
+  }
+
+  .sheet-footer-note {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  /* Bottom Controls Bar */
+  .flipbook-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--paper-card);
+    border: 2px solid var(--border-soft);
+    border-radius: 30px;
+    padding: 0.6rem 1.25rem;
+    margin-top: 1.75rem;
+    box-shadow: var(--shadow-card);
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .dark-mode .flipbook-controls {
+    background: #1e2433;
+    border-color: #334155;
+  }
+
+  .control-btn {
+    background: var(--paper-bg);
+    border: 1.5px solid var(--border-soft);
+    color: var(--text-main);
+    padding: 0.45rem 0.9rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .control-btn:hover {
+    border-color: var(--pastel-blue-dark);
+    transform: translateY(-1px);
+  }
+
+  .control-btn.primary {
+    background: var(--pastel-yellow);
+    border-color: var(--text-main);
+    font-weight: 800;
+  }
+
+  .dark-mode .control-btn.primary {
+    background: #eab308;
+    color: #0f172a;
+    border-color: #eab308;
+  }
+
+  .page-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-code);
+    font-weight: 800;
+    font-size: 0.9rem;
+    padding: 0 0.5rem;
+    color: var(--text-main);
+  }
+
+  .page-chapter-label {
+    display: inline-block;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: var(--font-main);
+    font-weight: 700;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-left: 1.5px solid var(--border-soft);
+    padding-left: 8px;
+    margin-left: 4px;
+  }
+
+  .control-divider {
+    width: 1px;
+    height: 22px;
+    background: var(--border-soft);
+    margin: 0 4px;
+  }
+
+  @media (max-width: 768px) {
+    .stage-nav-arrow {
+      display: none;
+    }
+    .sheet-inner-scroll {
+      padding: 1.5rem 1.25rem;
+    }
+    .page-chapter-label {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { PageFlip } from 'page-flip';
+
+  let pageFlipInstance: any = null;
+
+  function initGoodNotesBook() {
+    const root = document.querySelector('.flipbook-root') as HTMLElement;
+    const container = document.getElementById('goodnotesBook');
+    if (!root || !container || pageFlipInstance) return;
+
+    const initialIdx = parseInt(root.dataset.initialIndex || '0', 10);
+    const baseUrl = root.dataset.baseUrl || '/';
+
+    const isMobile = window.innerWidth < 850;
+    const bookWidth = isMobile ? Math.min(window.innerWidth - 32, 540) : 580;
+    const bookHeight = isMobile ? 620 : 720;
+
+    pageFlipInstance = new PageFlip(container, {
+      width: bookWidth,
+      height: bookHeight,
+      size: 'stretch',
+      minWidth: 320,
+      maxWidth: 700,
+      minHeight: 520,
+      maxHeight: 880,
+      showCover: false,
+      drawShadow: true,
+      maxShadowOpacity: 0.55,
+      usePortrait: isMobile,
+      startPage: initialIdx,
+      flippingTime: 750,
+      useMouseEvents: true,
+      swipeDistance: 30,
+      mobileScrollSupport: false
+    });
+
+    const sheets = document.querySelectorAll('.flip-sheet');
+    pageFlipInstance.loadFromHTML(sheets);
+
+    // Update UI on Flip
+    const currentNumEl = document.getElementById('pageCurrentDisplay');
+    const chapterNameEl = document.getElementById('currentChapterName');
+
+    function updatePageStatus(pageIndex: number) {
+      const activeSheet = sheets[pageIndex] as HTMLElement;
+      if (currentNumEl) currentNumEl.textContent = String(pageIndex + 1);
+      
+      if (activeSheet && chapterNameEl) {
+        const chNum = activeSheet.dataset.chapter;
+        const slug = activeSheet.dataset.slug;
+        const titleEl = activeSheet.querySelector('.sheet-title');
+        const title = titleEl ? titleEl.textContent : '';
+        chapterNameEl.textContent = `Chapter ${chNum}: ${title}`;
+
+        // Sync Tab Highlight
+        document.querySelectorAll('.tab-item').forEach((tab) => {
+          const tabHref = tab.getAttribute('href') || '';
+          if (slug && tabHref.includes(slug)) {
+            tab.classList.add('active');
+          } else if (tabHref.endsWith('/notes/') || tabHref.endsWith('/')) {
+            tab.classList.remove('active');
+          } else {
+            tab.classList.remove('active');
+          }
+        });
+      }
+    }
+
+    pageFlipInstance.on('flip', (e: any) => {
+      updatePageStatus(e.data);
+    });
+
+    pageFlipInstance.on('init', () => {
+      updatePageStatus(initialIdx);
+    });
+
+    // Control Buttons
+    document.getElementById('flipPrevBtn')?.addEventListener('click', () => pageFlipInstance.flipPrev());
+    document.getElementById('flipNextBtn')?.addEventListener('click', () => pageFlipInstance.flipNext());
+    document.getElementById('btnPrevPage')?.addEventListener('click', () => pageFlipInstance.flipPrev());
+    document.getElementById('btnNextPage')?.addEventListener('click', () => pageFlipInstance.flipNext());
+    document.getElementById('btnFirstPage')?.addEventListener('click', () => pageFlipInstance.flip(0));
+    document.getElementById('btnLastPage')?.addEventListener('click', () => pageFlipInstance.flip(sheets.length - 1));
+
+    // Fullscreen Toggle
+    document.getElementById('btnFullscreenToggle')?.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        root.requestFullscreen().catch(err => console.error(err));
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    // Keyboard Arrow Keys
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        pageFlipInstance.flipNext();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        pageFlipInstance.flipPrev();
+      }
+    });
+
+    // Connect top tabs to flip
+    document.querySelectorAll('.tab-item').forEach((tab, index) => {
+      tab.addEventListener('click', (e) => {
+        const href = tab.getAttribute('href') || '';
+        if (href.includes('/notes/')) {
+          const matchSlug = href.split('/notes/')[1]?.replace('/', '');
+          if (matchSlug) {
+            const targetIdx = Array.from(sheets).findIndex(
+              (s) => (s as HTMLElement).dataset.slug === matchSlug
+            );
+            if (targetIdx >= 0) {
+              e.preventDefault();
+              pageFlipInstance.flip(targetIdx);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  // Mount on DOM Ready and on View Transitions
+  document.addEventListener('DOMContentLoaded', initGoodNotesBook);
+  document.addEventListener('astro:page-load', () => {
+    pageFlipInstance = null;
+    initGoodNotesBook();
+  });
+  if (document.readyState !== 'loading') {
+    initGoodNotesBook();
+  }
+</script>
