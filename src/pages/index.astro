@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import NotebookLayout from '../layouts/NotebookLayout.astro';
+
+const rawNotes = await getCollection('notes');
+const allNotes = rawNotes.sort((a, b) => a.data.chapterNumber - b.data.chapterNumber);
+
+const baseUrl = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<NotebookLayout
+  title="System Design & Database Architecture"
+  subtitle="Modular Digital Planner Edition • Select a topic chapter below to study"
+  tag="System Design Study Journal"
+  activeSlug="index"
+  handwrittenAnnotation="★ Modular system: easy to read & edit individual chapters!"
+  description="System design and database architecture study notes styled like a GoodNotes digital notebook planner."
+>
+  <!-- Table of Contents Cards Grid -->
+  <div class="toc-grid">
+    {allNotes.map((note) => (
+      <a href={`${baseUrl}notes/${note.id}/`} class={`toc-card card-accent-${note.data.accentColor}`}>
+        <div>
+          <div class="toc-number">{String(note.data.chapterNumber).padStart(2, '0')}</div>
+          <div class="toc-title">{note.data.title}</div>
+          <div class="toc-desc">{note.data.description}</div>
+        </div>
+        <div class="toc-link">
+          Read Chapter ➔
+        </div>
+      </a>
+    ))}
+  </div>
+</NotebookLayout>

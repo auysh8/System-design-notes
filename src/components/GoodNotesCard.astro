@@ -1,0 +1,28 @@
+---
+interface Props {
+  title?: string;
+  borderColor?: string;
+  accent?: 'pink' | 'blue' | 'yellow' | 'purple' | 'green' | 'orange';
+  class?: string;
+  href?: string;
+}
+
+const { title, borderColor, accent, class: className = '', href } = Astro.props;
+const borderStyle = borderColor
+  ? `border-top: 5px solid ${borderColor};`
+  : accent
+  ? `border-top: 5px solid var(--pastel-${accent}-dark);`
+  : '';
+---
+
+{href ? (
+  <a href={href} class={`goodnotes-card ${className}`.trim()} style={borderStyle}>
+    {title && <h4>{title}</h4>}
+    <slot />
+  </a>
+) : (
+  <div class={`goodnotes-card ${className}`.trim()} style={borderStyle}>
+    {title && <h4>{title}</h4>}
+    <slot />
+  </div>
+)}

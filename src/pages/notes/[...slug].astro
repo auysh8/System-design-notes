@@ -1,0 +1,32 @@
+---
+import { getCollection, render } from 'astro:content';
+import NotebookLayout from '../../layouts/NotebookLayout.astro';
+import StickyNote from '../../components/StickyNote.astro';
+import GoodNotesCard from '../../components/GoodNotesCard.astro';
+import DiagramPaper from '../../components/DiagramPaper.astro';
+import QuoteBox from '../../components/QuoteBox.astro';
+import CodeSticker from '../../components/CodeSticker.astro';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes');
+  return notes.map((note) => ({
+    params: { slug: note.id },
+    props: { note },
+  }));
+}
+
+const { note } = Astro.props;
+const { Content } = await render(note);
+---
+
+<NotebookLayout
+  title={note.data.title}
+  subtitle={note.data.subtitle}
+  tag={note.data.tag}
+  chapterNumber={note.data.chapterNumber}
+  activeSlug={note.id}
+  handwrittenAnnotation={note.data.handwrittenAnnotation}
+  description={note.data.description}
+>
+  <Content components={{ StickyNote, GoodNotesCard, DiagramPaper, QuoteBox, CodeSticker }} />
+</NotebookLayout>

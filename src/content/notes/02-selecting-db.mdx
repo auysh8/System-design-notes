@@ -1,0 +1,52 @@
+---
+title: "Selecting the Right Database"
+shortTitle: "2. Selecting DB"
+chapterNumber: 2
+subtitle: "Relational vs Non-Relational Architecture Trade-offs"
+tag: "System Design Chapter 2"
+accentColor: "blue"
+description: "Relational vs Non-Relational database criteria and trade-offs."
+handwrittenAnnotation: "★ Choose SQL for structured relationships & ACID; choose NoSQL for high throughput & flexible schemas."
+---
+
+import GoodNotesCard from '../../components/GoodNotesCard.astro';
+
+<div class="note-section">
+    <p>Choosing between Relational (SQL) and Non-Relational (NoSQL) databases depends on data structure consistency and scalability needs.</p>
+
+    <div class="card-grid">
+        <GoodNotesCard
+            title="📊 Relational Databases (RDBMS)"
+            accent="blue"
+            href={import.meta.env.BASE_URL + "notes/03-relational-sql/"}
+        >
+            <p>Uses structured tables with rows, columns, and pre-defined schemas enforced via SQL query capabilities.</p>
+            <div style="margin-top: 0.75rem;">
+                <mark class="hl-blue">MySQL</mark>
+                <mark class="hl-blue">PostgreSQL</mark>
+                <mark class="hl-blue">SQLite</mark>
+                <mark class="hl-blue">Oracle</mark>
+            </div>
+            <div style="margin-top: 1rem; font-weight: 700; font-size: 0.85rem; color: var(--pastel-blue-dark);">
+                Explore Relational & SQL Chapter ➔
+            </div>
+        </GoodNotesCard>
+
+        <GoodNotesCard
+            title="⚡ Non-Relational Databases (NoSQL)"
+            accent="purple"
+            href={import.meta.env.BASE_URL + "notes/05-nosql-types/"}
+        >
+            <p>Flexible dynamic schemas engineered for high write throughput, massive horizontal elasticity, and low latency.</p>
+            <div style="margin-top: 0.75rem;">
+                <mark class="hl-pink">Redis</mark>
+                <mark class="hl-pink">MongoDB</mark>
+                <mark class="hl-pink">Cassandra</mark>
+                <mark class="hl-pink">CosmosDB</mark>
+            </div>
+            <div style="margin-top: 1rem; font-weight: 700; font-size: 0.85rem; color: var(--pastel-purple-dark);">
+                Explore NoSQL Types Chapter ➔
+            </div>
+        </GoodNotesCard>
+    </div>
+</div>

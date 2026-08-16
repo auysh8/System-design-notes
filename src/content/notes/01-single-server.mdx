@@ -1,0 +1,67 @@
+---
+title: "Single-Server Architecture Setup"
+shortTitle: "1. Single Server"
+chapterNumber: 1
+subtitle: "Web Server, Database, & Cache on a Single Machine"
+tag: "System Design Chapter 1"
+accentColor: "pink"
+description: "Monolithic setup, Request/Response execution flow & DNS resolution."
+handwrittenAnnotation: "★ Starting point of every system design journey!"
+---
+
+import StickyNote from '../../components/StickyNote.astro';
+import DiagramPaper from '../../components/DiagramPaper.astro';
+
+<div class="note-section">
+    <p>In a standard early-stage or monolithic architecture, <mark class="hl-yellow">Web Server, Application Logic, Database, and Cache</mark> all reside together on a single physical or virtual machine instance.</p>
+
+    {/*  Hand-Drawn Flow Diagram  */}
+    <DiagramPaper title="✏️ Request / Response Execution Flow">
+        <div class="flow-flex">
+            <div class="flow-node highlight-blue">
+                <strong>🌐 Web Browser</strong>
+                <div style="font-size: 0.75rem;">User Interface</div>
+            </div>
+
+            <div class="flow-arrow">
+                1. Request IP ➔<br />
+                &#8592; 2. Return IP
+            </div>
+
+            <div class="flow-node highlight-pink">
+                <strong>🏷️ DNS Server</strong>
+                <div style="font-size: 0.75rem;">app.demo.com</div>
+            </div>
+        </div>
+
+        <div class="flow-flex" style="margin-top: 1.5rem;">
+            <div class="flow-node highlight-blue">
+                <strong>🌐 Web Browser</strong>
+                <div style="font-size: 0.75rem;">Client Connection</div>
+            </div>
+
+            <div class="flow-arrow">
+                HTTP Request ➔<br />
+                &#8592; JSON / HTML
+            </div>
+
+            <div class="flow-node highlight-green" style="flex: 1.5;">
+                <strong>🖥️ Single Server Instance</strong>
+                <ul style="font-size: 0.8rem; text-align: left; margin: 0.5rem 0 0 1rem; padding: 0;">
+                    <li>⚡ <strong>Web App:</strong> Express / Django</li>
+                    <li>💾 <strong>Database:</strong> MySQL / Mongo</li>
+                    <li>🚀 <strong>Cache:</strong> Redis Store</li>
+                </ul>
+            </div>
+        </div>
+    </DiagramPaper>
+
+    <StickyNote type="sky" title="📌 Step-by-Step Flow Breakdown:">
+        <ol style="margin-left: 1rem; margin-bottom: 0;">
+            <li>User opens browser and navigates to domain <mark class="hl-yellow">app.demo.com</mark>.</li>
+            <li>Browser queries the <mark class="hl-yellow">DNS (Domain Name System)</mark> to resolve domain to Server IP Address.</li>
+            <li>Browser establishes HTTP/HTTPS connection directly with the resolved IP.</li>
+            <li>The single server processes application logic, fetches/saves data in <mark class="hl-yellow">DB</mark> or <mark class="hl-yellow">Cache</mark>, and returns <mark class="hl-yellow">JSON / HTML</mark> back to the browser.</li>
+        </ol>
+    </StickyNote>
+</div>

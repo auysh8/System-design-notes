@@ -1,0 +1,34 @@
+---
+title: "Transactional Integrity & ACID Properties"
+shortTitle: "4. ACID Integrity"
+chapterNumber: 4
+subtitle: "Ensuring Reliable Database Transactions"
+tag: "System Design Chapter 4"
+accentColor: "purple"
+description: "Atomicity, Consistency, Isolation, and Durability guarantees."
+handwrittenAnnotation: "★ ACID makes SQL the gold standard for banking & financial transactions!"
+---
+
+import StickyNote from '../../components/StickyNote.astro';
+
+<div class="note-section">
+    <p>Relational databases ensure strict transactional safety through <mark class="hl-pink">ACID guarantees</mark>:</p>
+
+    <div class="card-grid">
+        <StickyNote type="mint" title="🅰️ Atomicity">
+            <p style="font-size:0.9rem;">Transactions execute completely or fail entirely ("All or Nothing"). Partial updates are rolled back.</p>
+        </StickyNote>
+
+        <StickyNote type="sky" title="🅲 Consistency">
+            <p style="font-size:0.9rem;">Moves data from one valid state to another valid state, maintaining schema constraints.</p>
+        </StickyNote>
+
+        <StickyNote type="lavender" title="🅸 Isolation">
+            <p style="font-size:0.9rem;">Concurrent transactions execute without dirty reads or interference from parallel tasks.</p>
+        </StickyNote>
+
+        <StickyNote type="yellow" title="🅳 Durability">
+            <p style="font-size:0.9rem;">Committed data changes remain permanently stored, even during power or hardware failure.</p>
+        </StickyNote>
+    </div>
+</div>

@@ -1,0 +1,70 @@
+---
+title: "Non-Relational (NoSQL) Classifications"
+shortTitle: "5. NoSQL Types"
+chapterNumber: 5
+subtitle: "Document, Wide-Column, Graph & Key-Value DBs"
+tag: "System Design Chapter 5"
+accentColor: "green"
+description: "Document, Wide-Column, Graph, and Key-Value stores + comparison matrix."
+handwrittenAnnotation: "★ NoSQL trades strict joins for massive horizontal elasticity and speed!"
+---
+
+import GoodNotesCard from '../../components/GoodNotesCard.astro';
+
+<div class="note-section">
+    <div class="card-grid">
+        <GoodNotesCard title="📄 Document Stores" accent="green">
+            <p style="font-size:0.875rem;">Stores data in JSON/BSON structures allowing rich nested attributes in a single record.</p>
+            <div style="margin-top:0.5rem;"><mark class="hl-green">MongoDB</mark> <mark class="hl-green">CouchDB</mark></div>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="📊 Wide-Column Stores" accent="blue">
+            <p style="font-size:0.875rem;">Organizes data in dynamic column families optimized for high write performance.</p>
+            <div style="margin-top:0.5rem;"><mark class="hl-green">Cassandra</mark> <mark class="hl-green">CosmosDB</mark></div>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="🕸️ Graph Databases" accent="purple">
+            <p style="font-size:0.875rem;">Stores nodes and relationships as edges for querying interconnected networks.</p>
+            <div style="margin-top:0.5rem;"><mark class="hl-green">Neo4j</mark> <mark class="hl-green">Amazon Neptune</mark></div>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="🔑 Key-Value Stores" accent="yellow">
+            <p style="font-size:0.875rem;">KeyValue pair mappings for sub-millisecond lookups and caching layers.</p>
+            <div style="margin-top:0.5rem;"><mark class="hl-green">Redis</mark> <mark class="hl-green">Memcached</mark></div>
+        </GoodNotesCard>
+    </div>
+
+    <h3 style="font-family: var(--font-title); font-size: 1.4rem; font-weight: 800; margin: 2rem 0 1rem 0;">📝 Summary Matrix: SQL vs NoSQL</h3>
+
+    <table class="table-paper">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Relational (SQL)</th>
+                <th>Non-Relational (NoSQL)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Data Structure</strong></td>
+                <td>Rigid, well-structured tabular schema</td>
+                <td>Flexible, dynamic schema-less formats</td>
+            </tr>
+            <tr>
+                <td><strong>Consistency</strong></td>
+                <td>Strong consistency & strict ACID guarantees</td>
+                <td>Eventual consistency (BASE) models</td>
+            </tr>
+            <tr>
+                <td><strong>Latency</strong></td>
+                <td>Optimized for joins; higher write overhead</td>
+                <td>Super-low latency for fast write throughput</td>
+            </tr>
+            <tr>
+                <td><strong>Scaling</strong></td>
+                <td>Primary scaling via Vertical (Scale Up)</td>
+                <td>Native Horizontal scaling (Scale Out)</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

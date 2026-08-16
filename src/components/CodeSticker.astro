@@ -1,0 +1,17 @@
+---
+interface Props {
+  title?: string;
+  copyLabel?: string;
+  class?: string;
+}
+
+const { title = "Code Example", copyLabel = "Copy Code", class: className = "" } = Astro.props;
+---
+
+<div class={`code-sticker ${className}`.trim()}>
+  <div class="code-sticker-header">
+    <span>{title}</span>
+    <button class="copy-sticker-btn" onclick="copyCode(this)">{copyLabel}</button>
+  </div>
+  <slot />
+</div>

@@ -1,0 +1,15 @@
+---
+interface Props {
+  quote: string;
+  author?: string;
+  class?: string;
+}
+
+const { quote, author = 'Core System Design Philosophy', class: className = '' } = Astro.props;
+---
+
+<div class={`quote-callout-card ${className}`.trim()}>
+  <div class="quote-mark">“</div>
+  <div class="quote-text">{quote}</div>
+  {author && <div class="quote-author">— {author}</div>}
+</div>

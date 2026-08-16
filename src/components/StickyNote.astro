@@ -1,0 +1,15 @@
+---
+interface Props {
+  type?: 'yellow' | 'mint' | 'sky' | 'lavender';
+  title?: string;
+  class?: string;
+}
+
+const { type = 'yellow', title, class: className = '' } = Astro.props;
+const typeClass = type === 'yellow' ? '' : type;
+---
+
+<div class={`sticky-note ${typeClass} ${className}`.trim()}>
+  {title && <div class="sticky-title">{title}</div>}
+  <slot />
+</div>

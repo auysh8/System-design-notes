@@ -1,0 +1,181 @@
+---
+title: "Load Balancer Algorithms & Health Checks"
+shortTitle: "7. Load Balancing"
+chapterNumber: 7
+subtitle: "7 Traffic Routing Strategies, Session Persistence, & Failover Management"
+tag: "System Design Chapter 7"
+accentColor: "blue"
+description: "7 routing algorithms (Round Robin, Least Conn, Consistent Hashing) & auto-failover."
+handwrittenAnnotation: "★ Essential for high availability, fault tolerance & scaling!"
+---
+
+import StickyNote from '../../components/StickyNote.astro';
+import GoodNotesCard from '../../components/GoodNotesCard.astro';
+import DiagramPaper from '../../components/DiagramPaper.astro';
+
+<div class="note-section">
+    <p>A <mark class="hl-blue">Load Balancer</mark> distributes incoming client traffic across multiple backend servers to ensure no single server bears too much load, preventing bottlenecks and single points of failure (SPOF).</p>
+
+    <StickyNote type="sky" title="❓ Core Question: How does a Load Balancer distribute traffic?">
+        <p>Load balancers utilize <strong>7 core algorithms and strategies</strong> depending on server capacity, session requirements, and geographical proximity.</p>
+    </StickyNote>
+</div>
+
+{/*  SECTION: 7 ALGORITHMS  */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-yellow);">7</span>
+        Load Balancing Strategies & Algorithms
+    </div>
+
+    <div class="card-grid">
+
+        {/*  1. Round Robin  */}
+        <GoodNotesCard title="🔄 1. Round Robin" accent="pink">
+            <p>Redirects incoming requests in sequential cyclical order: <mark class="hl-pink">Server 1 ➔ Server 2 ➔ Server 3 ➔ Server 1</mark>.</p>
+            <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                💡 <strong>Best for:</strong> Environments where all servers have identical hardware specifications and request processing times are uniform.
+            </div>
+        </GoodNotesCard>
+
+        {/*  2. Least Connections  */}
+        <GoodNotesCard title="🔗 2. Least Connections" accent="blue">
+            <p>Redirects traffic to the server currently handling the <mark class="hl-blue">fewest active connections</mark>.</p>
+            <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                💡 <strong>Best for:</strong> Applications with long-lived persistent connections (e.g. WebSockets, streaming) where session lengths vary significantly.
+            </div>
+        </GoodNotesCard>
+
+        {/*  3. Least Response Time  */}
+        <GoodNotesCard title="⚡ 3. Least Response Time" accent="purple">
+            <p>Redirects traffic to the server that is most responsive and serving responses with the <mark class="hl-purple">lowest latency</mark>.</p>
+            <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                💡 <strong>Best for:</strong> Providing the fastest response times when backend servers have different performance specs.
+            </div>
+        </GoodNotesCard>
+
+        {/*  4. IP-Hash  */}
+        <GoodNotesCard title="🔑 4. IP-Hash" accent="green">
+            <p>Hashes the client's IP address to consistently map future requests from that IP to the <mark class="hl-green">exact same server</mark>.</p>
+            <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                💡 <strong>Best for:</strong> Session persistence (Sticky Sessions) when user state/session info is stored locally on a specific server and not synced across nodes.
+            </div>
+        </GoodNotesCard>
+
+        {/*  5. Weighted Algorithms  */}
+        <GoodNotesCard title="⚖️ 5. Weighted Algorithms" accent="yellow">
+            <p>Servers are assigned <mark class="hl-yellow">weights based on capacity</mark>. Higher-capacity servers receive a proportionally larger share of traffic.</p>
+            <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                💡 <strong>Best for:</strong> Heterogeneous server clusters where nodes have different CPU, RAM, or network bandwidth specifications.
+            </div>
+        </GoodNotesCard>
+
+        {/*  6. Geographical Algorithms  */}
+        <GoodNotesCard title="🗺️ 6. Geographical Algorithms" accent="orange">
+            <p>Redirects traffic to the server located closest to the user's <mark class="hl-orange">Geographical IP location</mark>.</p>
+            <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                💡 <strong>Best for:</strong> Global applications requiring latency reduction and localized content delivery (Geo-DNS routing).
+            </div>
+        </GoodNotesCard>
+
+    </div>
+
+    {/*  7. Consistent Hashing  */}
+    <StickyNote type="lavender" title="⭕ 7. Consistent Hashing (Popular but Complex)">
+        <p>Standard hashing (<code>Server = hash(key) % N</code>) breaks down when servers scale up or down because almost <strong>100% of keys get remapped</strong>. <mark class="hl-purple">Consistent Hashing</mark> solves this by mapping both servers and keys onto a circular ring topology.</p>
+    </StickyNote>
+
+    {/*  True Visual Consistent Hash Ring Diagram  */}
+    <DiagramPaper>
+        <div style="font-family: var(--font-title); font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; text-align: center; color: var(--text-main);">
+            ⭕ Consistent Hash Ring & Clockwise Routing
+        </div>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.75rem; text-align: center;">
+            Both servers and user requests are mapped onto a 360° circular hash ring. Requests travel <strong>clockwise</strong> to hit the first available server node.
+        </p>
+
+        {/*  SVG CIRCULAR HASH RING  */}
+        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 2rem;">
+            <svg width="360" height="360" viewBox="0 0 340 340" style="max-width: 100%; height: auto;">
+                {/*  Outer Ring Circle  */}
+                <circle cx="170" cy="170" r="115" fill="none" stroke="var(--pastel-blue-dark)" stroke-width="4" stroke-dasharray="6,6" opacity="0.6"/>
+                
+                {/*  Clockwise Direction Arrow Curve  */}
+                <path d="M 170 38 A 132 132 0 0 1 292 170" fill="none" stroke="var(--pastel-pink-dark)" stroke-dasharray="4,4" stroke-width="3"/>
+                <polygon points="292,175 284,160 297,165" fill="var(--pastel-pink-dark)"/>
+                <text x="235" y="52" fill="var(--pastel-pink-dark)" font-size="11" font-weight="bold" font-family="var(--font-title)">Clockwise Search</text>
+
+                {/*  Server 1 (Top: 0 deg)  */}
+                <g transform="translate(170, 55)">
+                    <circle r="22" fill="var(--paper-card)" stroke="#22c55e" stroke-width="3"/>
+                    <text text-anchor="middle" y="5" font-size="12" font-weight="bold" fill="var(--text-main)" font-family="var(--font-title)">S1</text>
+                    <text text-anchor="middle" y="-28" font-size="11" font-weight="bold" fill="#22c55e" font-family="var(--font-title)">Server 1</text>
+                </g>
+
+                {/*  Server 2 (Bottom Right: 120 deg)  */}
+                <g transform="translate(265, 230)">
+                    <circle r="22" fill="var(--paper-card)" stroke="#38bdf8" stroke-width="3"/>
+                    <text text-anchor="middle" y="5" font-size="12" font-weight="bold" fill="var(--text-main)" font-family="var(--font-title)">S2</text>
+                    <text text-anchor="middle" y="38" font-size="11" font-weight="bold" fill="#38bdf8" font-family="var(--font-title)">Server 2</text>
+                </g>
+
+                {/*  Server 3 (Bottom Left: 240 deg)  */}
+                <g transform="translate(75, 230)">
+                    <circle r="22" fill="var(--paper-card)" stroke="#a855f7" stroke-width="3"/>
+                    <text text-anchor="middle" y="5" font-size="12" font-weight="bold" fill="var(--text-main)" font-family="var(--font-title)">S3</text>
+                    <text text-anchor="middle" y="38" font-size="11" font-weight="bold" fill="#a855f7" font-family="var(--font-title)">Server 3</text>
+                </g>
+
+                {/*  USER REQUEST KEY ON RING  */}
+                <g transform="translate(260, 115)">
+                    <circle r="14" fill="#facc15" stroke="#eab308" stroke-width="2"/>
+                    <text text-anchor="middle" y="4" font-size="10" font-weight="bold" fill="#0f172a" font-family="var(--font-title)">Key 1</text>
+                </g>
+
+                {/*  Arrow from Key 1 -> Server 2 (Clockwise match)  */}
+                <path d="M 262 130 Q 275 165 265 200" fill="none" stroke="#eab308" stroke-width="3" stroke-dasharray="4,4"/>
+                <polygon points="265,205 260,192 270,194" fill="#eab308"/>
+
+                {/*  Center Ring Title  */}
+                <text x="170" y="165" text-anchor="middle" font-size="13" font-weight="800" fill="var(--text-main)" font-family="var(--font-title)">HASH RING</text>
+                <text x="170" y="185" text-anchor="middle" font-size="11" fill="var(--text-muted)" font-family="var(--font-title)">0 ➔ 2³² - 1</text>
+            </svg>
+        </div>
+
+        <div style="text-align: left; background: var(--paper-card); padding: 1.5rem; border-radius: 12px; border: 2px solid var(--border-soft); box-shadow: var(--shadow-card);">
+            <div style="font-weight: 800; font-size: 1.1rem; margin-bottom: 0.85rem; color: var(--text-main);">
+                💡 How Consistent Hashing Works (Step-by-Step):
+            </div>
+
+            <ol style="margin-left: 1.25rem; font-size: 0.9rem; color: var(--text-main); line-height: 1.6;">
+                <li style="margin-bottom: 0.75rem;">
+                    <strong>Ring Topology:</strong> Backend servers (<mark class="hl-green">S1</mark>, <mark class="hl-blue">S2</mark>, <mark class="hl-purple">S3</mark>) are hashed by IP/name and placed at fixed points along a 360° circular ring.
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                    <strong>Clockwise Request Lookup:</strong> When a user request (<mark class="hl-yellow">Key 1</mark>) arrives, its hash location is calculated on the ring. The system moves <strong>clockwise</strong> around the ring to find the first server it hits (<mark class="hl-blue">S2</mark>).
+                </li>
+                <li style="margin-bottom: 0.5rem;">
+                    <strong>Minimal Remapping on Crash/Add:</strong> If <mark class="hl-blue">S2</mark> crashes, only requests mapped to <mark class="hl-blue">S2</mark> move to <mark class="hl-purple">S3</mark>. <strong>Keys on S1 & S3 remain 100% untouched!</strong>
+                </li>
+            </ol>
+        </div>
+    </DiagramPaper>
+</div>
+
+{/*  SECTION: HEALTH CHECKS  */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-green);">🩺</span>
+        Health Checks & Failover Management
+    </div>
+
+    <StickyNote type="mint" title="❓ How does a Load Balancer know a server is offline?">
+        <p>The load balancer constantly sends periodic <mark class="hl-green">Health Check ping requests</mark> (e.g., HTTP `/healthz` endpoints or TCP heartbeats) to all registered backend servers.</p>
+        
+        <ul style="margin: 0.75rem 0 0 1.25rem; font-size: 0.9rem;">
+            <li><strong>Server Offline Detection:</strong> If a server fails to respond within a timeout window or returns error status codes, the load balancer automatically flags it as <mark class="hl-pink">UNHEALTHY</mark>.</li>
+            <li><strong>Traffic Rerouting:</strong> It immediately stops sending traffic to the failed server and reroutes incoming requests to remaining active servers.</li>
+            <li><strong>Auto-Recovery:</strong> It continues background probing, and once the server becomes active and healthy again, it re-introduces it into the server pool automatically.</li>
+        </ul>
+    </StickyNote>
+</div>

@@ -1,0 +1,80 @@
+---
+title: "Relational DBs (RDBMS) & SQL Joins"
+shortTitle: "3. Relational & SQL"
+chapterNumber: 3
+subtitle: "Schemas, Foreign Keys, and Entity Relationships"
+tag: "System Design Chapter 3"
+accentColor: "yellow"
+description: "SQL DDL/DML syntax, foreign key joins, and ER diagram schemas."
+handwrittenAnnotation: "★ Relational schemas enforce data consistency across multiple normalized tables!"
+---
+
+import CodeSticker from '../../components/CodeSticker.astro';
+
+<div class="note-section">
+    <p>Relational databases use <mark class="hl-yellow">SQL (Structured Query Language)</mark> for data definition and manipulation. Data is organized strictly into rows and columns.</p>
+
+    <CodeSticker title="SQL: Create & Insert Example" copyLabel="Copy SQL">
+```sql
+CREATE TABLE Customers (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(100),
+    age INTEGER,
+    email VARCHAR(100)
+);
+
+INSERT INTO Customers (id, name, age, email)
+VALUES (123, 'John Doe', 30, 'johndoe@example.com');
+```
+    </CodeSticker>
+
+    <h3 style="font-family: var(--font-title); font-size: 1.4rem; font-weight: 800; margin: 2rem 0 0.5rem 0;">🔗 Complex Join Operations & Foreign Keys</h3>
+    <p>SQL excels at joining related entities. For example, an <mark class="hl-blue">Orders</mark> table links to <mark class="hl-blue">Customers</mark> and <mark class="hl-blue">Products</mark> via Foreign Keys.</p>
+
+    <CodeSticker title="SQL: Orders Table Schema with Foreign Keys" copyLabel="Copy SQL">
+```sql
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    product_id INT,
+    quantity INT,
+    order_date DATE,
+    FOREIGN KEY (customer_id) REFERENCES Customers(id),
+    FOREIGN KEY (product_id) REFERENCES Products(id)
+);
+```
+    </CodeSticker>
+
+    {/* ER Schema Diagram */}
+    <div class="er-box-container">
+        <div class="er-card">
+            <div class="er-head">Customers</div>
+            <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
+            <div class="er-item"><span>name</span> <span>String</span></div>
+            <div class="er-item"><span>email</span> <span>String</span></div>
+        </div>
+
+        <div style="font-family: var(--font-hand); font-size: 1.5rem; font-weight: bold; color: var(--text-muted);">
+            ──(1:N)──►
+        </div>
+
+        <div class="er-card" style="border-color: var(--pastel-pink-dark);">
+            <div class="er-head" style="background: var(--pastel-pink);">Orders</div>
+            <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
+            <div class="er-item"><span>customer_id</span> <strong style="color:var(--pastel-blue-dark);">FK</strong></div>
+            <div class="er-item"><span>product_id</span> <strong style="color:var(--pastel-blue-dark);">FK</strong></div>
+            <div class="er-item"><span>order_date</span> <span>Date</span></div>
+        </div>
+
+        <div style="font-family: var(--font-hand); font-size: 1.5rem; font-weight: bold; color: var(--text-muted);">
+            ◄──(N:1)──
+        </div>
+
+        <div class="er-card">
+            <div class="er-head">Products</div>
+            <div class="er-item"><span>id</span> <strong style="color:var(--pastel-yellow-dark);">PK</strong></div>
+            <div class="er-item"><span>name</span> <span>String</span></div>
+            <div class="er-item"><span>price</span> <span>Decimal</span></div>
+        </div>
+    </div>
+</div>

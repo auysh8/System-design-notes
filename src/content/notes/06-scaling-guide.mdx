@@ -1,0 +1,57 @@
+---
+title: "System Scaling Strategies"
+shortTitle: "6. Scaling Guide"
+chapterNumber: 6
+subtitle: "Vertical vs Horizontal Scaling & Load Balancing"
+tag: "System Design Chapter 6"
+accentColor: "orange"
+description: "Vertical Scaling vs Horizontal Scaling trade-offs and Load Balancer topology."
+handwrittenAnnotation: "★ Scaling out with stateless application servers is the backbone of high availability!"
+---
+
+import StickyNote from '../../components/StickyNote.astro';
+import DiagramPaper from '../../components/DiagramPaper.astro';
+
+<div class="note-section">
+    <div class="card-grid">
+        <StickyNote type="yellow" title="📈 Vertical Scaling (Scale Up)">
+            <p style="font-size: 0.9rem;">Adding resources (<mark class="hl-yellow">CPU, RAM, SSDs</mark>) to the same single server node.</p>
+            <ul style="font-size:0.8rem; margin: 0.5rem 0 0 1rem;">
+                <li><strong>Pros:</strong> Simple setup; no code alterations required.</li>
+                <li><strong>Cons:</strong> Hardware capacity ceiling & SPOF risk.</li>
+            </ul>
+        </StickyNote>
+
+        <StickyNote type="mint" title="🌐 Horizontal Scaling (Scale Out)">
+            <p style="font-size: 0.9rem;">Adding more server instances and distributing incoming traffic using a <mark class="hl-green">Load Balancer</mark>.</p>
+            <ul style="font-size:0.8rem; margin: 0.5rem 0 0 1rem;">
+                <li><strong>Pros:</strong> Infinite horizontal growth & zero downtime availability.</li>
+                <li><strong>Cons:</strong> Complex state sync & network management.</li>
+            </ul>
+        </StickyNote>
+    </div>
+
+    {/*  Scaling Diagram  */}
+    <DiagramPaper title="⚖️ Load Balancer Horizontal Scaling Architecture">
+        <div class="flow-flex">
+            <div class="flow-node highlight-blue" style="max-width: 140px;">
+                <strong>👥 Clients</strong>
+            </div>
+
+            <div class="flow-arrow">➔ Request ➔</div>
+
+            <div class="flow-node highlight-pink" style="max-width: 160px;">
+                <strong>⚖️ Load Balancer</strong>
+                <div style="font-size:0.75rem;">Traffic Router</div>
+            </div>
+
+            <div class="flow-arrow">➔ Distribute ➔</div>
+
+            <div style="display:flex; flex-direction:column; gap:0.5rem; flex:1;">
+                <div class="flow-node highlight-green"><strong>Server Node 1</strong></div>
+                <div class="flow-node highlight-green"><strong>Server Node 2</strong></div>
+                <div class="flow-node highlight-green"><strong>Server Node 3</strong></div>
+            </div>
+        </div>
+    </DiagramPaper>
+</div>

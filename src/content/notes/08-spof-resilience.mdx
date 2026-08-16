@@ -1,0 +1,99 @@
+---
+title: "Single Point of Failure (SPOF) & High Availability"
+shortTitle: "8. SPOF & HA"
+chapterNumber: 8
+subtitle: "Eliminating SPOFs via Redundancy, Load Balancer Monitoring, & Self-Healing Systems"
+tag: "System Design Chapter 8"
+accentColor: "pink"
+description: "Eliminating SPOFs via redundancy & self-healing clusters."
+handwrittenAnnotation: "★ Critical for zero-downtime architecture & DDoS resilience!"
+---
+
+import StickyNote from '../../components/StickyNote.astro';
+import GoodNotesCard from '../../components/GoodNotesCard.astro';
+import DiagramPaper from '../../components/DiagramPaper.astro';
+
+{/*  SECTION 1: SPOF DEFINITION  */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-pink);">1</span>
+        What is a Single Point of Failure (SPOF)?
+    </div>
+
+    <p>A <mark class="hl-pink">Single Point of Failure (SPOF)</mark> is any component in an architecture that, if it stops working or goes down, causes the entire system to fail.</p>
+
+    {/*  SPOF Architecture Diagram  */}
+    <DiagramPaper>
+        <div style="font-family: var(--font-title); font-size: 1.2rem; font-weight: 800; margin-bottom: 1rem; text-align: center; color: var(--text-main);">
+            ⚠️ Vulnerable Architecture with Multiple SPOFs
+        </div>
+
+        <div class="flow-flex">
+            <div class="flow-node highlight-blue" style="max-width: 130px;">
+                <strong>👥 Client</strong>
+            </div>
+
+            <div class="flow-arrow">➔</div>
+
+            <div class="flow-node highlight-pink" style="max-width: 170px; border: 2px dashed #f472b6;">
+                <strong>⚖️ Load Balancer</strong>
+                <div style="font-size:0.75rem; color:#db2777; font-weight:bold; margin-top:2px;">⚠️ SPOF</div>
+            </div>
+
+            <div class="flow-arrow">➔</div>
+
+            <div style="display:flex; flex-direction:column; gap:0.4rem; flex:1;">
+                <div class="flow-node highlight-green"><strong>Server 1</strong></div>
+                <div class="flow-node highlight-green"><strong>Server 2</strong></div>
+                <div class="flow-node highlight-green"><strong>Server 3</strong></div>
+            </div>
+
+            <div class="flow-arrow">➔</div>
+
+            <div class="flow-node highlight-pink" style="max-width: 170px; border: 2px dashed #f472b6;">
+                <strong>💾 Database</strong>
+                <div style="font-size:0.75rem; color:#db2777; font-weight:bold; margin-top:2px;">⚠️ SPOF</div>
+            </div>
+        </div>
+    </DiagramPaper>
+
+    <StickyNote type="sky" title="🚨 Major Disadvantage of SPOFs:">
+        <p>Having SPOFs in your architecture gives malicious actors/hackers a single obvious target to bring down your entire application by focusing attack traffic (e.g. DDoS) directly at that single point.</p>
+    </StickyNote>
+</div>
+
+{/*  SECTION 2: 3 STRATEGIES TO ELIMINATE SPOF  */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-blue);">2</span>
+        3 Strategies to Avoid Load Balancer SPOFs
+    </div>
+
+    <div class="card-grid">
+
+        {/*  Strategy 1: Redundancy  */}
+        <GoodNotesCard title="🔄 1. Redundancy" accent="blue">
+            <p>Adding <mark class="hl-blue">multiple active/standby load balancers</mark> to your infrastructure setup.</p>
+            <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                💡 If one load balancer goes down, secondary load balancers immediately handle and route incoming traffic to backend servers without downtime.
+            </div>
+        </GoodNotesCard>
+
+        {/*  Strategy 2: Health Checks & Monitoring  */}
+        <GoodNotesCard title="🩺 2. Health Checks & Monitoring" accent="green">
+            <p>Constantly perform automated <mark class="hl-green">health check probes</mark> on load balancers.</p>
+            <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                💡 Identifies failing load balancers instantly and stops sending traffic to unhealthy nodes until they recover and come back online.
+            </div>
+        </GoodNotesCard>
+
+        {/*  Strategy 3: Self-Healing Systems  */}
+        <GoodNotesCard title="🛠️ 3. Self-Healing Systems" accent="purple">
+            <p>Automatically spin up a <mark class="hl-purple">new instance replacement</mark> if a load balancer crashes.</p>
+            <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                💡 Automated orchestration (e.g. Auto-Scaling Groups) detects failure and provisions a fresh load balancer node in place of the dead instance automatically.
+            </div>
+        </GoodNotesCard>
+
+    </div>
+</div>

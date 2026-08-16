@@ -1,0 +1,180 @@
+---
+import { getCollection } from 'astro:content';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  tag?: string;
+  chapterNumber?: number;
+  activeSlug?: string;
+  handwrittenAnnotation?: string;
+  description?: string;
+}
+
+const {
+  title,
+  subtitle,
+  tag = 'System Design Study Journal',
+  chapterNumber,
+  activeSlug = 'index',
+  handwrittenAnnotation,
+  description = 'System Design & Database Architecture notes styled like a GoodNotes digital notebook planner.'
+} = Astro.props;
+
+const rawNotes = await getCollection('notes');
+const allNotes = rawNotes.sort((a, b) => a.data.chapterNumber - b.data.chapterNumber);
+
+const currentIndex = allNotes.findIndex((n) => n.id === activeSlug);
+const prevNote = currentIndex > 0 ? allNotes[currentIndex - 1] : null;
+const nextNote = currentIndex >= 0 && currentIndex < allNotes.length - 1 ? allNotes[currentIndex + 1] : null;
+
+const baseUrl = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{chapterNumber ? `${chapterNumber}. ${title} — System Design Notes` : `${title} — System Design Notes`}</title>
+    <meta name="description" content={description}>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Top Planner Toolbar -->
+    <div class="toolbar">
+        <a href={baseUrl} class="toolbar-title">
+            <svg class="pen-icon" viewBox="0 0 24 24">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+            GoodNotes Architect Journal
+        </a>
+        <div class="toolbar-actions">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search notes..." onkeyup="filterNotes()">
+            <button class="toggle-btn" id="themeToggleBtn" onclick="togglePaperTheme()">
+                <span id="themeEmoji">🌙</span> <span id="themeModeText">Dark Paper</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- GoodNotes Notebook Container -->
+    <div class="notebook-container">
+        
+        <!-- Dynamic Notebook Tabs Header -->
+        <div class="tabs-header">
+            <a href={baseUrl} class={`tab-item ${activeSlug === 'index' ? 'active' : ''}`}>🏠 Index</a>
+            {allNotes.map((note) => (
+                <a
+                  href={`${baseUrl}notes/${note.id}/`}
+                  class={`tab-item ${activeSlug === note.id ? 'active' : ''}`}
+                >
+                  {note.data.shortTitle || `${note.data.chapterNumber}. ${note.data.title}`}
+                </a>
+            ))}
+        </div>
+
+        <!-- Main Paper Page -->
+        <div class="paper-page">
+            
+            <!-- Planner Cover Title -->
+            <div class="planner-header">
+                <span class="planner-tag">{tag}</span>
+                <h1>{title}</h1>
+                {subtitle && <p class="planner-subtitle">{subtitle}</p>}
+                {handwrittenAnnotation && (
+                    <div style="margin-top: 0.75rem;">
+                        <span class="handwritten-annotation">{handwrittenAnnotation}</span>
+                    </div>
+                )}
+            </div>
+
+            <!-- Page Content (Markdown / MDX Slot) -->
+            <slot />
+
+            <!-- Planner Navigation Footer -->
+            <footer>
+                <p>
+                    {prevNote && (
+                        <a href={`${baseUrl}notes/${prevNote.id}/`} style="color:var(--pastel-blue-dark); text-decoration:none; margin-right: 1rem;">
+                            ⬅️ {prevNote.data.chapterNumber}. {prevNote.data.shortTitle || prevNote.data.title}
+                        </a>
+                    )}
+                    <a href={baseUrl} style="color:var(--pastel-blue-dark); text-decoration:none;">
+                        🏠 Index
+                    </a>
+                    {nextNote && (
+                        <a href={`${baseUrl}notes/${nextNote.id}/`} style="color:var(--pastel-blue-dark); text-decoration:none; margin-left: 1rem;">
+                            {nextNote.data.chapterNumber}. {nextNote.data.shortTitle || nextNote.data.title} ➡️
+                        </a>
+                    )}
+                </p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Client-Side Notebook Utilities -->
+    <script is:inline>
+        function togglePaperTheme() {
+            document.body.classList.toggle('dark-mode');
+            const modeText = document.getElementById('themeModeText');
+            const themeEmoji = document.getElementById('themeEmoji');
+
+            if (document.body.classList.contains('dark-mode')) {
+                if (modeText) modeText.textContent = 'Light Paper';
+                if (themeEmoji) themeEmoji.textContent = '☀️';
+                localStorage.setItem('goodnotes_theme', 'dark');
+            } else {
+                if (modeText) modeText.textContent = 'Dark Paper';
+                if (themeEmoji) themeEmoji.textContent = '🌙';
+                localStorage.setItem('goodnotes_theme', 'light');
+            }
+        }
+
+        // Apply saved theme immediately
+        (function() {
+            const savedTheme = localStorage.getItem('goodnotes_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.body.classList.add('dark-mode');
+                window.addEventListener('DOMContentLoaded', () => {
+                    const modeText = document.getElementById('themeModeText');
+                    const themeEmoji = document.getElementById('themeEmoji');
+                    if (modeText) modeText.textContent = 'Light Paper';
+                    if (themeEmoji) themeEmoji.textContent = '☀️';
+                });
+            }
+        })();
+
+        function copyCode(btn) {
+            const container = btn.closest('.code-sticker');
+            const code = container.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.color = '#4ade80';
+                setTimeout(() => {
+                    btn.textContent = orig;
+                    btn.style.color = '';
+                }, 2000);
+            });
+        }
+
+        function filterNotes() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const sections = document.querySelectorAll('.note-section, .toc-card');
+
+            sections.forEach(sec => {
+                const txt = sec.innerText.toLowerCase();
+                sec.style.display = txt.includes(q) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
