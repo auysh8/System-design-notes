@@ -9,6 +9,12 @@
 [![Astro](https://img.shields.io/badge/Framework-Astro%20v5-BC52EE?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build/)
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
+<br/><br/>
+
+<a href="https://system-design-notes-l362awb0x-auysh8s-projects.vercel.app/">
+  <img src="./public/preview.png" alt="System Design Journal UI Preview" width="880" />
+</a>
+
 </div>
 
 ---
