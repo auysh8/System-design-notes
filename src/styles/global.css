@@ -167,12 +167,12 @@ body {
     display: flex;
     gap: 5px;
     padding-left: 1.75rem;
-    margin-bottom: -4px;
+    margin-bottom: -14px;
     overflow-x: auto;
     scrollbar-width: none;
     position: relative;
     z-index: 20;
-    align-items: flex-end;
+    align-items: flex-start;
 }
 
 .tabs-header::-webkit-scrollbar {
@@ -186,7 +186,8 @@ body {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 0.5rem 1.15rem;
+    height: 32px;
+    padding: 0 1.15rem;
     font-family: var(--font-title);
     font-size: 0.78rem;
     font-weight: 800;
@@ -217,11 +218,12 @@ body {
     transform: none;
 }
 
-/* Active State: Hanging Ribbon Bookmark (Image 1 style) - No lift / No scale */
+/* Active State: Hanging Ribbon Bookmark (Image 1 style) - Flush top, hangs downward */
 .tab-item.active {
     opacity: 1;
     z-index: 35;
-    padding: 0.55rem 1.15rem 1.35rem 1.15rem;
+    height: auto;
+    padding: 0.42rem 1.15rem 1.15rem 1.15rem;
     font-family: var(--font-ribbon);
     font-size: 1.15rem;
     font-weight: 700;
@@ -230,7 +232,7 @@ body {
     color: #ffffff !important;
     border-radius: 4px 4px 0 0;
     transform: none;
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 10px), 0 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 9px), 0 100%);
     filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.3));
     box-shadow: none;
 }
