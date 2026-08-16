@@ -1,6 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 
 interface Props {
@@ -45,7 +44,6 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-    <ClientRouter />
 </head>
 <body>
 
@@ -151,7 +149,8 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             if (themeEmoji) themeEmoji.textContent = isDark ? '☀️' : '🌙';
         }
 
-        function applySavedTheme() {
+        // Apply saved theme immediately on page load
+        (function() {
             const savedTheme = localStorage.getItem('goodnotes_theme');
             const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
@@ -161,14 +160,10 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
             } else {
                 document.body.classList.remove('dark-mode');
             }
-            updateThemeUI(isDark);
-        }
-
-        // Apply immediately on load
-        applySavedTheme();
-
-        // Re-apply after View Transition swaps
-        document.addEventListener('astro:after-swap', applySavedTheme);
+            window.addEventListener('DOMContentLoaded', () => {
+                updateThemeUI(isDark);
+            });
+        })();
 
         function copyCode(btn) {
             const container = btn.closest('.code-sticker');
