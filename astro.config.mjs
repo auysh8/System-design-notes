@@ -6,7 +6,7 @@ const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
 
 // https://astro.build/config
 export default defineConfig({
-  site: isGitHubPages ? 'https://auysh8.github.io' : undefined,
+  site: isGitHubPages ? 'https://auysh8.github.io' : 'https://system-design-notes-l362awb0x-auysh8s-projects.vercel.app',
   base: isGitHubPages ? '/System-design-notes/' : '/',
   integrations: [mdx()],
   trailingSlash: 'always',
