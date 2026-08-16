@@ -26,6 +26,7 @@ You can browse the live digital notebook here:
 7. **Load Balancer Algorithms & Health Checks**: 7 traffic routing strategies (Round Robin, Least Conn, Consistent Hashing ring) & auto-failover probes.
 8. **Single Point of Failure (SPOF) & High Availability**: Eliminating SPOFs via Redundancy, Load Balancer Probing, & Self-Healing Clusters.
 9. **API Design & Protocols**: Network Stack layers, HTTP Request/Response anatomy, HTTPS security benefits vs risks, REST vs GraphQL vs gRPC, API Lifecycle management & 4 Core Design Principles.
+10. **Communication & Messaging Protocols**: Protocol selection decision matrix (6 dimensions), HTTP Polling vs. WebSockets (push vs pull), gRPC HTTP/2 Protobuf streaming, and AMQP Message Broker architecture (RabbitMQ exchanges & queues).
 
 ---
 
