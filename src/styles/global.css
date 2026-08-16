@@ -169,8 +169,10 @@ body {
 .tabs-header {
     display: flex;
     gap: 6px;
+    padding-top: 10px;
     padding-left: 1.75rem;
-    margin-bottom: -32px;
+    margin-top: -10px;
+    margin-bottom: -42px;
     overflow-x: auto;
     scrollbar-width: none;
     position: relative;
@@ -1518,9 +1520,11 @@ li::marker {
     }
 
     .tabs-header {
+        padding-top: 8px;
         padding-left: 8px;
         gap: 4px;
-        margin-bottom: -24px;
+        margin-top: -8px;
+        margin-bottom: -32px;
         -webkit-overflow-scrolling: touch;
     }
 
