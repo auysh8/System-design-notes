@@ -276,35 +276,51 @@ body {
 
 /* Highlighters & Highlight Badges */
 mark, mark.hl-yellow {
+    display: inline-block;
     background: #fef08a;
     color: #1e293b !important;
-    padding: 0.15em 0.4em;
-    border-radius: 4px;
+    padding: 0.2em 0.55em;
+    margin: 2px 4px;
+    border-radius: 6px;
     font-weight: 700;
+    line-height: 1.35;
+    vertical-align: baseline;
 }
 
 mark.hl-pink {
+    display: inline-block;
     background: #fbcfe8;
     color: #1e293b !important;
-    padding: 0.15em 0.4em;
-    border-radius: 4px;
+    padding: 0.2em 0.55em;
+    margin: 2px 4px;
+    border-radius: 6px;
     font-weight: 700;
+    line-height: 1.35;
+    vertical-align: baseline;
 }
 
 mark.hl-blue {
+    display: inline-block;
     background: #bae6fd;
     color: #1e293b !important;
-    padding: 0.15em 0.4em;
-    border-radius: 4px;
+    padding: 0.2em 0.55em;
+    margin: 2px 4px;
+    border-radius: 6px;
     font-weight: 700;
+    line-height: 1.35;
+    vertical-align: baseline;
 }
 
 mark.hl-green {
+    display: inline-block;
     background: #bbf7d0;
     color: #1e293b !important;
-    padding: 0.15em 0.4em;
-    border-radius: 4px;
+    padding: 0.2em 0.55em;
+    margin: 2px 4px;
+    border-radius: 6px;
     font-weight: 700;
+    line-height: 1.35;
+    vertical-align: baseline;
 }
 
 /* Dark Mode Glowing Highlighter Badges */
