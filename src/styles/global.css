@@ -207,6 +207,56 @@ body {
     padding: 3rem 3.5rem;
     box-shadow: var(--shadow-paper);
     position: relative;
+    view-transition-name: paper-page;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+
+/* GoodNotes 3D Page Turn Transition Animations */
+@keyframes pageTurnExit {
+    0% {
+        transform: perspective(1400px) rotateY(0deg) scale(1);
+        opacity: 1;
+        transform-origin: left center;
+        box-shadow: var(--shadow-paper);
+    }
+    40% {
+        box-shadow: -20px 15px 35px rgba(0, 0, 0, 0.25);
+    }
+    100% {
+        transform: perspective(1400px) rotateY(-35deg) scale(0.96) translateX(-20px);
+        opacity: 0;
+        transform-origin: left center;
+    }
+}
+
+@keyframes pageTurnEnter {
+    0% {
+        transform: perspective(1400px) rotateY(30deg) scale(0.96) translateX(20px);
+        opacity: 0;
+        transform-origin: left center;
+    }
+    50% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: perspective(1400px) rotateY(0deg) scale(1) translateX(0);
+        opacity: 1;
+        transform-origin: left center;
+        box-shadow: var(--shadow-paper);
+    }
+}
+
+::view-transition-old(paper-page) {
+    animation: 280ms cubic-bezier(0.25, 1, 0.5, 1) both pageTurnExit;
+}
+
+::view-transition-new(paper-page) {
+    animation: 280ms cubic-bezier(0.25, 1, 0.5, 1) both pageTurnEnter;
+}
+
+.toolbar {
+    view-transition-name: notebook-toolbar;
 }
 
 @media (max-width: 768px) {
