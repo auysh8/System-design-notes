@@ -27,7 +27,7 @@ A curated study journal covering distributed systems, database scaling, and comm
 
 ## Live Demo
 
-Access the live interactive journal: **[https://system-design-notes-l362awb0x-auysh8s-projects.vercel.app](https://system-design-notes-l362awb0x-auysh8s-projects.vercel.app/)**
+Access the live interactive journal: **[https://system-design-notes-wheat.vercel.app/?_vercel_share=rtkI8vJzXZhV5TI0vcwLX7BryIQ5Foib](https://system-design-notes-wheat.vercel.app/?_vercel_share=rtkI8vJzXZhV5TI0vcwLX7BryIQ5Foib)**
 
 ---
 
