@@ -1,0 +1,342 @@
+---
+title: "Sessions, JWT Tokens, & OAuth 2 / OIDC"
+shortTitle: "15. JWT & OAuth 2"
+chapterNumber: 15
+subtitle: "Stateful Sessions, Stateless JWT Verification, Access vs Refresh Lifecycles, & OAuth 2 Delegation Flow"
+tag: "System Design Chapter 15"
+accentColor: "yellow"
+description: "Deep dive into stateful session stores vs stateless JWT verification, dual-token access/refresh lifecycles with HttpOnly cookie security, and OAuth 2 authorization code delegation."
+handwrittenAnnotation: "★ Store refresh tokens in HttpOnly cookies! JWT signatures are verified locally with zero DB lookups."
+---
+
+import StickyNote from '../../components/StickyNote.astro';
+import GoodNotesCard from '../../components/GoodNotesCard.astro';
+import DiagramPaper from '../../components/DiagramPaper.astro';
+import QuoteBox from '../../components/QuoteBox.astro';
+import CodeSticker from '../../components/CodeSticker.astro';
+
+{/* SECTION 1: SESSION-BASED AUTH */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-yellow);">1</span>
+        Stateful Session-Based Authentication
+    </div>
+
+    <p>In traditional web applications, authentication is <mark class="hl-yellow">Stateful</mark>. The server creates and retains a session record in a centralized data store (e.g. Redis) for every logged-in user:</p>
+
+    {/* Session Flow Sequence Ladder */}
+    <DiagramPaper title="🪜 Session-Based Authentication 8-Step Flow">
+        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
+            
+            {/* Header */}
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800;">
+                <div><span style="background: var(--paper-card); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">👤 User</span></div>
+                <div><span style="background: var(--pastel-blue); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🖥️ Web Server</span></div>
+                <div><span style="background: var(--pastel-purple); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🗄️ Session Store (Redis)</span></div>
+            </div>
+
+            {/* Sequence Steps */}
+            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.85;">
+                <div><strong>① User ➔ Web Server:</strong> Login with credentials (username & password).</div>
+                <div><strong>② Web Server ➔ Session Store:</strong> Generate cryptographic Session record and store in Redis.</div>
+                <div><strong>③ Session Store ➔ Web Server:</strong> Returns generated <code>Session ID</code>.</div>
+                <div><strong>④ Web Server ➔ User:</strong> Set cookie in response: <code>Set-Cookie: sessionId=xyz123; HttpOnly; Secure; SameSite=Strict</code>.</div>
+                <div style="border-top: 1px solid var(--border-soft); margin: 0.5rem 0; padding-top: 0.5rem;">
+                    <strong>⑤ User ➔ Web Server:</strong> Subsequent request to protected resource with session cookie.
+                </div>
+                <div><strong>⑥ Web Server ➔ Session Store:</strong> Query Session Store: <em>"Does session xyz123 exist?"</em></div>
+                <div><strong>⑦ Session Store ➔ Web Server:</strong> Return associated user data & permissions.</div>
+                <div><strong>⑧ Web Server ➔ User:</strong> Authorize request and return protected data.</div>
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 2: TOKEN-BASED AUTH & JWT */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-blue);">2</span>
+        Stateless Token-Based Authentication (JWT Bearer Flow)
+    </div>
+
+    <p>To scale across horizontally distributed microservices without hitting a centralized session store on every HTTP call, modern systems use <mark class="hl-blue">Stateless JWT Bearer Tokens</mark>:</p>
+
+    {/* JWT Flow Sequence Ladder */}
+    <DiagramPaper title="⚡ Stateless JWT Bearer Authentication Flow">
+        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
+            
+            {/* Header */}
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800;">
+                <div><span style="background: var(--paper-card); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">📱 Client</span></div>
+                <div><span style="background: var(--pastel-yellow); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🛡️ Auth Server</span></div>
+                <div><span style="background: var(--pastel-green); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🌐 API Server</span></div>
+            </div>
+
+            {/* Sequence Steps */}
+            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.85;">
+                <div><strong>① Client ➔ Auth Server:</strong> Login request with user credentials.</div>
+                <div><strong>② Auth Server:</strong> Validate credentials against database.</div>
+                <div><strong>③ Auth Server ➔ Client:</strong> Issue digitally signed <strong>JWT Token</strong> (containing user ID, roles, and expiry).</div>
+                <div style="border-top: 1px solid var(--border-soft); margin: 0.5rem 0; padding-top: 0.5rem;">
+                    <strong>④ Client ➔ API Server:</strong> Send request with header: <code>Authorization: Bearer &lt;jwt_token&gt;</code>.
+                </div>
+                <div>
+                    <strong>⑤ API Server:</strong> <span style="color: #16a34a; font-weight: 700;">Verify cryptographic signature locally</span> (using public key / secret) — <strong>zero database lookups needed!</strong>
+                </div>
+                <div><strong>⑥ API Server ➔ Client:</strong> Return requested data directly.</div>
+            </div>
+
+        </div>
+    </DiagramPaper>
+
+    <div class="card-grid" style="margin-top: 1.25rem;">
+        <GoodNotesCard title="🚀 Core Advantage" accent="green">
+            <p><strong>Completely Stateless:</strong> Any API server across multiple regions can verify the token without querying a database or cache.</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="⚠️ Core Trade-Off" accent="pink">
+            <p><strong>Revocation Difficulty:</strong> Because verification is stateless, invalidating a leaked token before it expires requires a token blacklist or short expiration times.</p>
+        </GoodNotesCard>
+    </div>
+</div>
+
+{/* SECTION 3: ACCESS & REFRESH TOKENS */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-pink);">3</span>
+        Access & Refresh Token Lifecycle
+    </div>
+
+    <p>To balance security and user experience, systems implement a <mark class="hl-pink">Dual-Token Lifecycle</mark>:</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <div style="background: #fee2e2; border: 2px solid #ef4444; border-radius: 10px; padding: 1rem; text-align: center;">
+            <div style="font-weight: 800; color: #991b1b; font-size: 1.05rem;">⚡ Access Token</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #7f1d1d; margin: 0.35rem 0;">15 min – 1 hr</div>
+            <div style="font-size: 0.8rem; color: #991b1b;">Short-lived; sent with API calls; limits blast radius if stolen.</div>
+        </div>
+
+        <div style="background: #dcfce7; border: 2px solid #22c55e; border-radius: 10px; padding: 1rem; text-align: center;">
+            <div style="font-weight: 800; color: #166534; font-size: 1.05rem;">🔄 Refresh Token</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #14532d; margin: 0.35rem 0;">7 to 30 days</div>
+            <div style="font-size: 0.8rem; color: #166534;">Long-lived; securely stored; used only to mint fresh access tokens.</div>
+        </div>
+    </div>
+
+    {/* Token Renewal Ladder */}
+    <DiagramPaper title="🔄 Access & Refresh Token Renewal Sequence">
+        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
+            
+            {/* Header */}
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800;">
+                <div><span style="background: var(--paper-card); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">📱 Client</span></div>
+                <div><span style="background: var(--pastel-yellow); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🛡️ Auth Server</span></div>
+                <div><span style="background: var(--pastel-green); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🌐 API Server</span></div>
+            </div>
+
+            {/* Steps */}
+            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.85;">
+                <div><strong>① Client ➔ Auth Server:</strong> Login request with user credentials.</div>
+                <div><strong>② Auth Server ➔ Client:</strong> Issue both <strong>Access Token</strong> (15 min) and <strong>Refresh Token</strong> (30 days).</div>
+                <div><strong>③ Client ➔ API Server:</strong> Make API request with expired Access Token.</div>
+                <div><strong>④ API Server ➔ Client:</strong> Return <code>401 Unauthorized</code> (Access Token Expired).</div>
+                <div><strong>⑤ Client ➔ Auth Server:</strong> Send Refresh Token to token renewal endpoint (<code>POST /auth/refresh</code>).</div>
+                <div><strong>⑥ Auth Server ➔ Client:</strong> Validate Refresh Token & issue a <strong>New Access Token</strong>.</div>
+                <div><strong>⑦ Client ➔ API Server:</strong> Re-send original request with the new Access Token.</div>
+                <div><strong>⑧ API Server ➔ Client:</strong> Success response with requested data.</div>
+            </div>
+
+        </div>
+    </DiagramPaper>
+
+    <StickyNote type="coral" title="🚨 Essential Security Golden Rule">
+        <p style="font-size:0.95rem; line-height:1.6;">
+            <strong>Never store Refresh Tokens in <code>localStorage</code> or <code>sessionStorage</code>!</strong><br />
+            Any Cross-Site Scripting (XSS) vulnerability allows attackers to extract local storage tokens. Always store Refresh Tokens inside <strong><code>HttpOnly</code>, <code>Secure</code>, <code>SameSite=Strict</code> cookies</strong> so JavaScript cannot access them.
+        </p>
+    </StickyNote>
+</div>
+
+{/* SECTION 4: OAUTH 2 & OIDC */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-purple);">4</span>
+        OAuth 2.0 Authorization Code Flow (Delegation)
+    </div>
+
+    <p>OAuth 2.0 is an <mark class="hl-purple">Authorization Delegation Framework</mark> enabling a third-party app to access user resources without ever seeing their credentials:</p>
+
+    {/* OAuth 2 Sequence Diagram */}
+    <DiagramPaper title="🛡️ OAuth 2 Authorization Code Flow (e.g. Google Drive Access)">
+        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 740px; margin: 0 auto; font-family: var(--font-body);">
+            
+            {/* Header */}
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; text-align: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800; font-size: 0.8rem;">
+                <div><span style="background: var(--paper-card); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">👤 User</span></div>
+                <div><span style="background: var(--pastel-yellow); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">📱 Your App (Client)</span></div>
+                <div><span style="background: var(--pastel-purple); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">🔑 Google OAuth Server</span></div>
+                <div><span style="background: var(--pastel-green); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">📁 Google Drive API</span></div>
+            </div>
+
+            {/* Sequence Steps */}
+            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.85;">
+                <div><strong>① User ➔ Your App:</strong> User clicks <em>"Connect Google Drive"</em>.</div>
+                <div><strong>② Your App ➔ Google OAuth:</strong> Redirect browser to Google's consent dialog.</div>
+                <div><strong>③ Google OAuth ➔ User:</strong> Display permission prompt: <em>"App wants read-only access to your Google Drive files"</em>.</div>
+                <div><strong>④ User ➔ Google OAuth:</strong> User clicks <em>"Allow Access"</em>.</div>
+                <div><strong>⑤ Google OAuth ➔ Your App:</strong> Redirect back with temporary <strong>Authorization Code</strong> (<code>?code=auth_code_123</code>).</div>
+                <div><strong>⑥ Your App ➔ Google OAuth:</strong> Backend exchanges Authorization Code + Client Secret via secure channel (<code>POST /token</code>).</div>
+                <div><strong>⑦ Google OAuth ➔ Your App:</strong> Issues <strong>Access Token</strong> (and optional Refresh Token).</div>
+                <div><strong>⑧ Your App ➔ Google Drive API:</strong> Request files using header: <code>Authorization: Bearer &lt;access_token&gt;</code>.</div>
+                <div><strong>⑨ Google Drive API ➔ User / App:</strong> Return requested Drive files safely.</div>
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 5: OIDC AUTHENTICATION */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-blue);">5</span>
+        OpenID Connect (OIDC): Adding Authentication to OAuth 2.0
+    </div>
+
+    <p><mark class="hl-blue">OpenID Connect (OIDC)</mark> is an identity layer built directly on top of OAuth 2.0 that allows clients to verify the identity of the end-user and obtain basic profile info via an <strong>ID Token</strong> (JWT format):</p>
+
+    {/* OIDC Sequence Diagram */}
+    <DiagramPaper title="🆔 OpenID Connect (OIDC) 10-Step Sign-In Flow">
+        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 740px; margin: 0 auto; font-family: var(--font-body);">
+            
+            {/* Header */}
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; text-align: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800; font-size: 0.8rem;">
+                <div><span style="background: var(--paper-card); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">👤 User</span></div>
+                <div><span style="background: var(--pastel-yellow); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">📱 Your App</span></div>
+                <div><span style="background: var(--pastel-purple); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">🔑 Google Identity (OIDC)</span></div>
+                <div><span style="background: var(--pastel-green); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">🖥️ Your Backend</span></div>
+            </div>
+
+            {/* Sequence Steps */}
+            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.85;">
+                <div><strong>① User ➔ Your App:</strong> User clicks <em>"Sign in with Google"</em>.</div>
+                <div><strong>② Your App ➔ Google Identity:</strong> Redirect to OIDC authorization endpoint (with <code>scope=openid profile email</code>).</div>
+                <div><strong>③ Google Identity ➔ User:</strong> Display Google Sign-in screen.</div>
+                <div><strong>④ User ➔ Google Identity:</strong> Enter credentials and confirm consent.</div>
+                <div><strong>⑤ Google Identity ➔ Your App:</strong> Return <strong>Authorization Code</strong>.</div>
+                <div><strong>⑥ Your App ➔ Google Identity:</strong> Exchange code for tokens (<code>POST /token</code>).</div>
+                <div><strong>⑦ Google Identity ➔ Your App:</strong> Returns both <strong>Access Token</strong> AND <strong>ID Token</strong> (signed JWT with user profile).</div>
+                <div><strong>⑧ Your App ➔ Your Backend:</strong> Send ID Token for verification.</div>
+                <div><strong>⑨ Your Backend ➔ Your App:</strong> Identity confirmed (valid signature & claims verified).</div>
+                <div style="color: #16a34a; font-weight: 800;">⑩ User: Logged in successfully!</div>
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 6: SSO & IDENTITY PROTOCOLS */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-green);">6</span>
+        Single Sign-On (SSO) & Federated Identity
+    </div>
+
+    <QuoteBox author="Architecture Key Principle" title="SSO is a User Experience">
+        <mark class="hl-green">SSO is a User Experience</mark>, not an isolated cryptographic protocol! It allows a user to authenticate once with a trusted <strong>Identity Provider (IdP)</strong> and access multiple independent applications seamlessly.
+    </QuoteBox>
+
+    {/* SSO Architecture Diagram */}
+    <DiagramPaper title="🌐 Single Sign-On (SSO) Hub-and-Spoke Architecture">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 680px; margin: 0 auto; align-items: center;">
+            
+            <div style="display: flex; align-items: center; gap: 1.5rem; width: 100%; justify-content: center; flex-wrap: wrap;">
+                
+                {/* User */}
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; font-weight: 800; box-shadow: 2px 2px 0px var(--text-main);">
+                    👤 User<br />
+                    <span style="font-size: 0.75rem; color: #16a34a; font-weight: 700;">(Login Once)</span>
+                </div>
+
+                <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-muted);">➔</div>
+
+                {/* Identity Provider */}
+                <div style="background: var(--pastel-purple); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem 1.75rem; text-align: center; font-weight: 800; box-shadow: 3px 3px 0px var(--text-main);">
+                    🛡️ Central Identity Provider (IdP)<br />
+                    <span style="font-size: 0.8rem; color: #581c87; font-weight: 600;">(Google Workspace, Okta, Keycloak)</span>
+                </div>
+
+            </div>
+
+            {/* Downstream Service Spokes */}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; width: 100%;">
+                <div style="background: #fee2e2; border: 1.5px solid #dc2626; color: #991b1b; padding: 0.75rem; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.88rem;">
+                    📧 Gmail
+                </div>
+                <div style="background: #dbeafe; border: 1.5px solid #2563eb; color: #1e40af; padding: 0.75rem; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.88rem;">
+                    📁 Google Drive
+                </div>
+                <div style="background: #fef3c7; border: 1.5px solid #d97706; color: #92400e; padding: 0.75rem; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.88rem;">
+                    ▶️ YouTube
+                </div>
+            </div>
+
+            <div style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+                User authenticates with the IdP once; SAML or OIDC tokens grant transparent access across all enterprise services.
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 7: ARCHITECTURAL COMPARISON MATRIX */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-orange);">7</span>
+        Architectural Comparison: Sessions vs. JWTs vs. OAuth 2 / OIDC
+    </div>
+
+    <table class="table-paper">
+        <thead>
+            <tr>
+                <th>Dimension</th>
+                <th>Stateful Sessions</th>
+                <th>Stateless JWT Tokens</th>
+                <th>OAuth 2 / OIDC</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Primary Goal</strong></td>
+                <td>User Authentication (AuthN)</td>
+                <td>User Authentication (AuthN)</td>
+                <td>Delegated Authorization + Identity</td>
+            </tr>
+            <tr>
+                <td><strong>State Storage</strong></td>
+                <td>Server-side (Redis, Database)</td>
+                <td>Client-side (Signed token payload)</td>
+                <td>Token-based with IdP verification</td>
+            </tr>
+            <tr>
+                <td><strong>Verification</strong></td>
+                <td>Database / cache I/O lookup</td>
+                <td>Local cryptographic signature check</td>
+                <td>IdP public key signature verification</td>
+            </tr>
+            <tr>
+                <td><strong>Revocation</strong></td>
+                <td>Instant (delete session from Redis)</td>
+                <td>Requires blacklist or short expiry</td>
+                <td>Revoke token at IdP / token introspection</td>
+            </tr>
+            <tr>
+                <td><strong>Best Suited For</strong></td>
+                <td>Monolithic SSR web apps, banking</td>
+                <td>Microservices, mobile apps, SPAs</td>
+                <td>Third-party integrations, SSO, Google login</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

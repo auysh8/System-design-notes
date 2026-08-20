@@ -1,0 +1,309 @@
+---
+title: "GraphQL API Architecture & Schema Design"
+shortTitle: "13. GraphQL Architecture"
+chapterNumber: 13
+subtitle: "Why GraphQL Exists, Single Endpoint Querying, Schema Definition (SDL), Mutations, & 200 OK Error Handling"
+tag: "System Design Chapter 13"
+accentColor: "purple"
+description: "Why GraphQL was created by Facebook, solving REST over/under-fetching, Schema SDL type systems, queries, mutations, and payload error handling."
+handwrittenAnnotation: "★ Single endpoint, precise client-driven fetching & strong typing — eliminates over/under-fetching!"
+---
+
+import StickyNote from '../../components/StickyNote.astro';
+import GoodNotesCard from '../../components/GoodNotesCard.astro';
+import DiagramPaper from '../../components/DiagramPaper.astro';
+import QuoteBox from '../../components/QuoteBox.astro';
+import CodeSticker from '../../components/CodeSticker.astro';
+
+{/* SECTION 1: WHY GRAPHQL EXISTS */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-purple);">1</span>
+        Why GraphQL Exists: The REST API Problem
+    </div>
+
+    <p><mark class="hl-purple">GraphQL</mark> was created by Facebook in 2012 (and open-sourced in 2015) to solve specific performance bottlenecks and network chattiness in mobile feeds powered by traditional REST APIs.</p>
+
+    {/* REST Problem Diagram */}
+    <DiagramPaper title="⚠️ The REST API Problem: Multiple Roundtrips & Waterfall Latency">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 720px; margin: 0 auto;">
+            
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 0.75rem;">
+                <div style="background: #fee2e2; border: 1.5px solid #dc2626; color: #991b1b; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem;">
+                    User API
+                </div>
+                <div style="background: #fee2e2; border: 1.5px solid #dc2626; color: #991b1b; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem;">
+                    Posts API
+                </div>
+                <div style="background: #fee2e2; border: 1.5px solid #dc2626; color: #991b1b; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem;">
+                    Comments API
+                </div>
+                <div style="background: #fee2e2; border: 1.5px solid #dc2626; color: #991b1b; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem;">
+                    Likes API
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: center;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem;">
+                    <div style="color: var(--text-muted); font-weight: 800; font-size: 1.25rem;">
+                        ↖️ ⬆️ ↗️ ↗️
+                    </div>
+                    <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 20px; padding: 0.5rem 1.5rem; font-weight: 800; box-shadow: 2px 2px 0px var(--text-main);">
+                        📱 Mobile / Web Client
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1rem; font-family: var(--font-code); font-size: 0.85rem;">
+                <div style="color: #dc2626; font-weight: 700; margin-bottom: 0.5rem;">
+                    ❌ Client forced to execute 4 separate sequential HTTP roundtrips:
+                </div>
+                <div style="color: var(--text-main); line-height: 1.8;">
+                    1. <code>GET /api/users/123</code> <span style="color:var(--text-muted);">➔ Get basic user details</span><br />
+                    2. <code>GET /api/users/123/posts</code> <span style="color:var(--text-muted);">➔ Get user posts</span><br />
+                    3. <code>GET /api/users/123/comments</code> <span style="color:var(--text-muted);">➔ Get comments</span><br />
+                    4. <code>GET /api/users/123/likes</code> <span style="color:var(--text-muted);">➔ Get like counts</span>
+                </div>
+            </div>
+
+        </div>
+    </DiagramPaper>
+
+    <div class="card-grid" style="margin-top: 1.25rem;">
+        <GoodNotesCard title="📉 Under-Fetching (N+1 Problem)" accent="pink">
+            <p>An endpoint doesn't provide enough related data, forcing the client to make multiple downstream roundtrips to fetch linked resources.</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="📦 Over-Fetching" accent="yellow">
+            <p>REST endpoints return fixed payload schemas with hundreds of unused fields (e.g. bio, location, settings) wasting cellular bandwidth.</p>
+        </GoodNotesCard>
+    </div>
+</div>
+
+{/* SECTION 2: HOW GRAPHQL SOLVES IT */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-green);">2</span>
+        How GraphQL Solves It: Single Endpoint & Precise Fetching
+    </div>
+
+    <p>With GraphQL, the client talks to a <mark class="hl-green">Single Unified Endpoint</mark> (e.g. <code>POST /graphql</code>) and asks for <strong>only the exact fields</strong> required in a single request:</p>
+
+    {/* GraphQL Solution Diagram */}
+    <DiagramPaper title="⚡ The GraphQL Solution: 1 Unified Request ➔ Exact Nested Data">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 700px; margin: 0 auto;">
+            
+            {/* Diagram Flow */}
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                <div style="background: var(--pastel-purple); border: 2px solid var(--text-main); border-radius: 12px; padding: 0.85rem 2rem; font-weight: 800; font-size: 1.05rem; box-shadow: 3px 3px 0px var(--text-main);">
+                    🌐 GraphQL Endpoint (<code>POST /graphql</code>)
+                </div>
+
+                <div style="font-size: 1.5rem; color: var(--pastel-purple-dark); font-weight: 800;">
+                    ⬆️
+                </div>
+
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 20px; padding: 0.5rem 1.5rem; font-weight: 800; box-shadow: 2px 2px 0px var(--text-main);">
+                    📱 Client (Sends 1 Single Query)
+                </div>
+            </div>
+
+            {/* Query Code */}
+            <div style="background: #1e1e24; color: #f1f5f9; border-radius: 10px; padding: 1.25rem; font-family: var(--font-code); font-size: 0.9rem; box-shadow: 3px 3px 0px var(--text-main);">
+                <div style="color: #a855f7; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.5rem;">
+                    Client GraphQL Query Document:
+                </div>
+                <pre style="margin: 0; color: #f8fafc; line-height: 1.5;"><code><span style="color:#a855f7; font-weight:700;">query</span> &#123;<br />  <span style="color:#38bdf8;">user</span>(<span style="color:#f59e0b;">id</span>: <span style="color:#4ade80;">"123"</span>) &#123;<br />    <span style="color:#e2e8f0;">name</span><br />    <span style="color:#38bdf8;">posts</span> &#123;<br />      <span style="color:#e2e8f0;">title</span><br />    &#125;<br />    <span style="color:#38bdf8;">comments</span> &#123;<br />      <span style="color:#e2e8f0;">text</span><br />    &#125;<br />  &#125;<br />&#125;</code></pre>
+            </div>
+
+            <div style="text-align: center; font-size: 0.9rem; color: #16a34a; font-weight: 700;">
+                ✅ Result: All user, posts, and comments data returned in 1 single HTTP roundtrip with zero over-fetching!
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 3: SCHEMA DESIGN & TYPE SYSTEM */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-blue);">3</span>
+        Schema Design & The Type System (SDL)
+    </div>
+
+    <p>GraphQL is strictly typed. The server defines a strongly-typed contract using the <mark class="hl-blue">Schema Definition Language (SDL)</mark>:</p>
+
+    <StickyNote type="sky" title="📜 Schema Definition Language (SDL) Example:">
+        <div style="background: #1e1e24; color: #f1f5f9; border-radius: 8px; padding: 1.15rem; font-family: var(--font-code); font-size: 0.88rem; margin-top: 0.5rem;">
+            <pre style="margin: 0; color: #f8fafc; line-height: 1.5;"><code><span style="color:#a855f7; font-weight:700;">type</span> <span style="color:#38bdf8; font-weight:700;">User</span> &#123;<br />  <span style="color:#e2e8f0;">id</span>: <span style="color:#f59e0b;">ID!</span><br />  <span style="color:#e2e8f0;">name</span>: <span style="color:#f59e0b;">String!</span><br />  <span style="color:#e2e8f0;">posts</span>: [<span style="color:#38bdf8;">Post!</span>]!<br />&#125;<br /><br /><span style="color:#a855f7; font-weight:700;">type</span> <span style="color:#38bdf8; font-weight:700;">Query</span> &#123;<br />  <span style="color:#e2e8f0;">user</span>(<span style="color:#f59e0b;">id</span>: <span style="color:#f59e0b;">ID!</span>): <span style="color:#38bdf8;">User</span><br />&#125;<br /><br /><span style="color:#a855f7; font-weight:700;">type</span> <span style="color:#38bdf8; font-weight:700;">Mutation</span> &#123;<br />  <span style="color:#e2e8f0;">createUser</span>(<span style="color:#f59e0b;">name</span>: <span style="color:#f59e0b;">String!</span>): <span style="color:#38bdf8;">User</span><br />&#125;</code></pre>
+        </div>
+    </StickyNote>
+
+    <div class="card-grid" style="margin-top: 1.25rem;">
+        <GoodNotesCard title="❗ Non-Null Modifier (!)" accent="yellow">
+            <p>An exclamation point (e.g. <code>String!</code>) guarantees the field will <strong>never be null</strong>. If the resolver returns null, GraphQL raises a schema execution error.</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="📦 List Types ([Post!])" accent="purple">
+            <p>Square brackets denote an array of objects. <code>[Post!]!</code> ensures both the list itself and every element inside the list are non-null.</p>
+        </GoodNotesCard>
+    </div>
+</div>
+
+{/* SECTION 4: QUERIES VS MUTATIONS */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-yellow);">4</span>
+        Operations: Queries vs. Mutations
+    </div>
+
+    <p>In GraphQL, operations are categorized into two primary types corresponding directly to REST HTTP methods:</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.25rem;">
+        
+        {/* QUERY CARD */}
+        <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-blue-dark); padding: 1.25rem;">
+            <div style="font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: var(--pastel-blue-dark); margin-bottom: 0.25rem;">
+                🔍 1. Queries (Read Operations)
+            </div>
+            <div style="font-size: 0.85rem; color: #0284c7; font-weight: 700; margin-bottom: 0.75rem;">
+                ➔ Similar to GET requests in REST APIs
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                Queries are strictly read-only and execute without modifying any backend state.
+            </p>
+
+            <div style="background: #1e1e24; color: #f1f5f9; border-radius: 8px; padding: 1rem; font-family: var(--font-code); font-size: 0.85rem;">
+                <pre style="margin: 0; color: #f8fafc; line-height: 1.5;"><code><span style="color:#a855f7; font-weight:700;">query</span> &#123;<br />  <span style="color:#38bdf8;">user</span>(<span style="color:#f59e0b;">id</span>: <span style="color:#4ade80;">"123"</span>) &#123;<br />    <span style="color:#e2e8f0;">name</span><br />    <span style="color:#38bdf8;">posts</span> &#123;<br />      <span style="color:#e2e8f0;">title</span><br />    &#125;<br />  &#125;<br />&#125;</code></pre>
+            </div>
+        </div>
+
+        {/* MUTATION CARD */}
+        <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-pink-dark); padding: 1.25rem;">
+            <div style="font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #ec4899; margin-bottom: 0.25rem;">
+                ✏️ 2. Mutations (Write Operations)
+            </div>
+            <div style="font-size: 0.85rem; color: #ec4899; font-weight: 700; margin-bottom: 0.75rem;">
+                ➔ Similar to POST, PUT, PATCH, DELETE in REST
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                Mutations create, update, or delete data and immediately return the modified entity in the same request.
+            </p>
+
+            <div style="background: #1e1e24; color: #f1f5f9; border-radius: 8px; padding: 1rem; font-family: var(--font-code); font-size: 0.85rem;">
+                <pre style="margin: 0; color: #f8fafc; line-height: 1.5;"><code><span style="color:#a855f7; font-weight:700;">mutation</span> &#123;<br />  <span style="color:#38bdf8;">createPost</span>(<br />    <span style="color:#f59e0b;">title</span>: <span style="color:#4ade80;">"New Post"</span>,<br />    <span style="color:#f59e0b;">body</span>: <span style="color:#4ade80;">"Hello"</span><br />  ) &#123;<br />    <span style="color:#e2e8f0;">id</span><br />    <span style="color:#e2e8f0;">title</span><br />  &#125;<br />&#125;</code></pre>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{/* SECTION 5: ERROR HANDLING & 200 OK PARADIGM */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-pink);">5</span>
+        GraphQL Error Handling: The 200 OK Paradigm
+    </div>
+
+    <p>GraphQL error handling differs fundamentally from REST APIs: <mark class="hl-pink">GraphQL requests almost always return HTTP 200 OK</mark> at the transport layer, even when field-level execution errors occur.</p>
+
+    <StickyNote type="lavender" title="⚠️ Why 200 OK for Errors?">
+        <p style="font-size:0.95rem; line-height:1.6;">
+            Because a single GraphQL query can resolve multiple independent fields, one field might succeed (e.g. <code>user.name</code>) while another fails (e.g. <code>user.paymentDetails</code>). The HTTP status code represents the <strong>transport handshake</strong>, while the payload contains partial data alongside an <code>errors</code> array.
+        </p>
+    </StickyNote>
+
+    {/* JSON Error Response Payload */}
+    <DiagramPaper title="📥 GraphQL Response Envelope with Errors Array">
+        <div style="background: #1e1e24; color: #f1f5f9; border-radius: 10px; padding: 1.25rem; font-family: var(--font-code); font-size: 0.9rem; max-width: 620px; margin: 0 auto; box-shadow: 3px 3px 0px var(--text-main);">
+            <div style="color: #94a3b8; font-size: 0.75rem; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 700;">
+                HTTP/1.1 200 OK — JSON Response Body:
+            </div>
+            <pre style="margin: 0; color: #f8fafc; line-height: 1.5;"><code>&#123;<br />  <span style="color:#38bdf8;">"data"</span>: &#123;<br />    <span style="color:#38bdf8;">"user"</span>: <span style="color:#ec4899;">null</span><br />  &#125;,<br />  <span style="color:#f59e0b;">"errors"</span>: [<br />    &#123;<br />      <span style="color:#38bdf8;">"statusCode"</span>: <span style="color:#f59e0b;">404</span>,<br />      <span style="color:#38bdf8;">"message"</span>: <span style="color:#4ade80;">"User not found"</span>,<br />      <span style="color:#38bdf8;">"path"</span>: [<span style="color:#4ade80;">"user"</span>]<br />    &#125;<br />  ]<br />&#125;</code></pre>
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 6: REST VS GRAPHQL COMPARISON MATRIX */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-orange);">6</span>
+        Architectural Comparison: REST vs. GraphQL
+    </div>
+
+    <table class="table-paper">
+        <thead>
+            <tr>
+                <th>Feature / Dimension</th>
+                <th>REST API</th>
+                <th>GraphQL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Endpoints</strong></td>
+                <td>Multiple endpoints (e.g. <code>/users</code>, <code>/posts</code>)</td>
+                <td>Single unified endpoint (e.g. <code>/graphql</code>)</td>
+            </tr>
+            <tr>
+                <td><strong>Data Fetching</strong></td>
+                <td>Fixed schema per endpoint (risk of over/under-fetching)</td>
+                <td>Client asks for exact required fields</td>
+            </tr>
+            <tr>
+                <td><strong>Type System</strong></td>
+                <td>Optional (OpenAPI / Swagger documentation)</td>
+                <td>Built-in, strictly enforced SDL Schema</td>
+            </tr>
+            <tr>
+                <td><strong>HTTP Caching</strong></td>
+                <td>Trivial with standard HTTP cache headers & CDNs</td>
+                <td>Complex (requires client-side normalized caching)</td>
+            </tr>
+            <tr>
+                <td><strong>Error Handling</strong></td>
+                <td>Standard HTTP status codes (404, 500, etc.)</td>
+                <td>Always 200 OK + payload <code>errors[]</code> array</td>
+            </tr>
+            <tr>
+                <td><strong>Best Suited For</strong></td>
+                <td>Public APIs, simple CRUD, static resource caching</td>
+                <td>Complex frontend apps, mobile apps, aggregate gateways</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{/* SECTION 7: GRAPHQL BEST PRACTICES */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-yellow);">7</span>
+        GraphQL Production Best Practices & Security
+    </div>
+
+    <p>Handwritten guidelines for resilient, secure, and performant GraphQL schemas:</p>
+
+    <div class="card-grid">
+        <GoodNotesCard title="📦 1. Keep Schemas Small & Modular" accent="purple">
+            <p>Deconstruct massive monolithic schemas into domain-driven type modules or federated subgraphs (e.g. Apollo Federation).</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="🏷️ 2. Use Meaningful Naming" accent="blue">
+            <p>Adopt clear, domain-aligned camelCase for fields and PascalCase for types. Avoid vague, overloaded names.</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="📝 3. Use Input Types for Mutations" accent="green">
+            <p>Wrap mutation parameters into dedicated <code>input</code> objects (e.g. <code>input CreateUserInput &#123; ... &#125;</code>) to preserve backwards compatibility.</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="🛑 4. Avoid Deeply Nested Queries" accent="yellow">
+            <p>Unconstrained circular references (e.g. <code>user ➔ posts ➔ author ➔ posts</code>) can easily crash downstream databases.</p>
+        </GoodNotesCard>
+    </div>
+
+    <StickyNote type="coral" title="🛡️ Critical Defense: Implement Query Depth & Complexity Limits">
+        <p style="font-size:0.95rem; line-height:1.6;">
+            Always enforce strict <strong>max query depth</strong> (e.g. max depth of 5 levels) and calculate <strong>query cost complexity analysis</strong> at the gateway before delegating execution to resolvers, shielding your database from denial-of-service (DoS) attacks.
+        </p>
+    </StickyNote>
+</div>

@@ -1,0 +1,378 @@
+---
+title: "RESTful API Design & Resource Modeling"
+shortTitle: "12. REST Design"
+chapterNumber: 12
+subtitle: "Domain-to-Resource Mapping, Query Modifiers, HTTP Methods Safety/Idempotency, Status Codes, & Best Practices"
+tag: "System Design Chapter 12"
+accentColor: "green"
+description: "Comprehensive guide to REST API resource modeling, filtering, sorting, pagination, HTTP methods safety/idempotency, status codes, and design best practices."
+handwrittenAnnotation: "★ Masterclass in RESTful architecture: clean URIs, expressive query params & strict status codes!"
+---
+
+import StickyNote from '../../components/StickyNote.astro';
+import GoodNotesCard from '../../components/GoodNotesCard.astro';
+import DiagramPaper from '../../components/DiagramPaper.astro';
+import QuoteBox from '../../components/QuoteBox.astro';
+import CodeSticker from '../../components/CodeSticker.astro';
+
+{/* SECTION 1: RESOURCE MODELING */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-green);">1</span>
+        Resource Modeling: From Business Domain to REST Endpoints
+    </div>
+
+    <p>In RESTful architecture, real-world business entities are mapped to pluralized, noun-based <mark class="hl-green">Resources</mark> identified by clean, predictable URIs.</p>
+
+    {/* Domain to Resource Mapping Diagram */}
+    <DiagramPaper title="🏗️ Business Domain ➔ REST Resource Mapping">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 760px; margin: 0 auto;">
+            
+            {/* Row 1: Business Domain Entities */}
+            <div>
+                <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; text-align: center;">
+                    🏢 Business Domain Entities
+                </div>
+                <div style="display: flex; justify-content: space-around; align-items: center; background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 10px; padding: 1rem; box-shadow: 3px 3px 0px var(--text-main);">
+                    <div style="font-weight: 800; font-size: 1.05rem; color: var(--pastel-blue-dark);">📦 Product</div>
+                    <div style="color: var(--text-muted); font-weight: 700;">─────────</div>
+                    <div style="font-weight: 800; font-size: 1.05rem; color: var(--pastel-purple-dark);">🛒 Order</div>
+                    <div style="color: var(--text-muted); font-weight: 700;">─────────</div>
+                    <div style="font-weight: 800; font-size: 1.05rem; color: var(--pastel-pink-dark);">⭐ Reviews</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 1.25rem; color: var(--text-muted);">
+                ⬇️ <em>mapped directly to pluralized REST collections</em> ⬇️
+            </div>
+
+            {/* Row 2: REST Resources */}
+            <div>
+                <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; text-align: center;">
+                    🌐 REST API Resource Collections
+                </div>
+                <div style="display: flex; justify-content: space-around; align-items: center; background: var(--paper-card); border: 2px dashed var(--pastel-green-dark); border-radius: 10px; padding: 1rem;">
+                    <div style="font-family: var(--font-code); font-weight: 700; background: var(--pastel-blue); padding: 0.3rem 0.75rem; border-radius: 6px;">/products</div>
+                    <div style="color: var(--text-muted); font-weight: 700;">─────────</div>
+                    <div style="font-family: var(--font-code); font-weight: 700; background: var(--pastel-purple); padding: 0.3rem 0.75rem; border-radius: 6px;">/orders</div>
+                    <div style="color: var(--text-muted); font-weight: 700;">─────────</div>
+                    <div style="font-family: var(--font-code); font-weight: 700; background: var(--pastel-pink); padding: 0.3rem 0.75rem; border-radius: 6px;">/reviews</div>
+                </div>
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 2: URL PATTERNS & IDENTIFIERS */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-blue);">2</span>
+        Hierarchical URL Patterns & Identifier Routing
+    </div>
+
+    <p>Endpoints should follow a hierarchical naming convention with version prefixes, plural nouns, and unique resource identifiers:</p>
+
+    <div class="card-grid">
+        
+        {/* Products Pattern */}
+        <GoodNotesCard title="📦 Products Resource Endpoints" accent="blue">
+            <ul style="font-family: var(--font-code); font-size: 0.85rem; padding-left: 1.2rem; margin-top: 0.5rem; line-height: 1.8;">
+                <li><code>GET  /api/v1/products</code> <br /><span style="color:var(--text-muted); font-family:var(--font-body); font-size:0.8rem;">➔ List all products</span></li>
+                <li><code>GET  /api/v1/products/&#123;id&#125;</code> <br /><span style="color:var(--text-muted); font-family:var(--font-body); font-size:0.8rem;">➔ e.g. /products/4d...e304 (Get specific product)</span></li>
+            </ul>
+        </GoodNotesCard>
+
+        {/* Orders Pattern */}
+        <GoodNotesCard title="🛒 Orders Resource Endpoints" accent="purple">
+            <ul style="font-family: var(--font-code); font-size: 0.85rem; padding-left: 1.2rem; margin-top: 0.5rem; line-height: 1.8;">
+                <li><code>GET  /api/v1/orders</code> <br /><span style="color:var(--text-muted); font-family:var(--font-body); font-size:0.8rem;">➔ List orders</span></li>
+                <li><code>GET  /api/v1/orders/&#123;id&#125;</code> <br /><span style="color:var(--text-muted); font-family:var(--font-body); font-size:0.8rem;">➔ e.g. /orders/4d5...e4 (Get specific order)</span></li>
+            </ul>
+        </GoodNotesCard>
+
+    </div>
+
+    {/* Nested Resources */}
+    <div style="margin-top: 1.25rem;">
+        <StickyNote type="lavender" title="⭐ Sub-Resource / Nested Endpoint Modeling:">
+            <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
+                When a resource is owned by or subordinate to another entity, express the parent-child relationship hierarchically:
+            </p>
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-radius: 8px; padding: 0.75rem 1rem; font-family: var(--font-code); font-size: 0.9rem;">
+                <strong>GET</strong> <code>/api/v1/products/&#123;id&#125;/reviews</code>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                Fetches all reviews specifically tied to product <code>&#123;id&#125;</code> without polluting top-level routing.
+            </p>
+        </StickyNote>
+    </div>
+</div>
+
+{/* SECTION 3: QUERY PARAMETERS (FILTERING, SORTING, PAGINATION) */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-yellow);">3</span>
+        Query Parameters: Filtering, Sorting & Pagination
+    </div>
+
+    <p>Rather than creating dedicated endpoint paths for every query permutation, use standard <mark class="hl-yellow">Query Parameters</mark> (<code>?key=value</code>) to modify resource collection responses.</p>
+
+    {/* 3 Modifiers Side by Side */}
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.25rem;">
+        
+        {/* 1. FILTERING */}
+        <DiagramPaper title="🔍 1. Filtering by Attributes">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="font-family: var(--font-code); font-size: 0.95rem; background: var(--paper-card); padding: 0.85rem; border-radius: 8px; border: 1.5px solid var(--border-soft);">
+                    <span style="color:#0284c7; font-weight:700;">GET</span> /api/v1/products<span style="color:#d97706; font-weight:700;">?category=books&inStock=true</span>
+                </div>
+                <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">
+                    ⬇️ API Backend Filters Database ⬇️
+                </div>
+                <div style="background: #1e1e24; color: #f1f5f9; border-radius: 8px; padding: 1rem; font-family: var(--font-code); font-size: 0.85rem;">
+                    <pre style="margin: 0; color: #f8fafc;"><code>[
+  &#123;
+    <span style="color:#38bdf8;">"id"</span>: <span style="color:#f59e0b;">101</span>,
+    <span style="color:#38bdf8;">"title"</span>: <span style="color:#4ade80;">"Designing APIs with Swagger"</span>,
+    <span style="color:#38bdf8;">"category"</span>: <span style="color:#4ade80;">"books"</span>,
+    <span style="color:#38bdf8;">"inStock"</span>: <span style="color:#ec4899;">true</span>,
+    <span style="color:#38bdf8;">"price"</span>: <span style="color:#f59e0b;">29.99</span>
+  &#125;
+]</code></pre>
+                </div>
+            </div>
+        </DiagramPaper>
+
+        {/* 2. SORTING */}
+        <DiagramPaper title="📶 2. Sorting by Fields">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="font-family: var(--font-code); font-size: 0.95rem; background: var(--paper-card); padding: 0.85rem; border-radius: 8px; border: 1.5px solid var(--border-soft);">
+                    <span style="color:#0284c7; font-weight:700;">GET</span> /api/v1/products<span style="color:#a855f7; font-weight:700;">?sort=price_asc</span>
+                </div>
+                <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">
+                    ⬇️ API Backend Sorts Ascending / Descending ⬇️
+                </div>
+                <div style="background: #1e1e24; color: #f1f5f9; border-radius: 8px; padding: 1rem; font-family: var(--font-code); font-size: 0.85rem;">
+                    <pre style="margin: 0; color: #f8fafc;"><code>[
+  &#123;
+    <span style="color:#38bdf8;">"id"</span>: <span style="color:#f59e0b;">201</span>,
+    <span style="color:#38bdf8;">"title"</span>: <span style="color:#4ade80;">"Wireframe Kit"</span>,
+    <span style="color:#38bdf8;">"price"</span>: <span style="color:#f59e0b;">9.99</span>
+  &#125;,
+  &#123;
+    <span style="color:#38bdf8;">"id"</span>: <span style="color:#f59e0b;">202</span>,
+    <span style="color:#38bdf8;">"title"</span>: <span style="color:#4ade80;">"Figma Pro License"</span>,
+    <span style="color:#38bdf8;">"price"</span>: <span style="color:#f59e0b;">19.00</span>
+  &#125;
+]</code></pre>
+                </div>
+            </div>
+        </DiagramPaper>
+
+        {/* 3. PAGINATION */}
+        <DiagramPaper title="📄 3. Pagination (Page / Limit & Offsets)">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="font-family: var(--font-code); font-size: 0.95rem; background: var(--paper-card); padding: 0.85rem; border-radius: 8px; border: 1.5px solid var(--border-soft);">
+                    <span style="color:#0284c7; font-weight:700;">GET</span> /api/v1/products<span style="color:#16a34a; font-weight:700;">?page=2&limit=3</span>
+                </div>
+                <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">
+                    ⬇️ API Returns Paginated Envelope with Metadata ⬇️
+                </div>
+                <div style="background: #1e1e24; color: #f1f5f9; border-radius: 8px; padding: 1rem; font-family: var(--font-code); font-size: 0.85rem;">
+                    <pre style="margin: 0; color: #f8fafc;"><code>&#123;
+  <span style="color:#38bdf8;">"page"</span>: <span style="color:#f59e0b;">2</span>,
+  <span style="color:#38bdf8;">"limit"</span>: <span style="color:#f59e0b;">3</span>,
+  <span style="color:#38bdf8;">"total"</span>: <span style="color:#f59e0b;">10</span>,
+  <span style="color:#38bdf8;">"products"</span>: [
+    &#123;
+      <span style="color:#38bdf8;">"id"</span>: <span style="color:#f59e0b;">301</span>,
+      <span style="color:#38bdf8;">"title"</span>: <span style="color:#4ade80;">"Next.js Handbook"</span>,
+      <span style="color:#38bdf8;">"price"</span>: <span style="color:#f59e0b;">15.00</span>
+    &#125;
+  ]
+&#125;</code></pre>
+                </div>
+            </div>
+        </DiagramPaper>
+
+    </div>
+
+    {/* Benefits Card */}
+    <div style="margin-top: 1.5rem;">
+        <GoodNotesCard title="🚀 3 Core Benefits of Filtering, Sorting & Pagination" accent="green">
+            <ul style="font-size: 0.95rem; padding-left: 1.2rem; margin: 0.25rem 0 0 0; line-height: 1.7;">
+                <li><strong>Saves Bandwidth:</strong> Prevents massive payloads over the wire by only transferring exact required records.</li>
+                <li><strong>Improves Server & Database Performance:</strong> Uses indexed queries, SQL <code>LIMIT / OFFSET</code>, and avoids memory exhaustion.</li>
+                <li><strong>Gives Frontend More Flexibility:</strong> Enables custom client-side grid controls, dynamic search bars, and infinite scrolling.</li>
+            </ul>
+        </GoodNotesCard>
+    </div>
+</div>
+
+{/* SECTION 4: HTTP METHODS, SAFETY & IDEMPOTENCY */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-pink);">4</span>
+        HTTP Methods: CRUD, Safety & Idempotency Rules
+    </div>
+
+    <p>Every HTTP request verb conveys specific semantics regarding state mutations, safety, and repeatable idempotency guarantees.</p>
+
+    <table class="table-paper">
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>CRUD Action</th>
+                <th>Endpoint Example</th>
+                <th>Safe?</th>
+                <th>Idempotent?</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><mark class="hl-blue">GET</mark></td>
+                <td><strong>Read</strong></td>
+                <td><code>GET /api/v1/products</code></td>
+                <td><span style="color:#16a34a; font-weight:700;">✅ Safe</span></td>
+                <td><span style="color:#16a34a; font-weight:700;">✅ Idempotent</span></td>
+            </tr>
+            <tr>
+                <td><mark class="hl-green">POST</mark></td>
+                <td><strong>Create</strong></td>
+                <td><code>POST /api/v1/products</code></td>
+                <td><span style="color:#dc2626; font-weight:700;">❌ Not Safe</span></td>
+                <td><span style="color:#dc2626; font-weight:700;">❌ Not Idempotent</span></td>
+            </tr>
+            <tr>
+                <td><mark class="hl-yellow">PUT</mark></td>
+                <td><strong>Update (Replace)</strong></td>
+                <td><code>PUT /api/v1/products/123</code></td>
+                <td><span style="color:#dc2626; font-weight:700;">❌ Not Safe</span></td>
+                <td><span style="color:#16a34a; font-weight:700;">✅ Idempotent</span></td>
+            </tr>
+            <tr>
+                <td><mark class="hl-purple">PATCH</mark></td>
+                <td><strong>Update (Partial)</strong></td>
+                <td><code>PATCH /api/v1/products/123</code></td>
+                <td><span style="color:#dc2626; font-weight:700;">❌ Not Safe</span></td>
+                <td><span style="color:#dc2626; font-weight:700;">❌ Not Idempotent</span></td>
+            </tr>
+            <tr>
+                <td><mark class="hl-pink">DELETE</mark></td>
+                <td><strong>Delete</strong></td>
+                <td><code>DELETE /api/v1/products/123</code></td>
+                <td><span style="color:#dc2626; font-weight:700;">❌ Not Safe</span></td>
+                <td><span style="color:#16a34a; font-weight:700;">✅ Idempotent</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="card-grid" style="margin-top: 1.25rem;">
+        <StickyNote type="yellow" title="🔒 Definition: Safe">
+            <p style="font-size:0.9rem;">
+                <strong>Safe Methods</strong> do NOT modify any server or database state. Calling them only inspects data (e.g. <code>GET</code>, <code>HEAD</code>).
+            </p>
+        </StickyNote>
+
+        <StickyNote type="sky" title="🔁 Definition: Idempotent">
+            <p style="font-size:0.9rem;">
+                <strong>Idempotent Methods</strong> produce the <em>exact same server state</em> whether executed once or repeated 1,000 times (e.g. <code>PUT</code>, <code>DELETE</code>, <code>GET</code>).
+            </p>
+        </StickyNote>
+    </div>
+</div>
+
+{/* SECTION 5: STATUS CODES & ERROR HANDLING */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-purple);">5</span>
+        HTTP Status Codes & Error Handling
+    </div>
+
+    <p>Clean REST APIs communicate outcome semantics using standardized 3-digit HTTP status codes:</p>
+
+    <div class="card-grid">
+        
+        {/* 2xx Success */}
+        <GoodNotesCard title="🟢 2xx: Success" accent="green">
+            <ul style="font-size: 0.85rem; padding-left: 1.2rem; line-height: 1.7;">
+                <li><strong>200 OK:</strong> Request succeeded (e.g. <code>GET /products/123</code> - successfully retrieved).</li>
+                <li><strong>201 Created:</strong> New resource generated (e.g. <code>POST /products</code> - created product).</li>
+                <li><strong>204 No Content:</strong> Succeeded, no response body (e.g. <code>DELETE /products/123</code>).</li>
+            </ul>
+        </GoodNotesCard>
+
+        {/* 3xx Redirection */}
+        <GoodNotesCard title="🟡 3xx: Redirection" accent="yellow">
+            <ul style="font-size: 0.85rem; padding-left: 1.2rem; line-height: 1.7;">
+                <li><strong>301 Moved Permanently:</strong> Resource relocated to new URI.</li>
+                <li><strong>304 Not Modified:</strong> Cached copy valid; client can reuse.</li>
+            </ul>
+        </GoodNotesCard>
+
+        {/* 4xx Client Errors */}
+        <GoodNotesCard title="🟠 4xx: Client Errors" accent="orange">
+            <ul style="font-size: 0.85rem; padding-left: 1.2rem; line-height: 1.7;">
+                <li><strong>400 Bad Request:</strong> Invalid payload syntax or malformed query parameters.</li>
+                <li><strong>401 Unauthorized:</strong> Missing or invalid authentication token.</li>
+                <li><strong>403 Forbidden:</strong> Authenticated but lacks required permission.</li>
+                <li><strong>404 Not Found:</strong> Resource does not exist (e.g. <code>GET /products/999</code>).</li>
+            </ul>
+        </GoodNotesCard>
+
+        {/* 5xx Server Errors */}
+        <GoodNotesCard title="🔴 5xx: Server Errors" accent="pink">
+            <ul style="font-size: 0.85rem; padding-left: 1.2rem; line-height: 1.7;">
+                <li><strong>500 Internal Server Error:</strong> Unexpected crash or unhandled server-side exception.</li>
+                <li><strong>502 Bad Gateway:</strong> Upstream server failure via proxy / load balancer.</li>
+                <li><strong>503 Service Unavailable:</strong> Server overloaded or undergoing maintenance.</li>
+            </ul>
+        </GoodNotesCard>
+
+    </div>
+</div>
+
+{/* SECTION 6: BEST PRACTICES & POOR VS GOOD DESIGN */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-orange);">6</span>
+        API Design Best Practices: Poor vs. Good Design
+    </div>
+
+    <StickyNote type="sky" title="📋 4 Core API Design Principles:">
+        <ol style="font-size: 0.95rem; padding-left: 1.2rem; line-height: 1.7; margin: 0.25rem 0 0 0;">
+            <li><strong>Use plural nouns for resources:</strong> e.g., <code>/users</code>, <code>/orders</code> (never verbs).</li>
+            <li><strong>Keep URLs consistent and hierarchical:</strong> Reflect resource parentage cleanly (<code>/products/123/reviews</code>).</li>
+            <li><strong>Support filtering, sorting, and pagination:</strong> Always provide query modifiers on collection routes.</li>
+            <li><strong>Version your APIs:</strong> Explicitly prefix routes with version identifiers (<code>/api/v1/...</code>) to prevent breaking client changes.</li>
+        </ol>
+    </StickyNote>
+
+    <h4 style="font-family: var(--font-title); font-size: 1.15rem; margin: 1.75rem 0 0.75rem 0;">
+        ⚖️ Poor Design vs. Good Design Direct Comparison:
+    </h4>
+
+    <table class="table-paper">
+        <thead>
+            <tr>
+                <th style="width: 50%; color: #dc2626;">❌ Poor API Design (Anti-Pattern)</th>
+                <th style="width: 50%; color: #16a34a;">✅ Good API Design (RESTful Standard)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>GET /getUser/123</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">Verb in URI path + singular noun</span></td>
+                <td><code>GET /api/v1/users/123</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">HTTP GET verb with plural noun</span></td>
+            </tr>
+            <tr>
+                <td><code>POST /users/123/delete</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">Action verb endpoint instead of HTTP method</span></td>
+                <td><code>DELETE /api/v1/users/123</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">Clean HTTP DELETE verb on target URI</span></td>
+            </tr>
+            <tr>
+                <td><code>GET /products?page=3</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">Incomplete pagination without limits or sort order</span></td>
+                <td><code>GET /api/v1/products?page=3&limit=25&sort=price:desc</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">Full query modifiers with limit and sort</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
