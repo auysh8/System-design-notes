@@ -56,7 +56,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
                             Initial Credentials Submission
                         </span>
-                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Browser ➔ Server</span>
+                        <span class="seq-pill yellow">Browser ➔ Server</span>
                     </div>
                     <div>User submits credentials (<code>POST /login &#123; username, password &#125;</code>) over HTTPS.</div>
                 </div>
@@ -67,7 +67,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
                             Create Session Record
                         </span>
-                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Server ➔ Redis</span>
+                        <span class="seq-pill blue">Server ➔ Redis</span>
                     </div>
                     <div>Server verifies password hash, generates a secure random <code>Session ID</code>, and writes user context to Redis (TTL 24h).</div>
                 </div>
@@ -78,7 +78,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
                             Session Persistence Confirmed
                         </span>
-                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Redis ➔ Server</span>
+                        <span class="seq-pill purple">Redis ➔ Server</span>
                     </div>
                     <div>Redis confirms session persistence and returns the unique cryptographic <code>session_id: sess_98432a1</code>.</div>
                 </div>
@@ -89,7 +89,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
                             Set Secure Cookie Header
                         </span>
-                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Server ➔ Browser</span>
+                        <span class="seq-pill green">Server ➔ Browser</span>
                     </div>
                     <div>Server responds: <code>Set-Cookie: sid=sess_98432a1; HttpOnly; Secure; SameSite=Strict</code>.</div>
                 </div>
@@ -105,7 +105,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
                             Automatic Cookie Attachment
                         </span>
-                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Browser ➔ Server</span>
+                        <span class="seq-pill yellow">Browser ➔ Server</span>
                     </div>
                     <div>Browser sends request to <code>GET /api/dashboard</code>; HTTP client attaches cookie <code>Cookie: sid=sess_98432a1</code> automatically.</div>
                 </div>
@@ -116,7 +116,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">6</span>
                             Session Lookup Query
                         </span>
-                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Server ➔ Redis</span>
+                        <span class="seq-pill purple">Server ➔ Redis</span>
                     </div>
                     <div>Server queries cache: <code>GET session:sess_98432a1</code> to fetch user roles, permissions, and status.</div>
                 </div>
@@ -127,7 +127,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">7</span>
                             Return Session State
                         </span>
-                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Redis ➔ Server</span>
+                        <span class="seq-pill blue">Redis ➔ Server</span>
                     </div>
                     <div>Redis returns active session payload (e.g. <code>&#123; userId: 42, role: "admin", exp: ... &#125;</code>).</div>
                 </div>
@@ -138,7 +138,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">8</span>
                             Authorized Payload Delivery
                         </span>
-                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Server ➔ Browser</span>
+                        <span class="seq-pill green">Server ➔ Browser</span>
                     </div>
                     <div>Server authorizes the request and returns the protected dashboard data with <code>200 OK</code>.</div>
                 </div>
@@ -220,7 +220,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
                             Authentication Request
                         </span>
-                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Client ➔ Auth Server</span>
+                        <span class="seq-pill yellow">Client ➔ Auth Server</span>
                     </div>
                     <div>Client sends user credentials (<code>POST /auth/login</code>).</div>
                 </div>
@@ -231,7 +231,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
                             Validate & Sign Token
                         </span>
-                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Auth Server Internal</span>
+                        <span class="seq-pill blue">Auth Server Internal</span>
                     </div>
                     <div>Auth Server verifies credentials against DB, encodes claims, and signs the JWT using its Private Key.</div>
                 </div>
@@ -242,7 +242,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
                             Issue Signed JWT
                         </span>
-                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Auth Server ➔ Client</span>
+                        <span class="seq-pill green">Auth Server ➔ Client</span>
                     </div>
                     <div>Returns JWT token payload to the client for subsequent API calls.</div>
                 </div>
@@ -258,18 +258,18 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
                             Bearer Token Request
                         </span>
-                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Client ➔ API Microservice</span>
+                        <span class="seq-pill yellow">Client ➔ API Microservice</span>
                     </div>
                     <div>Client sends request with header: <code>Authorization: Bearer &lt;signed_jwt_token&gt;</code>.</div>
                 </div>
 
                 <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
-                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: #166534;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
                             <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
                             Local Signature Verification (No DB Hit!)
                         </span>
-                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">API Microservice Internal</span>
+                        <span class="seq-pill green">API Microservice Internal</span>
                     </div>
                     <div>API Server computes cryptographic check with Public Key / Shared Secret: verifies expiry, signature, and user claims with <strong>0 database I/O</strong>.</div>
                 </div>
@@ -280,7 +280,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">6</span>
                             Direct Resource Response
                         </span>
-                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">API Microservice ➔ Client</span>
+                        <span class="seq-pill blue">API Microservice ➔ Client</span>
                     </div>
                     <div>API returns requested resource directly (<code>200 OK</code>).</div>
                 </div>
@@ -363,18 +363,18 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
                             Initial Dual-Token Issuance
                         </span>
-                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Auth Server ➔ Client</span>
+                        <span class="seq-pill yellow">Auth Server ➔ Client</span>
                     </div>
                     <div>Auth Server responds to valid login with: Access Token in JSON response body (15m) + Refresh Token in <code>HttpOnly</code> cookie (30d).</div>
                 </div>
 
                 <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid #ef4444; border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
-                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: #991b1b;">
-                            <span style="background: #fee2e2; border: 1.5px solid #dc2626; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: #ef4444;">
+                            <span style="background: var(--pastel-pink); border: 1.5px solid #ef4444; color: #ef4444; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
                             Expired Access Token Rejection
                         </span>
-                        <span style="background: #fee2e2; color: #991b1b; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Resource Server ➔ Client</span>
+                        <span class="seq-pill pink">Resource Server ➔ Client</span>
                     </div>
                     <div>Client calls API after 16 mins; Resource Server rejects expired token signature: <code>401 Unauthorized (jwt expired)</code>.</div>
                 </div>
@@ -385,7 +385,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
                             Silent Background Refresh Request
                         </span>
-                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Client ➔ Auth Server</span>
+                        <span class="seq-pill purple">Client ➔ Auth Server</span>
                     </div>
                     <div>HTTP interceptor traps 401, pauses pending requests, and calls <code>POST /auth/refresh</code> (sending HttpOnly refresh cookie).</div>
                 </div>
@@ -396,7 +396,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
                             Token Rotation & New Access Token
                         </span>
-                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Auth Server ➔ Client</span>
+                        <span class="seq-pill green">Auth Server ➔ Client</span>
                     </div>
                     <div>Auth Server checks token validity against DB/redis revocation table, rotates refresh token, and returns a fresh Access Token.</div>
                 </div>
@@ -407,7 +407,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
                             Transparent Request Replay
                         </span>
-                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Client ➔ Resource Server</span>
+                        <span class="seq-pill blue">Client ➔ Resource Server</span>
                     </div>
                     <div>Client automatically replays the original failed request with the new access token; user experiences zero disruption!</div>
                 </div>
@@ -469,7 +469,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
                             User Initiates Third-Party Connection
                         </span>
-                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">User ➔ Your App</span>
+                        <span class="seq-pill yellow">User ➔ Your App</span>
                     </div>
                     <div>User clicks <em>"Connect Google Drive"</em> inside Your App to import their cloud files.</div>
                 </div>
@@ -480,9 +480,9 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
                             Browser Redirect to Consent Dialog
                         </span>
-                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Your App ➔ Google OAuth</span>
+                        <span class="seq-pill purple">Your App ➔ Google OAuth</span>
                     </div>
-                    <div>App redirects browser to <code>https://accounts.google.com/o/oauth2/v2/auth?client_id=...&scope=drive.readonly&redirect_uri=...&response_type=code</code>.</div>
+                    <div>App redirects browser to <code>https://accounts.google.com/o/oauth2/v2/auth?client_id=...&amp;scope=drive.readonly&amp;redirect_uri=...&amp;response_type=code</code>.</div>
                 </div>
 
                 <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
@@ -491,7 +491,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
                             Consent Confirmation
                         </span>
-                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">User ➔ Google OAuth</span>
+                        <span class="seq-pill blue">User ➔ Google OAuth</span>
                     </div>
                     <div>Google prompts user: <em>"Grant Your App read-only access to Drive?"</em> User clicks <strong>Allow</strong>.</div>
                 </div>
@@ -502,7 +502,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
                             Authorization Code Returned via Redirect
                         </span>
-                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Google OAuth ➔ Your App</span>
+                        <span class="seq-pill yellow">Google OAuth ➔ Your App</span>
                     </div>
                     <div>Google redirects back to App: <code>https://yourapp.com/callback?code=spl_auth_code_91823</code>.</div>
                 </div>
@@ -513,7 +513,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
                             Backend Code Exchange (Direct Server-to-Server)
                         </span>
-                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Your Backend ➔ Google OAuth</span>
+                        <span class="seq-pill purple">Your Backend ➔ Google OAuth</span>
                     </div>
                     <div>App backend securely POSTs: <code>code=spl_auth_code_91823</code> + <code>client_secret</code> to Google token endpoint.</div>
                 </div>
@@ -524,7 +524,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">6</span>
                             Access Token Issued
                         </span>
-                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Google OAuth ➔ Your Backend</span>
+                        <span class="seq-pill green">Google OAuth ➔ Your Backend</span>
                     </div>
                     <div>Google authenticates client secret and returns <strong>Access Token</strong> with scope <code>drive.readonly</code>.</div>
                 </div>
@@ -535,18 +535,18 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">7</span>
                             Scoped API Data Request
                         </span>
-                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Your App ➔ Google Drive API</span>
+                        <span class="seq-pill blue">Your App ➔ Google Drive API</span>
                     </div>
                     <div>App queries Drive API with: <code>Authorization: Bearer &lt;access_token&gt;</code>.</div>
                 </div>
 
                 <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
-                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: #166534;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
                             <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">8</span>
                             Protected Files Returned Securely
                         </span>
-                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Google Drive API ➔ Your App</span>
+                        <span class="seq-pill green">Google Drive API ➔ Your App</span>
                     </div>
                     <div>Google Drive API validates token permissions and safely delivers user files without ever revealing Google password!</div>
                 </div>
@@ -614,7 +614,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
                             User Clicks 'Sign in with Google'
                         </span>
-                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">User ➔ Client App</span>
+                        <span class="seq-pill yellow">User ➔ Client App</span>
                     </div>
                     <div>User clicks social login button on your website.</div>
                 </div>
@@ -625,7 +625,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
                             Redirect with openid Scope
                         </span>
-                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Client App ➔ Google IdP</span>
+                        <span class="seq-pill purple">Client App ➔ Google IdP</span>
                     </div>
                     <div>Redirects to Google authorization endpoint with standard scope: <code>scope=openid profile email</code>.</div>
                 </div>
@@ -636,7 +636,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
                             User Authenticates & Approves
                         </span>
-                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">User ➔ Google IdP</span>
+                        <span class="seq-pill blue">User ➔ Google IdP</span>
                     </div>
                     <div>User logs into Google and confirms sharing profile/email details with Your App.</div>
                 </div>
@@ -647,7 +647,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
                             Authorization Code Returned
                         </span>
-                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Google IdP ➔ Client App</span>
+                        <span class="seq-pill yellow">Google IdP ➔ Client App</span>
                     </div>
                     <div>Google redirects to application redirect URI with temporary authorization code.</div>
                 </div>
@@ -658,7 +658,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
                             Code Exchange for Dual Tokens
                         </span>
-                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">App Backend ➔ Google IdP</span>
+                        <span class="seq-pill purple">App Backend ➔ Google IdP</span>
                     </div>
                     <div>Backend exchanges auth code with Google token endpoint (<code>POST https://oauth2.googleapis.com/token</code>).</div>
                 </div>
@@ -669,7 +669,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">6</span>
                             IdP Returns ID Token + Access Token
                         </span>
-                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Google IdP ➔ App Backend</span>
+                        <span class="seq-pill green">Google IdP ➔ App Backend</span>
                     </div>
                     <div>Google returns: <code>id_token</code> (signed JWT with email, name, avatar) + <code>access_token</code>.</div>
                 </div>
@@ -680,18 +680,18 @@ import CodeSticker from '../../components/CodeSticker.astro';
                             <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">7</span>
                             Verify Signature & Link User Account
                         </span>
-                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">App Backend Internal</span>
+                        <span class="seq-pill blue">App Backend Internal</span>
                     </div>
                     <div>Backend verifies ID token signature using Google's public JWKS certificates; extracts user profile and creates local session.</div>
                 </div>
 
                 <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
-                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: #166534;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
                             <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">8</span>
                             Authenticated Session Established
                         </span>
-                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">App Backend ➔ Client App</span>
+                        <span class="seq-pill green">App Backend ➔ Client App</span>
                     </div>
                     <div>User is logged in seamlessly with verified identity; welcome screen rendered!</div>
                 </div>
@@ -721,7 +721,7 @@ import CodeSticker from '../../components/CodeSticker.astro';
                 <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 14px; padding: 1.15rem 1.75rem; text-align: center; font-weight: 800; box-shadow: 3px 3px 0px var(--text-main); min-width: 170px;">
                     <div style="font-size: 2rem;">👤</div>
                     <div style="font-size: 1.05rem; color: var(--text-main); margin-top: 0.25rem;">Enterprise User</div>
-                    <span style="display: inline-block; margin-top: 0.35rem; background: var(--pastel-green); color: #166534; font-size: 0.75rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 10px; border: 1px solid #16a34a;">
+                    <span style="display: inline-block; margin-top: 0.35rem; background: var(--pastel-green); color: var(--text-main); font-size: 0.75rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 10px; border: 1px solid var(--pastel-green-dark);">
                         Single Login Entry
                     </span>
                 </div>
