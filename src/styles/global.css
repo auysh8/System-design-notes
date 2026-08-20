@@ -481,6 +481,8 @@ mark.hl-green {
 .sticky-note.mint { background: var(--pastel-green); }
 .sticky-note.sky { background: var(--pastel-blue); }
 .sticky-note.lavender { background: var(--pastel-purple); }
+.sticky-note.coral, .sticky-note.pink { background: var(--pastel-pink); }
+.sticky-note.orange { background: var(--pastel-orange); }
 
 .sticky-title {
     font-family: var(--font-hand);

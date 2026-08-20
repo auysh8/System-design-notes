@@ -32,11 +32,11 @@ import CodeSticker from '../../components/CodeSticker.astro';
             
             {/* REST WATERFALL COLUMN */}
             <div style="background: var(--paper-card); border: 2px solid #ef4444; border-radius: 14px; padding: 1.25rem; box-shadow: 3px 3px 0px rgba(239, 68, 68, 0.25); display: flex; flex-direction: column; gap: 0.85rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #fca5a5; padding-bottom: 0.5rem;">
-                    <span style="font-family: var(--font-title); font-weight: 800; color: #dc2626; font-size: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed rgba(239, 68, 68, 0.4); padding-bottom: 0.5rem;">
+                    <span style="font-family: var(--font-title); font-weight: 800; color: #ef4444; font-size: 1rem;">
                         ⚠️ REST API Approach
                     </span>
-                    <span class="planner-tag" style="background: #fee2e2; color: #991b1b; font-size: 0.75rem; margin: 0;">
+                    <span class="planner-tag" style="background: var(--pastel-pink); color: var(--text-main); font-size: 0.75rem; margin: 0; border: 1px solid var(--pastel-pink-dark);">
                         4 Roundtrips • 540ms+
                     </span>
                 </div>
@@ -49,34 +49,34 @@ import CodeSticker from '../../components/CodeSticker.astro';
                 <div style="display: flex; flex-direction: column; gap: 0.5rem; font-family: var(--font-code); font-size: 0.8rem;">
                     <div style="background: rgba(239, 68, 68, 0.08); border-left: 4px solid #ef4444; padding: 0.45rem 0.65rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
                         <span>1️⃣ <code>GET /api/users/123</code></span>
-                        <span style="color: #dc2626; font-size: 0.75rem; font-weight: 700;">120ms (User)</span>
+                        <span style="color: #ef4444; font-size: 0.75rem; font-weight: 700;">120ms (User)</span>
                     </div>
                     <div style="background: rgba(239, 68, 68, 0.08); border-left: 4px solid #ef4444; padding: 0.45rem 0.65rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-left: 0.75rem;">
                         <span>2️⃣ <code>GET /api/users/123/posts</code></span>
-                        <span style="color: #dc2626; font-size: 0.75rem; font-weight: 700;">180ms (Posts)</span>
+                        <span style="color: #ef4444; font-size: 0.75rem; font-weight: 700;">180ms (Posts)</span>
                     </div>
                     <div style="background: rgba(239, 68, 68, 0.08); border-left: 4px solid #ef4444; padding: 0.45rem 0.65rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-left: 1.5rem;">
                         <span>3️⃣ <code>GET /api/users/123/comments</code></span>
-                        <span style="color: #dc2626; font-size: 0.75rem; font-weight: 700;">150ms (Comments)</span>
+                        <span style="color: #ef4444; font-size: 0.75rem; font-weight: 700;">150ms (Comments)</span>
                     </div>
                     <div style="background: rgba(239, 68, 68, 0.08); border-left: 4px solid #ef4444; padding: 0.45rem 0.65rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-left: 2.25rem;">
                         <span>4️⃣ <code>GET /api/users/123/likes</code></span>
-                        <span style="color: #dc2626; font-size: 0.75rem; font-weight: 700;">90ms (Likes)</span>
+                        <span style="color: #ef4444; font-size: 0.75rem; font-weight: 700;">90ms (Likes)</span>
                     </div>
                 </div>
 
-                <div style="background: #fee2e2; border-radius: 8px; padding: 0.65rem; font-size: 0.8rem; color: #991b1b; line-height: 1.4;">
+                <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); border-left: 4px solid #ef4444; border-radius: 8px; padding: 0.65rem; font-size: 0.8rem; color: var(--text-main); line-height: 1.4;">
                     <strong>❌ Bottlenecks:</strong> High radio latency on mobile, CPU drain, redundant payload headers, and massive <em>over-fetching</em> of unneeded database fields.
                 </div>
             </div>
 
             {/* GRAPHQL UNIFIED COLUMN */}
             <div style="background: var(--paper-card); border: 2px solid #22c55e; border-radius: 14px; padding: 1.25rem; box-shadow: 3px 3px 0px rgba(34, 197, 94, 0.25); display: flex; flex-direction: column; gap: 0.85rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #86efac; padding-bottom: 0.5rem;">
-                    <span style="font-family: var(--font-title); font-weight: 800; color: #16a34a; font-size: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed rgba(34, 197, 94, 0.4); padding-bottom: 0.5rem;">
+                    <span style="font-family: var(--font-title); font-weight: 800; color: #22c55e; font-size: 1rem;">
                         ✨ GraphQL Solution
                     </span>
-                    <span class="planner-tag" style="background: #dcfce7; color: #166534; font-size: 0.75rem; margin: 0;">
+                    <span class="planner-tag" style="background: var(--pastel-green); color: var(--text-main); font-size: 0.75rem; margin: 0; border: 1px solid var(--pastel-green-dark);">
                         1 Single Roundtrip • 140ms
                     </span>
                 </div>
@@ -649,11 +649,13 @@ subscription {
                     GraphQL's flexibility makes it vulnerable to <strong>Query Complexity DoS attacks</strong> where an attacker requests expensive fields with huge limits.
                 </p>
                 <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem;">
-                    <div style="flex: 1; min-width: 260px; background: rgba(255,255,255,0.7); border: 1.5px solid #f87171; border-radius: 8px; padding: 0.65rem;">
-                        <strong style="color: #b91c1c;">1. Query Cost Analysis:</strong> Assign static points to each field. Reject incoming requests if total calculation score &gt; 1000 pts.
+                    <div style="flex: 1; min-width: 260px; background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 4px solid #ef4444; border-radius: 8px; padding: 0.75rem; color: var(--text-main); box-shadow: var(--shadow-card);">
+                        <strong style="color: #ef4444; display: block; margin-bottom: 0.25rem;">1. Query Cost Analysis:</strong>
+                        <span style="color: var(--text-main);">Assign static points to each field. Reject incoming requests if total calculation score &gt; 1000 pts.</span>
                     </div>
-                    <div style="flex: 1; min-width: 260px; background: rgba(255,255,255,0.7); border: 1.5px solid #f87171; border-radius: 8px; padding: 0.65rem;">
-                        <strong style="color: #b91c1c;">2. Automatic Persisted Queries (APQ):</strong> In production, disable arbitrary string queries from clients. Only allow pre-approved query hashes registered during CI/CD build.
+                    <div style="flex: 1; min-width: 260px; background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 4px solid #ef4444; border-radius: 8px; padding: 0.75rem; color: var(--text-main); box-shadow: var(--shadow-card);">
+                        <strong style="color: #ef4444; display: block; margin-bottom: 0.25rem;">2. Automatic Persisted Queries (APQ):</strong>
+                        <span style="color: var(--text-main);">In production, disable arbitrary string queries from clients. Only allow pre-approved query hashes registered during CI/CD build.</span>
                     </div>
                 </div>
             </div>

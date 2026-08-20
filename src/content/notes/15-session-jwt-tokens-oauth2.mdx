@@ -163,28 +163,28 @@ import CodeSticker from '../../components/CodeSticker.astro';
             <span>🧩</span> The 3 Parts of a JSON Web Token (JWT)
         </div>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.85rem;">
-            <div style="background: #fee2e2; border: 1.5px solid #ef4444; border-radius: 10px; padding: 0.85rem;">
-                <div style="font-weight: 800; color: #991b1b; font-size: 0.9rem;">1. Header (Alg & Type)</div>
-                <div style="font-family: var(--font-code); font-size: 0.78rem; margin-top: 0.35rem; color: #7f1d1d;">
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-top: 5px solid #ef4444; border-radius: 10px; padding: 0.85rem; box-shadow: var(--shadow-card);">
+                <div style="font-weight: 800; color: #ef4444; font-size: 0.9rem;">1. Header (Alg & Type)</div>
+                <div style="font-family: var(--font-code); font-size: 0.78rem; margin-top: 0.35rem; color: var(--text-main); font-weight: 600;">
                     &#123; "alg": "RS256", "typ": "JWT" &#125;
                 </div>
-                <div style="font-size: 0.75rem; color: #991b1b; margin-top: 0.35rem;">Base64URL encoded; defines signature algo.</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Base64URL encoded; defines signature algo.</div>
             </div>
 
-            <div style="background: #e9d5ff; border: 1.5px solid #a855f7; border-radius: 10px; padding: 0.85rem;">
-                <div style="font-weight: 800; color: #581c87; font-size: 0.9rem;">2. Payload (Claims)</div>
-                <div style="font-family: var(--font-code); font-size: 0.78rem; margin-top: 0.35rem; color: #3b0764;">
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-top: 5px solid #a855f7; border-radius: 10px; padding: 0.85rem; box-shadow: var(--shadow-card);">
+                <div style="font-weight: 800; color: #a855f7; font-size: 0.9rem;">2. Payload (Claims)</div>
+                <div style="font-family: var(--font-code); font-size: 0.78rem; margin-top: 0.35rem; color: var(--text-main); font-weight: 600;">
                     &#123; "sub": "42", "role": "admin", "exp": 171400 &#125;
                 </div>
-                <div style="font-size: 0.75rem; color: #581c87; margin-top: 0.35rem;">Base64URL encoded; carries non-sensitive claims.</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Base64URL encoded; carries non-sensitive claims.</div>
             </div>
 
-            <div style="background: #bbf7d0; border: 1.5px solid #22c55e; border-radius: 10px; padding: 0.85rem;">
-                <div style="font-weight: 800; color: #14532d; font-size: 0.9rem;">3. Cryptographic Signature</div>
-                <div style="font-family: var(--font-code); font-size: 0.78rem; margin-top: 0.35rem; color: #166534;">
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-top: 5px solid #22c55e; border-radius: 10px; padding: 0.85rem; box-shadow: var(--shadow-card);">
+                <div style="font-weight: 800; color: #22c55e; font-size: 0.9rem;">3. Cryptographic Signature</div>
+                <div style="font-family: var(--font-code); font-size: 0.78rem; margin-top: 0.35rem; color: var(--text-main); font-weight: 600;">
                     HMACSHA256(b64(H) + "." + b64(P), secret)
                 </div>
-                <div style="font-size: 0.75rem; color: #14532d; margin-top: 0.35rem;">Guarantees integrity; prevents tampering.</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">Guarantees integrity; prevents tampering.</div>
             </div>
         </div>
     </div>
@@ -311,22 +311,22 @@ import CodeSticker from '../../components/CodeSticker.astro';
 
     {/* Token Comparison Pill Cards */}
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
-        <div style="background: #fee2e2; border: 2px solid #ef4444; border-radius: 14px; padding: 1.25rem; text-align: center; box-shadow: 3px 3px 0px #ef4444;">
-            <div style="font-weight: 800; color: #991b1b; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <div style="background: var(--paper-card); border: 2px solid #ef4444; border-top: 6px solid #ef4444; border-radius: 14px; padding: 1.25rem; text-align: center; box-shadow: var(--shadow-card);">
+            <div style="font-weight: 800; color: #ef4444; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 <span>⚡</span> Access Token
             </div>
-            <div style="font-size: 1.85rem; font-weight: 800; color: #7f1d1d; margin: 0.5rem 0;">15 min – 1 hr</div>
-            <div style="font-size: 0.85rem; color: #991b1b; line-height: 1.5;">
+            <div style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); margin: 0.5rem 0;">15 min – 1 hr</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
                 Short-lived; sent with every API request via <code>Authorization: Bearer</code> header. If intercepted, attacker window is strictly minimized.
             </div>
         </div>
 
-        <div style="background: #dcfce7; border: 2px solid #22c55e; border-radius: 14px; padding: 1.25rem; text-align: center; box-shadow: 3px 3px 0px #22c55e;">
-            <div style="font-weight: 800; color: #166534; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <div style="background: var(--paper-card); border: 2px solid #22c55e; border-top: 6px solid #22c55e; border-radius: 14px; padding: 1.25rem; text-align: center; box-shadow: var(--shadow-card);">
+            <div style="font-weight: 800; color: #22c55e; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 <span>🔄</span> Refresh Token
             </div>
-            <div style="font-size: 1.85rem; font-weight: 800; color: #14532d; margin: 0.5rem 0;">7 to 30 days</div>
-            <div style="font-size: 0.85rem; color: #166534; line-height: 1.5;">
+            <div style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); margin: 0.5rem 0;">7 to 30 days</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
                 Long-lived; stored exclusively in secure <code>HttpOnly</code> cookies; used only at <code>/auth/refresh</code> to mint fresh access tokens.
             </div>
         </div>
@@ -735,12 +735,12 @@ import CodeSticker from '../../components/CodeSticker.astro';
                 <div style="background: var(--pastel-purple); border: 2.5px solid var(--text-main); border-radius: 14px; padding: 1.25rem 2rem; text-align: center; font-weight: 800; box-shadow: 4px 4px 0px var(--text-main); flex: 1; min-width: 260px;">
                     <div style="font-size: 2rem;">🛡️</div>
                     <div style="font-size: 1.15rem; color: var(--text-main); margin-top: 0.25rem;">Central Identity Provider (IdP)</div>
-                    <div style="font-size: 0.82rem; color: #581c87; font-weight: 700; margin-top: 0.25rem;">
+                    <div style="font-size: 0.82rem; color: var(--text-main); font-weight: 700; margin-top: 0.25rem; opacity: 0.9;">
                         Okta • Microsoft Entra ID (Azure AD) • Google Workspace • Keycloak
                     </div>
                     <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
-                        <span style="background: var(--paper-card); border: 1px solid var(--border-soft); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; font-family: var(--font-code);">SAML 2.0 Assertions</span>
-                        <span style="background: var(--paper-card); border: 1px solid var(--border-soft); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; font-family: var(--font-code);">OIDC ID Tokens</span>
+                        <span style="background: var(--paper-card); border: 1px solid var(--border-soft); color: var(--text-main); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; font-family: var(--font-code);">SAML 2.0 Assertions</span>
+                        <span style="background: var(--paper-card); border: 1px solid var(--border-soft); color: var(--text-main); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; font-family: var(--font-code);">OIDC ID Tokens</span>
                     </div>
                 </div>
 
@@ -759,35 +759,35 @@ import CodeSticker from '../../components/CodeSticker.astro';
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; width: 100%;">
                 
                 {/* Spoke 1: Productivity */}
-                <div style="background: #fee2e2; border: 2px solid #dc2626; border-radius: 12px; padding: 1rem; box-shadow: 2px 2px 0px #dc2626; text-align: center;">
+                <div style="background: var(--paper-card); border: 2px solid #ef4444; border-top: 5px solid #ef4444; border-radius: 12px; padding: 1rem; box-shadow: var(--shadow-card); text-align: center;">
                     <div style="font-size: 1.5rem;">📧</div>
-                    <div style="font-weight: 800; color: #991b1b; font-size: 0.95rem; margin-top: 0.2rem;">Google Workspace / Gmail</div>
-                    <div style="font-size: 0.75rem; color: #7f1d1d; margin-top: 0.35rem;">SAML 2.0 Web SSO Assertion</div>
-                    <span style="display: inline-block; margin-top: 0.4rem; background: #ffffff; color: #16a34a; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px;">✓ Auto Logged In</span>
+                    <div style="font-weight: 800; color: #ef4444; font-size: 0.95rem; margin-top: 0.2rem;">Google Workspace / Gmail</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">SAML 2.0 Web SSO Assertion</div>
+                    <span style="display: inline-block; margin-top: 0.4rem; background: var(--pastel-green); color: var(--text-main); font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px; border: 1px solid var(--pastel-green-dark);">✓ Auto Logged In</span>
                 </div>
 
                 {/* Spoke 2: Cloud Storage */}
-                <div style="background: #dbeafe; border: 2px solid #2563eb; border-radius: 12px; padding: 1rem; box-shadow: 2px 2px 0px #2563eb; text-align: center;">
+                <div style="background: var(--paper-card); border: 2px solid #3b82f6; border-top: 5px solid #3b82f6; border-radius: 12px; padding: 1rem; box-shadow: var(--shadow-card); text-align: center;">
                     <div style="font-size: 1.5rem;">📁</div>
-                    <div style="font-weight: 800; color: #1e40af; font-size: 0.95rem; margin-top: 0.2rem;">Enterprise Box / Drive</div>
-                    <div style="font-size: 0.75rem; color: #1e3a8a; margin-top: 0.35rem;">OIDC JWT Identity Claims</div>
-                    <span style="display: inline-block; margin-top: 0.4rem; background: #ffffff; color: #16a34a; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px;">✓ Auto Logged In</span>
+                    <div style="font-weight: 800; color: #3b82f6; font-size: 0.95rem; margin-top: 0.2rem;">Enterprise Box / Drive</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">OIDC JWT Identity Claims</div>
+                    <span style="display: inline-block; margin-top: 0.4rem; background: var(--pastel-green); color: var(--text-main); font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px; border: 1px solid var(--pastel-green-dark);">✓ Auto Logged In</span>
                 </div>
 
                 {/* Spoke 3: Chat & Collab */}
-                <div style="background: #fef3c7; border: 2px solid #d97706; border-radius: 12px; padding: 1rem; box-shadow: 2px 2px 0px #d97706; text-align: center;">
+                <div style="background: var(--paper-card); border: 2px solid #f59e0b; border-top: 5px solid #f59e0b; border-radius: 12px; padding: 1rem; box-shadow: var(--shadow-card); text-align: center;">
                     <div style="font-size: 1.5rem;">💬</div>
-                    <div style="font-weight: 800; color: #92400e; font-size: 0.95rem; margin-top: 0.2rem;">Slack / MS Teams</div>
-                    <div style="font-size: 0.75rem; color: #78350f; margin-top: 0.35rem;">SCIM User Provisioning + SAML</div>
-                    <span style="display: inline-block; margin-top: 0.4rem; background: #ffffff; color: #16a34a; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px;">✓ Auto Logged In</span>
+                    <div style="font-weight: 800; color: #f59e0b; font-size: 0.95rem; margin-top: 0.2rem;">Slack / MS Teams</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">SCIM User Provisioning + SAML</div>
+                    <span style="display: inline-block; margin-top: 0.4rem; background: var(--pastel-green); color: var(--text-main); font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px; border: 1px solid var(--pastel-green-dark);">✓ Auto Logged In</span>
                 </div>
 
                 {/* Spoke 4: Developer Tools */}
-                <div style="background: #f3e8ff; border: 2px solid #9333ea; border-radius: 12px; padding: 1rem; box-shadow: 2px 2px 0px #9333ea; text-align: center;">
+                <div style="background: var(--paper-card); border: 2px solid #a855f7; border-top: 5px solid #a855f7; border-radius: 12px; padding: 1rem; box-shadow: var(--shadow-card); text-align: center;">
                     <div style="font-size: 1.5rem;">🐙</div>
-                    <div style="font-weight: 800; color: #6b21a8; font-size: 0.95rem; margin-top: 0.2rem;">GitHub Enterprise / Jira</div>
-                    <div style="font-size: 0.75rem; color: #581c87; margin-top: 0.35rem;">OIDC / OAuth 2 Federated IAM</div>
-                    <span style="display: inline-block; margin-top: 0.4rem; background: #ffffff; color: #16a34a; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px;">✓ Auto Logged In</span>
+                    <div style="font-weight: 800; color: #a855f7; font-size: 0.95rem; margin-top: 0.2rem;">GitHub Enterprise / Jira</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">OIDC / OAuth 2 Federated IAM</div>
+                    <span style="display: inline-block; margin-top: 0.4rem; background: var(--pastel-green); color: var(--text-main); font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px; border: 1px solid var(--pastel-green-dark);">✓ Auto Logged In</span>
                 </div>
 
             </div>
