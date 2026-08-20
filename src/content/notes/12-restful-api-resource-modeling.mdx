@@ -22,46 +22,76 @@ import CodeSticker from '../../components/CodeSticker.astro';
         Resource Modeling: From Business Domain to REST Endpoints
     </div>
 
-    <p>In RESTful architecture, real-world business entities are mapped to pluralized, noun-based <mark class="hl-green">Resources</mark> identified by clean, predictable URIs.</p>
+    <p>In RESTful (Representational State Transfer) architecture, real-world business entities are abstracted into pluralized, noun-based <mark class="hl-green">Resources</mark> identified by clean, intuitive, and predictable URIs.</p>
 
     {/* Domain to Resource Mapping Diagram */}
-    <DiagramPaper title="🏗️ Business Domain ➔ REST Resource Mapping">
-        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 760px; margin: 0 auto;">
+    <DiagramPaper title="🏗️ Business Domain ➔ REST Resource Mapping Architecture">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 820px; margin: 0 auto;">
             
             {/* Row 1: Business Domain Entities */}
             <div>
-                <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; text-align: center;">
-                    🏢 Business Domain Entities
+                <div style="font-family: var(--font-title); font-weight: 800; font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; text-align: center;">
+                    🏢 1. Business Domain Entities (Data Layer)
                 </div>
-                <div style="display: flex; justify-content: space-around; align-items: center; background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 10px; padding: 1rem; box-shadow: 3px 3px 0px var(--text-main);">
-                    <div style="font-weight: 800; font-size: 1.05rem; color: var(--pastel-blue-dark);">📦 Product</div>
-                    <div style="color: var(--text-muted); font-weight: 700;">─────────</div>
-                    <div style="font-weight: 800; font-size: 1.05rem; color: var(--pastel-purple-dark);">🛒 Order</div>
-                    <div style="color: var(--text-muted); font-weight: 700;">─────────</div>
-                    <div style="font-weight: 800; font-size: 1.05rem; color: var(--pastel-pink-dark);">⭐ Reviews</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div class="flow-node highlight-blue" style="padding: 1rem; border-radius: 12px; text-align: center;">
+                        <div style="font-weight: 800; font-size: 1.1rem; color: var(--pastel-blue-dark); margin-bottom: 0.35rem;">📦 Product</div>
+                        <div style="font-family: var(--font-code); font-size: 0.78rem; opacity: 0.85;">Fields: id, title, price, stock</div>
+                    </div>
+                    <div class="flow-node" style="background: var(--pastel-purple); padding: 1rem; border-radius: 12px; text-align: center;">
+                        <div style="font-weight: 800; font-size: 1.1rem; color: var(--pastel-purple-dark); margin-bottom: 0.35rem;">🛒 Order</div>
+                        <div style="font-family: var(--font-code); font-size: 0.78rem; opacity: 0.85;">Fields: id, user_id, total, status</div>
+                    </div>
+                    <div class="flow-node highlight-pink" style="padding: 1rem; border-radius: 12px; text-align: center;">
+                        <div style="font-weight: 800; font-size: 1.1rem; color: var(--pastel-pink-dark); margin-bottom: 0.35rem;">⭐ Review</div>
+                        <div style="font-family: var(--font-code); font-size: 0.78rem; opacity: 0.85;">Fields: id, product_id, rating</div>
+                    </div>
                 </div>
             </div>
 
-            <div style="text-align: center; font-size: 1.25rem; color: var(--text-muted);">
-                ⬇️ <em>mapped directly to pluralized REST collections</em> ⬇️
+            {/* Transition Connector */}
+            <div style="text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.75rem; color: var(--pastel-green-dark); font-family: var(--font-hand); font-size: 1.25rem; font-weight: 800;">
+                <span>⬇️</span>
+                <span style="background: var(--pastel-green); color: var(--text-main); padding: 0.25rem 0.85rem; border-radius: 20px; border: 1.5px solid var(--text-main); font-family: var(--font-title); font-size: 0.8rem; letter-spacing: 0.03em; text-transform: uppercase;">
+                    Mapped to Pluralized REST Resource Collections
+                </span>
+                <span>⬇️</span>
             </div>
 
-            {/* Row 2: REST Resources */}
+            {/* Row 2: REST Resource Endpoints */}
             <div>
-                <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; text-align: center;">
-                    🌐 REST API Resource Collections
+                <div style="font-family: var(--font-title); font-weight: 800; font-size: 0.95rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; text-align: center;">
+                    🌐 2. REST API Resource Collections (Interface Layer)
                 </div>
-                <div style="display: flex; justify-content: space-around; align-items: center; background: var(--paper-card); border: 2px dashed var(--pastel-green-dark); border-radius: 10px; padding: 1rem;">
-                    <div style="font-family: var(--font-code); font-weight: 700; background: var(--pastel-blue); padding: 0.3rem 0.75rem; border-radius: 6px;">/products</div>
-                    <div style="color: var(--text-muted); font-weight: 700;">─────────</div>
-                    <div style="font-family: var(--font-code); font-weight: 700; background: var(--pastel-purple); padding: 0.3rem 0.75rem; border-radius: 6px;">/orders</div>
-                    <div style="color: var(--text-muted); font-weight: 700;">─────────</div>
-                    <div style="font-family: var(--font-code); font-weight: 700; background: var(--pastel-pink); padding: 0.3rem 0.75rem; border-radius: 6px;">/reviews</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div style="background: var(--paper-card); border: 2px solid var(--pastel-blue-dark); border-radius: 12px; padding: 1rem; text-align: center; box-shadow: 3px 3px 0px var(--pastel-blue-dark);">
+                        <span class="protocol-tag" style="background: var(--pastel-blue); font-weight: 800; font-size: 0.88rem;">/api/v1/products</span>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem;">Collection endpoint for products</div>
+                    </div>
+                    <div style="background: var(--paper-card); border: 2px solid var(--pastel-purple-dark); border-radius: 12px; padding: 1rem; text-align: center; box-shadow: 3px 3px 0px var(--pastel-purple-dark);">
+                        <span class="protocol-tag" style="background: var(--pastel-purple); font-weight: 800; font-size: 0.88rem;">/api/v1/orders</span>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem;">Collection endpoint for orders</div>
+                    </div>
+                    <div style="background: var(--paper-card); border: 2px solid var(--pastel-pink-dark); border-radius: 12px; padding: 1rem; text-align: center; box-shadow: 3px 3px 0px var(--pastel-pink-dark);">
+                        <span class="protocol-tag" style="background: var(--pastel-pink); font-weight: 800; font-size: 0.88rem;">/api/v1/reviews</span>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem;">Collection endpoint for reviews</div>
+                    </div>
                 </div>
             </div>
 
         </div>
     </DiagramPaper>
+
+    {/* Architectural Guidelines Cards */}
+    <div class="card-grid">
+        <GoodNotesCard title="🏛️ 1. Nouns Over Verbs" accent="green">
+            <p>URIs represent <strong>things (resources)</strong>, not actions. Use <code>/orders</code> instead of <code>/createOrder</code> or <code>/getOrders</code>. The HTTP method specifies the action.</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="🏷️ 2. Pluralized Standard" accent="blue">
+            <p>Collections use plural nouns (<code>/products</code>). A specific entity is addressed via its unique identifier in the path (<code>/products/&#123;id&#125;</code>).</p>
+        </GoodNotesCard>
+    </div>
 </div>
 
 {/* SECTION 2: URL PATTERNS & IDENTIFIERS */}
@@ -71,40 +101,97 @@ import CodeSticker from '../../components/CodeSticker.astro';
         Hierarchical URL Patterns & Identifier Routing
     </div>
 
-    <p>Endpoints should follow a hierarchical naming convention with version prefixes, plural nouns, and unique resource identifiers:</p>
+    <p>Endpoints should follow a strict hierarchical structure with API versioning prefixes, plural noun resource paths, and unique resource identifiers:</p>
+
+    {/* URL Anatomy Diagram */}
+    <DiagramPaper title="📐 Clean REST URI Structure Anatomy">
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; font-family: var(--font-code); font-size: 0.9rem; padding: 0.75rem; text-align: center;">
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 8px;">
+                <span style="color: var(--text-muted); font-size: 0.7rem; display: block; text-transform: uppercase;">Protocol + Host</span>
+                <strong style="color: var(--pastel-blue-dark);">https://api.domain.com</strong>
+            </div>
+            <div style="font-size: 1.2rem; color: var(--text-muted);">/</div>
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 8px;">
+                <span style="color: var(--text-muted); font-size: 0.7rem; display: block; text-transform: uppercase;">Version Prefix</span>
+                <strong style="color: var(--pastel-green-dark);">api/v1</strong>
+            </div>
+            <div style="font-size: 1.2rem; color: var(--text-muted);">/</div>
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 8px;">
+                <span style="color: var(--text-muted); font-size: 0.7rem; display: block; text-transform: uppercase;">Resource Collection</span>
+                <strong style="color: var(--pastel-purple-dark);">products</strong>
+            </div>
+            <div style="font-size: 1.2rem; color: var(--text-muted);">/</div>
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 8px;">
+                <span style="color: var(--text-muted); font-size: 0.7rem; display: block; text-transform: uppercase;">Entity ID</span>
+                <strong style="color: #f59e0b;">&#123;id&#125;</strong>
+            </div>
+            <div style="font-size: 1.2rem; color: var(--text-muted);">/</div>
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 8px;">
+                <span style="color: var(--text-muted); font-size: 0.7rem; display: block; text-transform: uppercase;">Sub-Resource</span>
+                <strong style="color: var(--pastel-pink-dark);">reviews</strong>
+            </div>
+        </div>
+    </DiagramPaper>
 
     <div class="card-grid">
         
-        {/* Products Pattern */}
+        {/* Products Resource Card */}
         <GoodNotesCard title="📦 Products Resource Endpoints" accent="blue">
-            <ul style="font-family: var(--font-code); font-size: 0.85rem; padding-left: 1.2rem; margin-top: 0.5rem; line-height: 1.8;">
-                <li><code>GET  /api/v1/products</code> <br /><span style="color:var(--text-muted); font-family:var(--font-body); font-size:0.8rem;">➔ List all products</span></li>
-                <li><code>GET  /api/v1/products/&#123;id&#125;</code> <br /><span style="color:var(--text-muted); font-family:var(--font-body); font-size:0.8rem;">➔ e.g. /products/4d...e304 (Get specific product)</span></li>
-            </ul>
+            <div style="display: flex; flex-direction: column; gap: 0.65rem; margin-top: 0.5rem;">
+                <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); border-radius: 8px; padding: 0.6rem 0.8rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-code); font-size: 0.85rem;">
+                        <span class="protocol-tag" style="background: var(--pastel-blue); font-weight: 800;">GET</span>
+                        <code>/api/v1/products</code>
+                    </div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">➔ Retrieve list of product collection</div>
+                </div>
+
+                <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); border-radius: 8px; padding: 0.6rem 0.8rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-code); font-size: 0.85rem;">
+                        <span class="protocol-tag" style="background: var(--pastel-blue); font-weight: 800;">GET</span>
+                        <code>/api/v1/products/&#123;id&#125;</code>
+                    </div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">➔ Fetch single product by UUID / ID (e.g., <code>/products/4d3e...</code>)</div>
+                </div>
+            </div>
         </GoodNotesCard>
 
-        {/* Orders Pattern */}
+        {/* Orders Resource Card */}
         <GoodNotesCard title="🛒 Orders Resource Endpoints" accent="purple">
-            <ul style="font-family: var(--font-code); font-size: 0.85rem; padding-left: 1.2rem; margin-top: 0.5rem; line-height: 1.8;">
-                <li><code>GET  /api/v1/orders</code> <br /><span style="color:var(--text-muted); font-family:var(--font-body); font-size:0.8rem;">➔ List orders</span></li>
-                <li><code>GET  /api/v1/orders/&#123;id&#125;</code> <br /><span style="color:var(--text-muted); font-family:var(--font-body); font-size:0.8rem;">➔ e.g. /orders/4d5...e4 (Get specific order)</span></li>
-            </ul>
+            <div style="display: flex; flex-direction: column; gap: 0.65rem; margin-top: 0.5rem;">
+                <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); border-radius: 8px; padding: 0.6rem 0.8rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-code); font-size: 0.85rem;">
+                        <span class="protocol-tag" style="background: var(--pastel-blue); font-weight: 800;">GET</span>
+                        <code>/api/v1/orders</code>
+                    </div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">➔ List authenticated user's order history</div>
+                </div>
+
+                <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); border-radius: 8px; padding: 0.6rem 0.8rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-code); font-size: 0.85rem;">
+                        <span class="protocol-tag" style="background: var(--pastel-green); font-weight: 800;">POST</span>
+                        <code>/api/v1/orders</code>
+                    </div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">➔ Submit and create new checkout order</div>
+                </div>
+            </div>
         </GoodNotesCard>
 
     </div>
 
-    {/* Nested Resources */}
+    {/* Sub-Resource / Nested Modeling */}
     <div style="margin-top: 1.25rem;">
-        <StickyNote type="lavender" title="⭐ Sub-Resource / Nested Endpoint Modeling:">
-            <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
-                When a resource is owned by or subordinate to another entity, express the parent-child relationship hierarchically:
+        <StickyNote type="lavender" title="⭐ Sub-Resource / Nested Endpoint Modeling">
+            <p style="font-size: 0.95rem; margin-bottom: 0.6rem;">
+                When an entity is naturally owned by or subordinate to another parent entity, express the relation hierarchically in the path:
             </p>
-            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-radius: 8px; padding: 0.75rem 1rem; font-family: var(--font-code); font-size: 0.9rem;">
-                <strong>GET</strong> <code>/api/v1/products/&#123;id&#125;/reviews</code>
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-radius: 8px; padding: 0.75rem 1rem; font-family: var(--font-code); font-size: 0.9rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                <span class="protocol-tag" style="background: var(--pastel-blue); font-weight: 800;">GET</span>
+                <code>/api/v1/products/<strong>&#123;productId&#125;</strong>/reviews</code>
             </div>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
-                Fetches all reviews specifically tied to product <code>&#123;id&#125;</code> without polluting top-level routing.
-            </p>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.5;">
+                📌 <strong>Design Rule of Thumb:</strong> Limit nesting to a maximum of <strong>2 levels deep</strong> (e.g., <code>/products/&#123;id&#125;/reviews</code>). Deeply nested paths like <code>/users/1/orders/2/items/3/taxes</code> indicate poor modeling; flatten them to top-level collections with query filters (<code>/order-items?order_id=2</code>).
+            </div>
         </StickyNote>
     </div>
 </div>
@@ -116,83 +203,97 @@ import CodeSticker from '../../components/CodeSticker.astro';
         Query Parameters: Filtering, Sorting & Pagination
     </div>
 
-    <p>Rather than creating dedicated endpoint paths for every query permutation, use standard <mark class="hl-yellow">Query Parameters</mark> (<code>?key=value</code>) to modify resource collection responses.</p>
+    <p>Rather than creating dedicated endpoint paths for every query permutation, use standardized <mark class="hl-yellow">Query Parameters</mark> (<code>?key=value</code>) to modify, constrain, and structure collection responses.</p>
 
     {/* 3 Modifiers Side by Side */}
     <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.25rem;">
         
         {/* 1. FILTERING */}
-        <DiagramPaper title="🔍 1. Filtering by Attributes">
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <div style="font-family: var(--font-code); font-size: 0.95rem; background: var(--paper-card); padding: 0.85rem; border-radius: 8px; border: 1.5px solid var(--border-soft);">
-                    <span style="color:#0284c7; font-weight:700;">GET</span> /api/v1/products<span style="color:#d97706; font-weight:700;">?category=books&inStock=true</span>
+        <DiagramPaper title="🔍 1. Attribute Filtering (?key=value)">
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                <div style="font-family: var(--font-code); font-size: 0.92rem; background: var(--paper-card); padding: 0.85rem 1.15rem; border-radius: 10px; border: 2px solid var(--border-soft); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <span class="protocol-tag" style="background: var(--pastel-blue); font-weight: 800;">GET</span>
+                    <span>/api/v1/products</span>
+                    <span style="background: var(--pastel-yellow); color: var(--text-main); font-weight: 800; padding: 0.2rem 0.5rem; border-radius: 6px; border: 1px solid var(--pastel-yellow-dark);">?category=books&inStock=true</span>
                 </div>
-                <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">
-                    ⬇️ API Backend Filters Database ⬇️
+                
+                <div style="font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                    <span>⚡ <strong>Backend Action:</strong> Appends <code>WHERE category = 'books' AND in_stock = true</code> to SQL query.</span>
                 </div>
-                <div style="background: #1e1e24; color: #f1f5f9; border-radius: 8px; padding: 1rem; font-family: var(--font-code); font-size: 0.85rem;">
-                    <pre style="margin: 0; color: #f8fafc;"><code>[
+
+                <CodeSticker title="HTTP 200 OK — Filtered Products Payload" copyLabel="Copy JSON">
+<pre><code>[
   &#123;
-    <span style="color:#38bdf8;">"id"</span>: <span style="color:#f59e0b;">101</span>,
-    <span style="color:#38bdf8;">"title"</span>: <span style="color:#4ade80;">"Designing APIs with Swagger"</span>,
-    <span style="color:#38bdf8;">"category"</span>: <span style="color:#4ade80;">"books"</span>,
-    <span style="color:#38bdf8;">"inStock"</span>: <span style="color:#ec4899;">true</span>,
-    <span style="color:#38bdf8;">"price"</span>: <span style="color:#f59e0b;">29.99</span>
+    <span class="sql-type">"id"</span>: <span class="sql-num">101</span>,
+    <span class="sql-type">"title"</span>: <span class="sql-str">"Designing APIs with Swagger"</span>,
+    <span class="sql-type">"category"</span>: <span class="sql-str">"books"</span>,
+    <span class="sql-type">"inStock"</span>: <span class="sql-kw">true</span>,
+    <span class="sql-type">"price"</span>: <span class="sql-num">29.99</span>
   &#125;
 ]</code></pre>
-                </div>
+                </CodeSticker>
             </div>
         </DiagramPaper>
 
         {/* 2. SORTING */}
-        <DiagramPaper title="📶 2. Sorting by Fields">
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <div style="font-family: var(--font-code); font-size: 0.95rem; background: var(--paper-card); padding: 0.85rem; border-radius: 8px; border: 1.5px solid var(--border-soft);">
-                    <span style="color:#0284c7; font-weight:700;">GET</span> /api/v1/products<span style="color:#a855f7; font-weight:700;">?sort=price_asc</span>
+        <DiagramPaper title="📶 2. Collection Sorting (?sort=field)">
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                <div style="font-family: var(--font-code); font-size: 0.92rem; background: var(--paper-card); padding: 0.85rem 1.15rem; border-radius: 10px; border: 2px solid var(--border-soft); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <span class="protocol-tag" style="background: var(--pastel-blue); font-weight: 800;">GET</span>
+                    <span>/api/v1/products</span>
+                    <span style="background: var(--pastel-purple); color: var(--text-main); font-weight: 800; padding: 0.2rem 0.5rem; border-radius: 6px; border: 1px solid var(--pastel-purple-dark);">?sort=price:asc</span>
                 </div>
-                <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">
-                    ⬇️ API Backend Sorts Ascending / Descending ⬇️
+
+                <div style="font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                    <span>⚡ <strong>Backend Action:</strong> Appends <code>ORDER BY price ASC</code> (use <code>-price</code> or <code>price:desc</code> for descending).</span>
                 </div>
-                <div style="background: #1e1e24; color: #f1f5f9; border-radius: 8px; padding: 1rem; font-family: var(--font-code); font-size: 0.85rem;">
-                    <pre style="margin: 0; color: #f8fafc;"><code>[
+
+                <CodeSticker title="HTTP 200 OK — Sorted Products Payload" copyLabel="Copy JSON">
+<pre><code>[
   &#123;
-    <span style="color:#38bdf8;">"id"</span>: <span style="color:#f59e0b;">201</span>,
-    <span style="color:#38bdf8;">"title"</span>: <span style="color:#4ade80;">"Wireframe Kit"</span>,
-    <span style="color:#38bdf8;">"price"</span>: <span style="color:#f59e0b;">9.99</span>
+    <span class="sql-type">"id"</span>: <span class="sql-num">201</span>,
+    <span class="sql-type">"title"</span>: <span class="sql-str">"Wireframe UI Kit"</span>,
+    <span class="sql-type">"price"</span>: <span class="sql-num">9.99</span>
   &#125;,
   &#123;
-    <span style="color:#38bdf8;">"id"</span>: <span style="color:#f59e0b;">202</span>,
-    <span style="color:#38bdf8;">"title"</span>: <span style="color:#4ade80;">"Figma Pro License"</span>,
-    <span style="color:#38bdf8;">"price"</span>: <span style="color:#f59e0b;">19.00</span>
+    <span class="sql-type">"id"</span>: <span class="sql-num">202</span>,
+    <span class="sql-type">"title"</span>: <span class="sql-str">"Figma Pro Component Library"</span>,
+    <span class="sql-type">"price"</span>: <span class="sql-num">19.00</span>
   &#125;
 ]</code></pre>
-                </div>
+                </CodeSticker>
             </div>
         </DiagramPaper>
 
         {/* 3. PAGINATION */}
-        <DiagramPaper title="📄 3. Pagination (Page / Limit & Offsets)">
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <div style="font-family: var(--font-code); font-size: 0.95rem; background: var(--paper-card); padding: 0.85rem; border-radius: 8px; border: 1.5px solid var(--border-soft);">
-                    <span style="color:#0284c7; font-weight:700;">GET</span> /api/v1/products<span style="color:#16a34a; font-weight:700;">?page=2&limit=3</span>
+        <DiagramPaper title="📄 3. Pagination & Envelope Metadata (?page=2&limit=3)">
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                <div style="font-family: var(--font-code); font-size: 0.92rem; background: var(--paper-card); padding: 0.85rem 1.15rem; border-radius: 10px; border: 2px solid var(--border-soft); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <span class="protocol-tag" style="background: var(--pastel-blue); font-weight: 800;">GET</span>
+                    <span>/api/v1/products</span>
+                    <span style="background: var(--pastel-green); color: var(--text-main); font-weight: 800; padding: 0.2rem 0.5rem; border-radius: 6px; border: 1px solid var(--pastel-green-dark);">?page=2&limit=3</span>
                 </div>
-                <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">
-                    ⬇️ API Returns Paginated Envelope with Metadata ⬇️
+
+                <div style="font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                    <span>⚡ <strong>Backend Action:</strong> Appends <code>LIMIT 3 OFFSET 3</code> with envelope pagination metadata.</span>
                 </div>
-                <div style="background: #1e1e24; color: #f1f5f9; border-radius: 8px; padding: 1rem; font-family: var(--font-code); font-size: 0.85rem;">
-                    <pre style="margin: 0; color: #f8fafc;"><code>&#123;
-  <span style="color:#38bdf8;">"page"</span>: <span style="color:#f59e0b;">2</span>,
-  <span style="color:#38bdf8;">"limit"</span>: <span style="color:#f59e0b;">3</span>,
-  <span style="color:#38bdf8;">"total"</span>: <span style="color:#f59e0b;">10</span>,
-  <span style="color:#38bdf8;">"products"</span>: [
+
+                <CodeSticker title="HTTP 200 OK — Paginated Envelope Response" copyLabel="Copy JSON">
+<pre><code>&#123;
+  <span class="sql-type">"page"</span>: <span class="sql-num">2</span>,
+  <span class="sql-type">"limit"</span>: <span class="sql-num">3</span>,
+  <span class="sql-type">"total_records"</span>: <span class="sql-num">124</span>,
+  <span class="sql-type">"total_pages"</span>: <span class="sql-num">42</span>,
+  <span class="sql-type">"has_more"</span>: <span class="sql-kw">true</span>,
+  <span class="sql-type">"data"</span>: [
     &#123;
-      <span style="color:#38bdf8;">"id"</span>: <span style="color:#f59e0b;">301</span>,
-      <span style="color:#38bdf8;">"title"</span>: <span style="color:#4ade80;">"Next.js Handbook"</span>,
-      <span style="color:#38bdf8;">"price"</span>: <span style="color:#f59e0b;">15.00</span>
+      <span class="sql-type">"id"</span>: <span class="sql-num">301</span>,
+      <span class="sql-type">"title"</span>: <span class="sql-str">"Next.js Architecture Handbook"</span>,
+      <span class="sql-type">"price"</span>: <span class="sql-num">15.00</span>
     &#125;
   ]
 &#125;</code></pre>
-                </div>
+                </CodeSticker>
             </div>
         </DiagramPaper>
 
@@ -200,11 +301,11 @@ import CodeSticker from '../../components/CodeSticker.astro';
 
     {/* Benefits Card */}
     <div style="margin-top: 1.5rem;">
-        <GoodNotesCard title="🚀 3 Core Benefits of Filtering, Sorting & Pagination" accent="green">
+        <GoodNotesCard title="🚀 3 Core Benefits of Standardized Query Modifiers" accent="green">
             <ul style="font-size: 0.95rem; padding-left: 1.2rem; margin: 0.25rem 0 0 0; line-height: 1.7;">
-                <li><strong>Saves Bandwidth:</strong> Prevents massive payloads over the wire by only transferring exact required records.</li>
-                <li><strong>Improves Server & Database Performance:</strong> Uses indexed queries, SQL <code>LIMIT / OFFSET</code>, and avoids memory exhaustion.</li>
-                <li><strong>Gives Frontend More Flexibility:</strong> Enables custom client-side grid controls, dynamic search bars, and infinite scrolling.</li>
+                <li><strong>Saves Network Bandwidth:</strong> Prevents massive multi-megabyte payloads by only sending requested subsets over the wire.</li>
+                <li><strong>Protects Database & Server:</strong> Leverages B-Tree index scans, bounds SQL execution times with <code>LIMIT</code>, and prevents Out-of-Memory (OOM) crashes.</li>
+                <li><strong>Unlocks Rich Frontend UX:</strong> Supports responsive pagination controls, dynamic sorting chips, and instant search-as-you-type filters.</li>
             </ul>
         </GoodNotesCard>
     </div>
@@ -217,67 +318,88 @@ import CodeSticker from '../../components/CodeSticker.astro';
         HTTP Methods: CRUD, Safety & Idempotency Rules
     </div>
 
-    <p>Every HTTP request verb conveys specific semantics regarding state mutations, safety, and repeatable idempotency guarantees.</p>
+    <p>Every HTTP request verb communicates precise operational semantics regarding resource mutation, safety guarantees, and idempotency repeatability under network retries.</p>
 
+    {/* CRUD Matrix Table */}
     <table class="table-paper">
         <thead>
             <tr>
-                <th>Method</th>
-                <th>CRUD Action</th>
+                <th style="width: 110px;">Method</th>
+                <th style="width: 130px;">CRUD Action</th>
                 <th>Endpoint Example</th>
-                <th>Safe?</th>
-                <th>Idempotent?</th>
+                <th style="width: 140px; text-align: center;">Safe?</th>
+                <th style="width: 160px; text-align: center;">Idempotent?</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td><mark class="hl-blue">GET</mark></td>
-                <td><strong>Read</strong></td>
-                <td><code>GET /api/v1/products</code></td>
-                <td><span style="color:#16a34a; font-weight:700;">✅ Safe</span></td>
-                <td><span style="color:#16a34a; font-weight:700;">✅ Idempotent</span></td>
+                <td><span class="protocol-tag" style="background: var(--pastel-blue); font-weight: 800;">GET</span></td>
+                <td><strong>Read / Retrieve</strong></td>
+                <td><code>GET /api/v1/products/123</code></td>
+                <td style="text-align: center;">
+                    <span style="background: var(--pastel-green); color: var(--text-main); font-weight: 800; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid var(--pastel-green-dark); display: inline-block;">✅ Safe</span>
+                </td>
+                <td style="text-align: center;">
+                    <span style="background: var(--pastel-green); color: var(--text-main); font-weight: 800; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid var(--pastel-green-dark); display: inline-block;">✅ Idempotent</span>
+                </td>
             </tr>
             <tr>
-                <td><mark class="hl-green">POST</mark></td>
-                <td><strong>Create</strong></td>
+                <td><span class="protocol-tag" style="background: var(--pastel-green); font-weight: 800;">POST</span></td>
+                <td><strong>Create / Action</strong></td>
                 <td><code>POST /api/v1/products</code></td>
-                <td><span style="color:#dc2626; font-weight:700;">❌ Not Safe</span></td>
-                <td><span style="color:#dc2626; font-weight:700;">❌ Not Idempotent</span></td>
+                <td style="text-align: center;">
+                    <span style="background: var(--pastel-pink); color: var(--text-main); font-weight: 800; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid var(--pastel-pink-dark); display: inline-block;">❌ Unsafe</span>
+                </td>
+                <td style="text-align: center;">
+                    <span style="background: var(--pastel-pink); color: var(--text-main); font-weight: 800; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid var(--pastel-pink-dark); display: inline-block;">❌ Non-Idempotent</span>
+                </td>
             </tr>
             <tr>
-                <td><mark class="hl-yellow">PUT</mark></td>
-                <td><strong>Update (Replace)</strong></td>
+                <td><span class="protocol-tag" style="background: var(--pastel-yellow); font-weight: 800;">PUT</span></td>
+                <td><strong>Update (Full Replace)</strong></td>
                 <td><code>PUT /api/v1/products/123</code></td>
-                <td><span style="color:#dc2626; font-weight:700;">❌ Not Safe</span></td>
-                <td><span style="color:#16a34a; font-weight:700;">✅ Idempotent</span></td>
+                <td style="text-align: center;">
+                    <span style="background: var(--pastel-pink); color: var(--text-main); font-weight: 800; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid var(--pastel-pink-dark); display: inline-block;">❌ Unsafe</span>
+                </td>
+                <td style="text-align: center;">
+                    <span style="background: var(--pastel-green); color: var(--text-main); font-weight: 800; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid var(--pastel-green-dark); display: inline-block;">✅ Idempotent</span>
+                </td>
             </tr>
             <tr>
-                <td><mark class="hl-purple">PATCH</mark></td>
+                <td><span class="protocol-tag" style="background: var(--pastel-purple); font-weight: 800;">PATCH</span></td>
                 <td><strong>Update (Partial)</strong></td>
                 <td><code>PATCH /api/v1/products/123</code></td>
-                <td><span style="color:#dc2626; font-weight:700;">❌ Not Safe</span></td>
-                <td><span style="color:#dc2626; font-weight:700;">❌ Not Idempotent</span></td>
+                <td style="text-align: center;">
+                    <span style="background: var(--pastel-pink); color: var(--text-main); font-weight: 800; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid var(--pastel-pink-dark); display: inline-block;">❌ Unsafe</span>
+                </td>
+                <td style="text-align: center;">
+                    <span style="background: var(--pastel-pink); color: var(--text-main); font-weight: 800; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid var(--pastel-pink-dark); display: inline-block;">❌ Non-Idempotent*</span>
+                </td>
             </tr>
             <tr>
-                <td><mark class="hl-pink">DELETE</mark></td>
-                <td><strong>Delete</strong></td>
+                <td><span class="protocol-tag" style="background: var(--pastel-pink); font-weight: 800;">DELETE</span></td>
+                <td><strong>Delete / Destroy</strong></td>
                 <td><code>DELETE /api/v1/products/123</code></td>
-                <td><span style="color:#dc2626; font-weight:700;">❌ Not Safe</span></td>
-                <td><span style="color:#16a34a; font-weight:700;">✅ Idempotent</span></td>
+                <td style="text-align: center;">
+                    <span style="background: var(--pastel-pink); color: var(--text-main); font-weight: 800; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid var(--pastel-pink-dark); display: inline-block;">❌ Unsafe</span>
+                </td>
+                <td style="text-align: center;">
+                    <span style="background: var(--pastel-green); color: var(--text-main); font-weight: 800; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid var(--pastel-green-dark); display: inline-block;">✅ Idempotent</span>
+                </td>
             </tr>
         </tbody>
     </table>
 
     <div class="card-grid" style="margin-top: 1.25rem;">
-        <StickyNote type="yellow" title="🔒 Definition: Safe">
-            <p style="font-size:0.9rem;">
-                <strong>Safe Methods</strong> do NOT modify any server or database state. Calling them only inspects data (e.g. <code>GET</code>, <code>HEAD</code>).
+        <StickyNote type="yellow" title="🔒 Definition: Safe Methods">
+            <p style="font-size:0.9rem; line-height: 1.6;">
+                <strong>Safe Methods</strong> are strictly read-only and guarantee <em>zero server-side state mutation</em>. Clients can pre-fetch, cache, and execute them unconditionally (e.g., <code>GET</code>, <code>HEAD</code>, <code>OPTIONS</code>).
             </p>
         </StickyNote>
 
-        <StickyNote type="sky" title="🔁 Definition: Idempotent">
-            <p style="font-size:0.9rem;">
-                <strong>Idempotent Methods</strong> produce the <em>exact same server state</em> whether executed once or repeated 1,000 times (e.g. <code>PUT</code>, <code>DELETE</code>, <code>GET</code>).
+        <StickyNote type="sky" title="🔁 Definition: Idempotent Methods">
+            <p style="font-size:0.9rem; line-height: 1.6;">
+                <strong>Idempotent Methods</strong> produce the <em>exact same server state</em> whether executed 1 time or repeated 1,000 times ($f(f(x)) = f(x)$). Crucial for safe automatic network retries during network timeouts (e.g., <code>PUT</code>, <code>DELETE</code>, <code>GET</code>).
             </p>
         </StickyNote>
     </div>
@@ -287,49 +409,113 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-purple);">5</span>
-        HTTP Status Codes & Error Handling
+        HTTP Status Codes & Standardized Error Handling
     </div>
 
-    <p>Clean REST APIs communicate outcome semantics using standardized 3-digit HTTP status codes:</p>
+    <p>Well-engineered REST APIs communicate operational outcomes using standardized 3-digit HTTP status codes. Avoid returning <code>200 OK</code> with an embedded error payload.</p>
 
+    {/* 4 Status Code Range Cards */}
     <div class="card-grid">
         
         {/* 2xx Success */}
         <GoodNotesCard title="🟢 2xx: Success" accent="green">
-            <ul style="font-size: 0.85rem; padding-left: 1.2rem; line-height: 1.7;">
-                <li><strong>200 OK:</strong> Request succeeded (e.g. <code>GET /products/123</code> - successfully retrieved).</li>
-                <li><strong>201 Created:</strong> New resource generated (e.g. <code>POST /products</code> - created product).</li>
-                <li><strong>204 No Content:</strong> Succeeded, no response body (e.g. <code>DELETE /products/123</code>).</li>
-            </ul>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-green); font-weight: 800;">200 OK</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Standard successful response (GET, PUT, PATCH).</span>
+                </div>
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-green); font-weight: 800;">201 Created</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">New resource created (returns <code>Location</code> header).</span>
+                </div>
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-green); font-weight: 800;">204 No Content</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Action succeeded; no body returned (e.g., DELETE).</span>
+                </div>
+            </div>
         </GoodNotesCard>
 
         {/* 3xx Redirection */}
         <GoodNotesCard title="🟡 3xx: Redirection" accent="yellow">
-            <ul style="font-size: 0.85rem; padding-left: 1.2rem; line-height: 1.7;">
-                <li><strong>301 Moved Permanently:</strong> Resource relocated to new URI.</li>
-                <li><strong>304 Not Modified:</strong> Cached copy valid; client can reuse.</li>
-            </ul>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-yellow); font-weight: 800;">301 Moved Permanently</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Target resource permanently assigned new URI.</span>
+                </div>
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-yellow); font-weight: 800;">304 Not Modified</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Conditional GET: cached client copy is still valid.</span>
+                </div>
+            </div>
         </GoodNotesCard>
 
         {/* 4xx Client Errors */}
         <GoodNotesCard title="🟠 4xx: Client Errors" accent="orange">
-            <ul style="font-size: 0.85rem; padding-left: 1.2rem; line-height: 1.7;">
-                <li><strong>400 Bad Request:</strong> Invalid payload syntax or malformed query parameters.</li>
-                <li><strong>401 Unauthorized:</strong> Missing or invalid authentication token.</li>
-                <li><strong>403 Forbidden:</strong> Authenticated but lacks required permission.</li>
-                <li><strong>404 Not Found:</strong> Resource does not exist (e.g. <code>GET /products/999</code>).</li>
-            </ul>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-orange); font-weight: 800;">400 Bad Request</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Malformed JSON payload or invalid query syntax.</span>
+                </div>
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-orange); font-weight: 800;">401 Unauthorized</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Missing, invalid, or expired authentication token.</span>
+                </div>
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-orange); font-weight: 800;">403 Forbidden</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Authenticated client lacks sufficient RBAC permissions.</span>
+                </div>
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-orange); font-weight: 800;">404 Not Found</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Requested resource URI does not exist.</span>
+                </div>
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-orange); font-weight: 800;">429 Too Many Requests</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Rate limit exceeded (returns <code>Retry-After</code> header).</span>
+                </div>
+            </div>
         </GoodNotesCard>
 
         {/* 5xx Server Errors */}
         <GoodNotesCard title="🔴 5xx: Server Errors" accent="pink">
-            <ul style="font-size: 0.85rem; padding-left: 1.2rem; line-height: 1.7;">
-                <li><strong>500 Internal Server Error:</strong> Unexpected crash or unhandled server-side exception.</li>
-                <li><strong>502 Bad Gateway:</strong> Upstream server failure via proxy / load balancer.</li>
-                <li><strong>503 Service Unavailable:</strong> Server overloaded or undergoing maintenance.</li>
-            </ul>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-pink); font-weight: 800;">500 Internal Error</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Unhandled backend exception or database failure.</span>
+                </div>
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-pink); font-weight: 800;">502 Bad Gateway</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Reverse proxy / Load Balancer received invalid upstream response.</span>
+                </div>
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-pink); font-weight: 800;">503 Unavailable</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Server temporarily overloaded or undergoing scheduled maintenance.</span>
+                </div>
+                <div>
+                    <span class="protocol-tag" style="background: var(--pastel-pink); font-weight: 800;">504 Gateway Timeout</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.35rem;">Upstream microservice timed out during proxy processing.</span>
+                </div>
+            </div>
         </GoodNotesCard>
 
+    </div>
+
+    {/* RFC 7807 Standard Error Response */}
+    <div style="margin-top: 1.5rem;">
+        <CodeSticker title="📋 RFC 7807: Standardized Problem Details Error Payload" copyLabel="Copy JSON">
+<pre><code>&#123;
+  <span class="sql-type">"type"</span>: <span class="sql-str">"https://api.example.com/errors/insufficient-inventory"</span>,
+  <span class="sql-type">"title"</span>: <span class="sql-str">"Insufficient Inventory"</span>,
+  <span class="sql-type">"status"</span>: <span class="sql-num">422</span>,
+  <span class="sql-type">"detail"</span>: <span class="sql-str">"Product 101 only has 2 items in stock, but 5 were requested."</span>,
+  <span class="sql-type">"instance"</span>: <span class="sql-str">"/orders/checkout/req_9874"</span>,
+  <span class="sql-type">"invalid_params"</span>: [
+    &#123;
+      <span class="sql-type">"name"</span>: <span class="sql-str">"quantity"</span>,
+      <span class="sql-type">"reason"</span>: <span class="sql-str">"Quantity requested exceeds available stock"</span>
+    &#125;
+  ]
+&#125;</code></pre>
+        </CodeSticker>
     </div>
 </div>
 
@@ -337,42 +523,75 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-orange);">6</span>
-        API Design Best Practices: Poor vs. Good Design
+        API Design Best Practices: Anti-Patterns vs. REST Standards
     </div>
 
-    <StickyNote type="sky" title="📋 4 Core API Design Principles:">
+    <StickyNote type="sky" title="📋 4 Golden Principles of RESTful API Architecture:">
         <ol style="font-size: 0.95rem; padding-left: 1.2rem; line-height: 1.7; margin: 0.25rem 0 0 0;">
-            <li><strong>Use plural nouns for resources:</strong> e.g., <code>/users</code>, <code>/orders</code> (never verbs).</li>
-            <li><strong>Keep URLs consistent and hierarchical:</strong> Reflect resource parentage cleanly (<code>/products/123/reviews</code>).</li>
-            <li><strong>Support filtering, sorting, and pagination:</strong> Always provide query modifiers on collection routes.</li>
-            <li><strong>Version your APIs:</strong> Explicitly prefix routes with version identifiers (<code>/api/v1/...</code>) to prevent breaking client changes.</li>
+            <li><strong>Use Plural Nouns for Resources:</strong> Never embed verbs in URIs (use <code>/users</code>, <code>/orders</code>).</li>
+            <li><strong>Model Hierarchical Parentage Intuitively:</strong> Reflect ownership via clean paths (<code>/products/123/reviews</code>).</li>
+            <li><strong>Expose Expressive Query Modifiers:</strong> Provide filtering, sorting, and pagination on all collection routes.</li>
+            <li><strong>Explicit API Versioning:</strong> Always prefix paths with version identifiers (<code>/api/v1/...</code>) to ensure backward compatibility.</li>
         </ol>
     </StickyNote>
 
-    <h4 style="font-family: var(--font-title); font-size: 1.15rem; margin: 1.75rem 0 0.75rem 0;">
-        ⚖️ Poor Design vs. Good Design Direct Comparison:
+    <h4 style="font-family: var(--font-title); font-size: 1.2rem; margin: 1.75rem 0 0.75rem 0; display: flex; align-items: center; gap: 8px;">
+        <span>⚖️</span> Direct Comparison: Anti-Patterns vs. RESTful Standards
     </h4>
 
     <table class="table-paper">
         <thead>
             <tr>
-                <th style="width: 50%; color: #dc2626;">❌ Poor API Design (Anti-Pattern)</th>
-                <th style="width: 50%; color: #16a34a;">✅ Good API Design (RESTful Standard)</th>
+                <th style="width: 50%; background: var(--pastel-pink);">❌ Poor API Design (Anti-Pattern)</th>
+                <th style="width: 50%; background: var(--pastel-green);">✅ Good API Design (RESTful Standard)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td><code>GET /getUser/123</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">Verb in URI path + singular noun</span></td>
-                <td><code>GET /api/v1/users/123</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">HTTP GET verb with plural noun</span></td>
+                <td>
+                    <div style="font-family: var(--font-code); font-size: 0.88rem; color: #ef4444; font-weight: 700;">GET /getUser/123</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">⚠️ Anti-Pattern: Action verb embedded in URI path + singular noun.</div>
+                </td>
+                <td>
+                    <div style="font-family: var(--font-code); font-size: 0.88rem; color: #16a34a; font-weight: 700;">GET /api/v1/users/123</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">✅ REST: Standard HTTP GET verb targeting plural collection with version.</div>
+                </td>
             </tr>
             <tr>
-                <td><code>POST /users/123/delete</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">Action verb endpoint instead of HTTP method</span></td>
-                <td><code>DELETE /api/v1/users/123</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">Clean HTTP DELETE verb on target URI</span></td>
+                <td>
+                    <div style="font-family: var(--font-code); font-size: 0.88rem; color: #ef4444; font-weight: 700;">POST /users/123/delete</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">⚠️ Anti-Pattern: RPC-style method disguised inside a POST request.</div>
+                </td>
+                <td>
+                    <div style="font-family: var(--font-code); font-size: 0.88rem; color: #16a34a; font-weight: 700;">DELETE /api/v1/users/123</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">✅ REST: Idempotent HTTP DELETE method on target resource identifier.</div>
+                </td>
             </tr>
             <tr>
-                <td><code>GET /products?page=3</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">Incomplete pagination without limits or sort order</span></td>
-                <td><code>GET /api/v1/products?page=3&limit=25&sort=price:desc</code> <br /><span style="font-size:0.8rem; color:var(--text-muted);">Full query modifiers with limit and sort</span></td>
+                <td>
+                    <div style="font-family: var(--font-code); font-size: 0.88rem; color: #ef4444; font-weight: 700;">GET /products (returning 50,000 items)</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">⚠️ Anti-Pattern: Unbounded full-table database dumps risking server OOM.</div>
+                </td>
+                <td>
+                    <div style="font-family: var(--font-code); font-size: 0.88rem; color: #16a34a; font-weight: 700;">GET /api/v1/products?page=1&limit=25&sort=price:asc</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">✅ REST: Bounded pagination envelope with explicit limits and sorting.</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div style="font-family: var(--font-code); font-size: 0.88rem; color: #ef4444; font-weight: 700;">HTTP 200 OK &#123; "error": "Not found" &#125;</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">⚠️ Anti-Pattern: Masking failures under 200 OK breaks CDN caching and clients.</div>
+                </td>
+                <td>
+                    <div style="font-family: var(--font-code); font-size: 0.88rem; color: #16a34a; font-weight: 700;">HTTP 404 Not Found &#123; "title": "User not found" &#125;</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">✅ REST: Standardized status codes conforming to RFC 7807 problem details.</div>
+                </td>
             </tr>
         </tbody>
     </table>
+
+    <QuoteBox 
+        quote="REST is not a protocol or a strict standard—it is an architectural style that leverages existing HTTP capabilities to build scalable, decoupled, and self-descriptive distributed systems."
+        author="Roy Fielding — Architectural Styles and the Design of Network-based Software Architectures"
+    />
 </div>

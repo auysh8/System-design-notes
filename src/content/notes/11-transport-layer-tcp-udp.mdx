@@ -15,23 +15,83 @@ import DiagramPaper from '../../components/DiagramPaper.astro';
 import QuoteBox from '../../components/QuoteBox.astro';
 import CodeSticker from '../../components/CodeSticker.astro';
 
-{/* SECTION 1: WHAT IS COVERED */}
+<QuoteBox 
+    quote="In distributed systems, networking is never magic — it is a deliberate engineering negotiation between reliability guarantees and raw speed."
+    author="Transport Layer Architecture Axiom"
+/>
+
+{/* SECTION 1: OVERVIEW & THE CORE TRADEOFF */}
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-blue);">1</span>
         Transport Layer Overview: Reliability vs. Speed
     </div>
 
-    <p>The <mark class="hl-blue">Transport Layer</mark> is responsible for end-to-end communication, packet delivery, flow control, and error recovery between host applications across a network.</p>
+    <p>The <mark class="hl-blue">Transport Layer (Layer 4)</mark> serves as the foundational communication bridge between application processes running on different host machines across IP networks. It manages end-to-end data transport, session establishment, packet segmentation, and error recovery.</p>
 
-    <div class="card-grid">
-        <GoodNotesCard title="🛡️ TCP: Reliable but Slower" accent="blue">
-            <p><strong>Connection-oriented protocol</strong> that guarantees 100% data delivery in exact sequence with built-in error checking and retransmissions at the cost of slight latency overhead.</p>
+    {/* HERO COMPARISON CARDS */}
+    <div class="card-grid" style="margin-top: 1.25rem;">
+        <GoodNotesCard title="🛡️ TCP (Transmission Control Protocol)" accent="blue">
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                <span class="planner-tag" style="background: var(--pastel-blue); color: var(--pastel-blue-dark); margin: 0; font-size: 0.75rem;">Connection-Oriented</span>
+                <span class="planner-tag" style="background: var(--pastel-green); color: var(--pastel-green-dark); margin: 0; font-size: 0.75rem;">100% Guaranteed Delivery</span>
+                <span class="planner-tag" style="background: var(--pastel-purple); color: var(--pastel-purple-dark); margin: 0; font-size: 0.75rem;">In-Order Stream</span>
+            </div>
+            <p style="font-size: 0.92rem; line-height: 1.6;">
+                Establishes a dedicated full-duplex virtual connection via a <strong>3-Way Handshake</strong>. Implements sequence numbering, acknowledgment tracking (ACKs), sliding-window flow control, and automatic retransmission of lost packets.
+            </p>
+            <div style="margin-top: 0.85rem; padding: 0.6rem 0.85rem; background: var(--paper-bg); border-radius: 8px; border: 1px solid var(--border-soft); font-size: 0.82rem; color: var(--text-muted);">
+                ⚖️ <strong>Trade-off:</strong> High reliability & integrity at the expense of higher connection setup latency and packet overhead (20–60 byte header).
+            </div>
         </GoodNotesCard>
 
-        <GoodNotesCard title="⚡ UDP: Fast but Unreliable" accent="pink">
-            <p><strong>Connectionless, lightweight protocol</strong> that transmits packets immediately without establishing a handshake or waiting for acknowledgments, optimizing purely for minimum latency.</p>
+        <GoodNotesCard title="⚡ UDP (User Datagram Protocol)" accent="pink">
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                <span class="planner-tag" style="background: var(--pastel-pink); color: var(--pastel-pink-dark); margin: 0; font-size: 0.75rem;">Connectionless</span>
+                <span class="planner-tag" style="background: var(--pastel-yellow); color: var(--pastel-yellow-dark); margin: 0; font-size: 0.75rem;">Zero Handshake Latency</span>
+                <span class="planner-tag" style="background: var(--pastel-orange); color: var(--pastel-orange-dark); margin: 0; font-size: 0.75rem;">Fire-and-Forget</span>
+            </div>
+            <p style="font-size: 0.92rem; line-height: 1.6;">
+                Transmits independent datagram chunks immediately without prior session negotiation. Has no acknowledgment system, no retransmissions, and no packet reordering logic.
+            </p>
+            <div style="margin-top: 0.85rem; padding: 0.6rem 0.85rem; background: var(--paper-bg); border-radius: 8px; border: 1px solid var(--border-soft); font-size: 0.82rem; color: var(--text-muted);">
+                ⚖️ <strong>Trade-off:</strong> Blazing-fast 0-RTT speed and ultralight 8-byte header overhead at the expense of potential packet loss and out-of-order delivery.
+            </div>
         </GoodNotesCard>
+    </div>
+
+    {/* HEADER OVERHEAD VISUAL COMPARISON */}
+    <div style="margin-top: 1.5rem; background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 14px; padding: 1.25rem; box-shadow: var(--shadow-card);">
+        <div style="font-family: var(--font-title); font-weight: 800; font-size: 1rem; margin-bottom: 0.75rem; color: var(--text-main); display: flex; align-items: center; justify-content: space-between;">
+            <span>📦 Packet Header Anatomy & Bandwidth Overhead</span>
+            <span class="planner-tag" style="background: var(--pastel-yellow); color: var(--pastel-yellow-dark); margin: 0;">Layer 4 Frame</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+            <div style="background: var(--paper-bg); border: 1.5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem;">
+                <div style="font-weight: 800; color: var(--pastel-blue-dark); font-size: 0.9rem; margin-bottom: 0.35rem;">
+                    🛡️ TCP Header: 20 – 60 Bytes
+                </div>
+                <div style="font-family: var(--font-code); font-size: 0.78rem; color: var(--text-main); line-height: 1.5;">
+                    [Src Port: 16b] [Dst Port: 16b]<br/>
+                    [Sequence Number: 32b]<br/>
+                    [Acknowledgment Number: 32b]<br/>
+                    [Flags: SYN, ACK, FIN, RST, PSH, URG]<br/>
+                    [Window Size: 16b] [Checksum: 16b] [Options...]
+                </div>
+            </div>
+            <div style="background: var(--paper-bg); border: 1.5px solid var(--pastel-pink-dark); border-radius: 10px; padding: 0.85rem;">
+                <div style="font-weight: 800; color: var(--pastel-pink-dark); font-size: 0.9rem; margin-bottom: 0.35rem;">
+                    ⚡ UDP Header: 8 Bytes Fixed
+                </div>
+                <div style="font-family: var(--font-code); font-size: 0.78rem; color: var(--text-main); line-height: 1.5;">
+                    [Source Port: 16 bits (2 Bytes)]<br/>
+                    [Destination Port: 16 bits (2 Bytes)]<br/>
+                    [Total Length: 16 bits (2 Bytes)]<br/>
+                    [Checksum: 16 bits (2 Bytes)]<br/>
+                    <span style="color: var(--pastel-green-dark); font-weight: 700;">✨ That's it! 100% pure payload efficiency.</span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -39,24 +99,58 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-green);">2</span>
-        TCP (Transmission Control Protocol)
+        TCP (Transmission Control Protocol) Deep-Dive
     </div>
 
-    <StickyNote type="sky" title="🔒 Key Characteristics of TCP:">
-        <ul style="font-size: 0.95rem; margin: 0.25rem 0 0 1.2rem; line-height: 1.7;">
-            <li><strong>Guaranteed Packet Delivery:</strong> Every sent packet must be confirmed with an acknowledgment (ACK).</li>
-            <li><strong>Connection-Based:</strong> Requires a formal <strong>3-Way Handshake</strong> before any payload data transfers.</li>
-            <li><strong>Ordered Packets:</strong> Packets contain sequence numbers; out-of-order packets are reassembled correctly by the receiver.</li>
-            <li><strong>Error Checking & Retransmission:</strong> Corrupted or dropped packets trigger timeouts and automatic re-sends.</li>
-        </ul>
+    <p><mark class="hl-green">TCP</mark> is engineered for guaranteed reliability. It treats communication as a continuous, reliable byte stream rather than isolated messages.</p>
+
+    <StickyNote type="sky" title="🔒 The 4 Pillars of TCP Reliability:">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.5rem;">
+            <div style="background: var(--paper-card); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                <strong>1. Delivery Guarantee:</strong> Every packet is tracked. Missing packets are automatically resent.
+            </div>
+            <div style="background: var(--paper-card); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                <strong>2. Ordered Delivery:</strong> Sequence numbers ensure segments are reassembled in exact order.
+            </div>
+            <div style="background: var(--paper-card); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                <strong>3. Flow Control:</strong> Prevents a fast sender from overwhelming a slow receiver buffer (Sliding Window).
+            </div>
+            <div style="background: var(--paper-card); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                <strong>4. Congestion Control:</strong> Adjusts sending rates based on network capacity (Slow Start, AIMD).
+            </div>
+        </div>
     </StickyNote>
 
-    <div style="margin-top: 1.25rem;">
-        <GoodNotesCard title="💼 Best Suitable For:" accent="green">
-            <p style="font-size:0.95rem;">
-                Critical workloads where <strong>zero data loss</strong> is required: 
-                <strong>Payment Gateways, Banking Transactions, User Authentication APIs, File Transfers (FTP/SFTP), Emails (SMTP/IMAP), and Web Pages (HTTP/HTTPS)</strong>.
+    <div class="card-grid" style="margin-top: 1.5rem;">
+        <GoodNotesCard title="🌊 Flow Control: Sliding Window" accent="blue">
+            <p style="font-size: 0.9rem;">
+                The receiver continuously advertises its available buffer space (<strong>Receive Window: rwnd</strong>) in every ACK packet. The sender ensures in-flight unacknowledged bytes never exceed this limit, preventing buffer overflow and dropped frames.
             </p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="🚦 Congestion Control: AIMD" accent="green">
+            <p style="font-size: 0.9rem;">
+                <strong>Additive Increase / Multiplicative Decrease:</strong> The sender starts with a small Congestion Window (cwnd) during <em>Slow Start</em>, scales linearly while ACKs arrive smoothly, and aggressively cuts the rate in half upon detecting packet loss.
+            </p>
+        </GoodNotesCard>
+    </div>
+
+    <div style="margin-top: 1.25rem;">
+        <GoodNotesCard title="💼 Prime Production Use Cases for TCP:" accent="green">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.75rem; margin-top: 0.5rem; font-size: 0.88rem;">
+                <div style="background: var(--paper-bg); padding: 0.6rem 0.85rem; border-radius: 8px; border-left: 3px solid var(--pastel-green-dark);">
+                    <strong>💳 Payments & Banking:</strong> Stripe, PayPal, SWIFT transfers (zero tolerance for dropped transactions).
+                </div>
+                <div style="background: var(--paper-bg); padding: 0.6rem 0.85rem; border-radius: 8px; border-left: 3px solid var(--pastel-blue-dark);">
+                    <strong>🌐 Web & APIs:</strong> HTTPS / REST / GraphQL / gRPC / WebSocket over TLS.
+                </div>
+                <div style="background: var(--paper-bg); padding: 0.6rem 0.85rem; border-left: 3px solid var(--pastel-purple-dark); border-radius: 8px;">
+                    <strong>🔑 Auth & Tokens:</strong> OAuth2, JWT verification, session cookie updates.
+                </div>
+                <div style="background: var(--paper-bg); padding: 0.6rem 0.85rem; border-left: 3px solid var(--pastel-orange-dark); border-radius: 8px;">
+                    <strong>📁 File & Data Storage:</strong> SFTP, FTP, database replication streams (PostgreSQL/MySQL WAL logs).
+                </div>
+            </div>
         </GoodNotesCard>
     </div>
 </div>
@@ -65,197 +159,341 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-yellow);">3</span>
-        UDP (User Datagram Protocol)
+        UDP (User Datagram Protocol) Deep-Dive
     </div>
 
-    <StickyNote type="yellow" title="⚡ Key Characteristics of UDP:">
-        <ul style="font-size: 0.95rem; margin: 0.25rem 0 0 1.2rem; line-height: 1.7;">
-            <li><strong>No Delivery Guarantee:</strong> Fire-and-forget datagram delivery with no acknowledgment mechanism.</li>
-            <li><strong>Connectionless:</strong> No handshake setup or teardown state stored on sender or receiver.</li>
-            <li><strong>Faster Transmission:</strong> Zero waiting time for connection establishment or lost packet recovery.</li>
-            <li><strong>Minimal Protocol Overhead:</strong> 8-byte lightweight header compared to TCP's 20–60 byte header.</li>
-        </ul>
+    <p><mark class="hl-yellow">UDP</mark> strips away connection state, flow control, and retransmission logic in exchange for the lowest possible latency and minimal CPU/network overhead.</p>
+
+    <StickyNote type="yellow" title="⚡ The 4 Pillars of UDP Architecture:">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.5rem;">
+            <div style="background: var(--paper-card); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                <strong>1. 0-RTT Connectionless:</strong> No handshake setup or teardown. First packet carries actual application data.
+            </div>
+            <div style="background: var(--paper-card); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                <strong>2. Head-of-Line Free:</strong> Dropping packet #3 does not stall packet #4 from reaching the application immediately.
+            </div>
+            <div style="background: var(--paper-card); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                <strong>3. Ultralight 8B Overhead:</strong> Maximizes useful data payload ratio per Ethernet frame (MTU 1500 bytes).
+            </div>
+            <div style="background: var(--paper-card); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                <strong>4. Multicast / Broadcast:</strong> Able to stream one packet to thousands of receivers simultaneously.
+            </div>
+        </div>
     </StickyNote>
 
-    <div style="margin-top: 1.25rem;">
-        <GoodNotesCard title="🎮 Best Suitable For:" accent="purple">
-            <p style="font-size:0.95rem;">
-                Time-sensitive applications where <strong>speed matters more than occasional dropped packets</strong>: 
-                <strong>Live Video Calling (WebRTC / Zoom), Live Video Streaming (Twitch / YouTube Live), Multiplayer Online Gaming, Voice over IP (VoIP), and DNS Queries</strong>.
+    <div class="card-grid" style="margin-top: 1.5rem;">
+        <GoodNotesCard title="🚫 Eliminating Head-of-Line (HoL) Blocking" accent="pink">
+            <p style="font-size: 0.9rem;">
+                In TCP, if segment 3 is lost, segments 4 and 5 must sit buffered in the operating system kernel until segment 3 is retransmitted. <strong>UDP passes segments directly to the application layer</strong> as soon as they arrive, preserving real-time flow.
             </p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="📡 Broadcast & IP Multicast" accent="yellow">
+            <p style="font-size: 0.9rem;">
+                Because UDP doesn't maintain two-way connection state machines, a single sender can broadcast datagrams across an entire LAN subnet or multicast stock market quotes to millions of subscribing trading terminals.
+            </p>
+        </GoodNotesCard>
+    </div>
+
+    <div style="margin-top: 1.25rem;">
+        <GoodNotesCard title="🎮 Prime Production Use Cases for UDP:" accent="purple">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.75rem; margin-top: 0.5rem; font-size: 0.88rem;">
+                <div style="background: var(--paper-bg); padding: 0.6rem 0.85rem; border-radius: 8px; border-left: 3px solid var(--pastel-pink-dark);">
+                    <strong>🎮 Multiplayer Gaming:</strong> Player positions & physics state (a stale coordinate resent 200ms late is useless).
+                </div>
+                <div style="background: var(--paper-bg); padding: 0.6rem 0.85rem; border-radius: 8px; border-left: 3px solid var(--pastel-purple-dark);">
+                    <strong>📹 Real-Time Audio/Video:</strong> WebRTC, Zoom, Discord, Google Meet (prefer brief glitch over audio lag).
+                </div>
+                <div style="background: var(--paper-bg); padding: 0.6rem 0.85rem; border-left: 3px solid var(--pastel-yellow-dark); border-radius: 8px;">
+                    <strong>🔍 DNS Lookups (Port 53):</strong> Lightweight single-request domain-to-IP resolution queries.
+                </div>
+                <div style="background: var(--paper-bg); padding: 0.6rem 0.85rem; border-left: 3px solid var(--pastel-blue-dark); border-radius: 8px;">
+                    <strong>📊 Metrics & Telemetry:</strong> StatsD, Prometheus UDP exporters, syslog log shippers (high throughput).
+                </div>
+            </div>
         </GoodNotesCard>
     </div>
 </div>
 
-{/* SECTION 4: 3-WAY HANDSHAKE IN TCP */}
+{/* SECTION 4: VISUALLY STUNNING 3-WAY HANDSHAKE */}
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-purple);">4</span>
-        The TCP 3-Way Handshake
+        The TCP 3-Way Handshake (SYN ➔ SYN-ACK ➔ ACK)
     </div>
 
-    <p>Before exchanging application data, a TCP client and server synchronize sequence numbers and establish a trusted full-duplex session using 3 signaling steps:</p>
+    <p>Before exchanging application payload data, the client and server must agree on <strong>Initial Sequence Numbers (ISNs)</strong>, verify two-way reachability, and allocate operating system buffer resources.</p>
 
-    <DiagramPaper title="🤝 TCP 3-Way Handshake Connection Flow">
-        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 680px; margin: 0 auto;">
+    <DiagramPaper title="🤝 Visual TCP 3-Way Handshake & State Machine Ladder">
+        <div style="max-width: 780px; margin: 0 auto;">
             
-            {/* Step 1: SYN */}
-            <div style="display: flex; align-items: center; justify-content: space-between; background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem; box-shadow: 3px 3px 0px var(--text-main);">
-                <div style="font-weight: 800; font-size: 1.05rem; min-width: 90px; color: var(--pastel-blue-dark);">💻 Client</div>
-                <div style="flex: 1; text-align: center; font-weight: 700; font-family: var(--font-code); color: #0284c7; padding: 0 0.75rem;">
-                    ─── SYN (Synchronize Sequence #) ────────▶
+            {/* ACTOR HEADERS WITH STATE PILLS */}
+            <div style="display: grid; grid-template-columns: 1fr 1.6fr 1fr; align-items: center; margin-bottom: 1.75rem; text-align: center;">
+                <div style="background: var(--paper-card); border: 2px solid var(--pastel-blue-dark); border-radius: 12px; padding: 0.75rem; box-shadow: 3px 3px 0px var(--text-main);">
+                    <div style="font-size: 1.15rem; font-weight: 800; color: var(--pastel-blue-dark); font-family: var(--font-title);">💻 Client</div>
+                    <div style="font-size: 0.75rem; font-family: var(--font-code); color: var(--text-muted); margin-top: 0.2rem;">State: <span style="color: var(--pastel-blue-dark); font-weight: 700;">CLOSED</span></div>
                 </div>
-                <div style="font-weight: 800; font-size: 1.05rem; min-width: 90px; text-align: right; color: var(--pastel-green-dark);">🖥️ Server</div>
+                
+                <div style="font-family: var(--font-title); font-size: 0.85rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+                    ⚡ Full-Duplex Negotiation
+                </div>
+
+                <div style="background: var(--paper-card); border: 2px solid var(--pastel-green-dark); border-radius: 12px; padding: 0.75rem; box-shadow: 3px 3px 0px var(--text-main);">
+                    <div style="font-size: 1.15rem; font-weight: 800; color: var(--pastel-green-dark); font-family: var(--font-title);">🖥️ Server</div>
+                    <div style="font-size: 0.75rem; font-family: var(--font-code); color: var(--text-muted); margin-top: 0.2rem;">State: <span style="color: var(--pastel-green-dark); font-weight: 700;">LISTEN</span></div>
+                </div>
             </div>
 
-            {/* Step 2: SYN-ACK */}
-            <div style="display: flex; align-items: center; justify-content: space-between; background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem; box-shadow: 3px 3px 0px var(--text-main);">
-                <div style="font-weight: 800; font-size: 1.05rem; min-width: 90px; color: var(--pastel-blue-dark);">💻 Client</div>
-                <div style="flex: 1; text-align: center; font-weight: 700; font-family: var(--font-code); color: #16a34a; padding: 0 0.75rem;">
-                    ◀──────── SYN-ACK (Acknowledge & Sync) ───
+            {/* HANDSHAKE STEPS FLOW */}
+            <div style="display: flex; flex-direction: column; gap: 1.25rem; position: relative;">
+                
+                {/* STEP 1: SYN */}
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-left: 6px solid var(--pastel-blue-dark); border-radius: 12px; padding: 1.1rem; box-shadow: 4px 4px 0px var(--text-main);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.6rem;">
+                        <span class="planner-tag" style="background: var(--pastel-blue); color: var(--pastel-blue-dark); font-weight: 800; margin: 0;">
+                            Step 1: Client ➔ Server
+                        </span>
+                        <span style="font-family: var(--font-code); font-weight: 700; font-size: 0.82rem; background: var(--paper-bg); padding: 0.2rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-soft);">
+                            Flags: [SYN=1, ACK=0]
+                        </span>
+                    </div>
+                    <div style="font-family: var(--font-code); font-size: 0.95rem; font-weight: 800; color: var(--pastel-blue-dark); display: flex; align-items: center; gap: 0.5rem;">
+                        <span>💻</span> <span>SYN (Seq = 1000)</span> <span>──────────────▶</span> <span>🖥️</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-main); margin-top: 0.5rem; line-height: 1.5; background: var(--paper-bg); padding: 0.5rem 0.75rem; border-radius: 6px;">
+                        💬 <strong>Client Annotation:</strong> <em>"Hello! I want to open a connection. My Initial Sequence Number (ISN) is 1000."</em><br/>
+                        <span style="font-size: 0.78rem; color: var(--text-muted);">Client transitions to state: <strong>SYN_SENT</strong></span>
+                    </div>
                 </div>
-                <div style="font-weight: 800; font-size: 1.05rem; min-width: 90px; text-align: right; color: var(--pastel-green-dark);">🖥️ Server</div>
+
+                {/* STEP 2: SYN-ACK */}
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-left: 6px solid var(--pastel-green-dark); border-radius: 12px; padding: 1.1rem; box-shadow: 4px 4px 0px var(--text-main);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.6rem;">
+                        <span class="planner-tag" style="background: var(--pastel-green); color: var(--pastel-green-dark); font-weight: 800; margin: 0;">
+                            Step 2: Server ➔ Client
+                        </span>
+                        <span style="font-family: var(--font-code); font-weight: 700; font-size: 0.82rem; background: var(--paper-bg); padding: 0.2rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-soft);">
+                            Flags: [SYN=1, ACK=1]
+                        </span>
+                    </div>
+                    <div style="font-family: var(--font-code); font-size: 0.95rem; font-weight: 800; color: var(--pastel-green-dark); display: flex; align-items: center; gap: 0.5rem;">
+                        <span>💻</span> <span>◀────────────── SYN-ACK (Seq = 5000, Ack = 1001)</span> <span>🖥️</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-main); margin-top: 0.5rem; line-height: 1.5; background: var(--paper-bg); padding: 0.5rem 0.75rem; border-radius: 6px;">
+                        💬 <strong>Server Annotation:</strong> <em>"Acknowledged your Seq 1000 (expecting 1001 next). My own ISN is 5000. Let's sync!"</em><br/>
+                        <span style="font-size: 0.78rem; color: var(--text-muted);">Server transitions to state: <strong>SYN_RECEIVED</strong></span>
+                    </div>
+                </div>
+
+                {/* STEP 3: ACK */}
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-left: 6px solid var(--pastel-purple-dark); border-radius: 12px; padding: 1.1rem; box-shadow: 4px 4px 0px var(--text-main);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.6rem;">
+                        <span class="planner-tag" style="background: var(--pastel-purple); color: var(--pastel-purple-dark); font-weight: 800; margin: 0;">
+                            Step 3: Client ➔ Server
+                        </span>
+                        <span style="font-family: var(--font-code); font-weight: 700; font-size: 0.82rem; background: var(--paper-bg); padding: 0.2rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-soft);">
+                            Flags: [SYN=0, ACK=1]
+                        </span>
+                    </div>
+                    <div style="font-family: var(--font-code); font-size: 0.95rem; font-weight: 800; color: var(--pastel-purple-dark); display: flex; align-items: center; gap: 0.5rem;">
+                        <span>💻</span> <span>ACK (Seq = 1001, Ack = 5001)</span> <span>──────────────▶</span> <span>🖥️</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-main); margin-top: 0.5rem; line-height: 1.5; background: var(--paper-bg); padding: 0.5rem 0.75rem; border-radius: 6px;">
+                        💬 <strong>Client Annotation:</strong> <em>"Got your Seq 5000! Acknowledged (expecting 5001). Handshake complete — sending payload data now!"</em><br/>
+                        <span style="font-size: 0.78rem; color: var(--text-muted);">Both Client & Server transition to: <strong style="color: var(--pastel-green-dark);">ESTABLISHED</strong></span>
+                    </div>
+                </div>
+
             </div>
 
-            {/* Step 3: ACK */}
-            <div style="display: flex; align-items: center; justify-content: space-between; background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem; box-shadow: 3px 3px 0px var(--text-main);">
-                <div style="font-weight: 800; font-size: 1.05rem; min-width: 90px; color: var(--pastel-blue-dark);">💻 Client</div>
-                <div style="flex: 1; text-align: center; font-weight: 700; font-family: var(--font-code); color: #a855f7; padding: 0 0.75rem;">
-                    ─── ACK (Established! Ready for Data) ────▶
-                </div>
-                <div style="font-weight: 800; font-size: 1.05rem; min-width: 90px; text-align: right; color: var(--pastel-green-dark);">🖥️ Server</div>
+            {/* SUCCESS BANNER */}
+            <div style="margin-top: 1.5rem; background: var(--pastel-green); border: 2px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1.25rem; text-align: center; color: var(--text-main); font-weight: 700; font-size: 0.92rem;">
+                🎉 Connection Established! Two-way full-duplex byte streaming channel is live.
             </div>
 
         </div>
     </DiagramPaper>
+
+    {/* BONUS TEARDOWN NOTE */}
+    <div style="margin-top: 1.5rem;">
+        <StickyNote type="lavender" title="🛑 Bonus Concept: TCP 4-Way Teardown (Connection Termination)">
+            <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">
+                Gracefully closing a TCP connection requires <strong>4 signaling messages</strong> because TCP is full-duplex (each half-connection must be closed independently):
+            </p>
+            <div style="font-family: var(--font-code); font-size: 0.85rem; background: var(--paper-card); padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-soft); line-height: 1.6;">
+                1. Client ➔ <code>FIN</code> (I am done sending data)<br/>
+                2. Server ➔ <code>ACK</code> (Got your close request; completing pending writes)<br/>
+                3. Server ➔ <code>FIN</code> (I am also done sending data)<br/>
+                4. Client ➔ <code>ACK</code> (Acknowledged! Enters <code>TIME_WAIT</code> for 2×MSL before closing)
+            </div>
+        </StickyNote>
+    </div>
 </div>
 
-{/* SECTION 5: PACKET DELIVERY & ERROR RECOVERY COMPARISON */}
+{/* SECTION 5: PACKET LOSS & RETRANSMISSION LADDER */}
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-pink);">5</span>
-        Packet Delivery & Loss Handling: TCP vs. UDP
+        Packet Delivery & Loss Handling: TCP vs. UDP Side-by-Side
     </div>
 
-    <p>The core practical difference between TCP and UDP appears when network congestion or physical drops cause a packet to be lost during transit.</p>
+    <p>What happens when physical router drops or wireless interference corrupts a packet in transit? Here is the exact side-by-side operational comparison:</p>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.25rem;">
+    <div class="sequence-comparison-grid">
         
-        {/* TCP Flow Card */}
-        <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-blue-dark); padding: 1.25rem;">
-            <div style="font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: var(--pastel-blue-dark); margin-bottom: 0.5rem; text-align: center;">
-                🛡️ TCP: "Reliable But Slower"
-            </div>
-            <div style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-bottom: 1rem;">
-                Source ➔ Destination Transmission Ladder
+        {/* TCP TRANSMISSION LADDER */}
+        <div class="sequence-box" style="border-top: 5px solid var(--pastel-blue-dark);">
+            <div class="sequence-header">
+                <span style="color: var(--pastel-blue-dark);">🛡️ TCP: Guaranteed Delivery</span>
+                <span class="planner-tag" style="background: var(--pastel-blue); color: var(--pastel-blue-dark); margin:0;">Zero Loss</span>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 0.6rem; font-family: var(--font-code); font-size: 0.85rem;">
-                <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 6px;">
-                    ① Packet 1 ──────▶ <span style="color:#16a34a; font-weight:700;">[Ack 1 Received ✓]</span>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Every segment requires an ACK. Loss triggers timeout countdown & retransmission.
+            </p>
+
+            <div class="sequence-flow">
+                <div class="seq-item client-req">
+                    <span>💻 Pkt 1 (Seq 100)</span> ➔ <code>In-Flight</code> ➔ <span>🖥️ [ACK 101 ✓]</span>
                 </div>
-                <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 6px;">
-                    ② Packet 2 ──────▶ <span style="color:#16a34a; font-weight:700;">[Ack 2 Received ✓]</span>
+                <div class="seq-item client-req">
+                    <span>💻 Pkt 2 (Seq 101)</span> ➔ <code>In-Flight</code> ➔ <span>🖥️ [ACK 102 ✓]</span>
                 </div>
-                <div style="background: #fee2e2; border: 1.5px dashed #dc2626; color: #991b1b; padding: 0.5rem 0.75rem; border-radius: 6px; font-weight: 700;">
-                    ③ Packet 3 ───❌ <strong>[Packet Loss!]</strong>
+                <div class="seq-item wasted">
+                    <span>💻 Pkt 3 (Seq 102)</span> ➔ <code>Router Drop ❌</code> ➔ <span style="font-weight: 800; color: #dc2626;">[DROPPED!]</span>
                 </div>
-                <div style="background: #fef3c7; border: 1px solid #d97706; color: #92400e; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; text-align: center;">
-                    ⏳ <strong>Timeout Triggered — Awaiting ACK 3</strong>
+                <div style="background: var(--pastel-yellow); border: 1.5px solid var(--pastel-yellow-dark); padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.8rem; font-family: var(--font-code); color: var(--text-main); text-align: center;">
+                    ⏳ <strong>RTO Timeout Expired! (No ACK 103 received)</strong>
                 </div>
-                <div style="background: #dcfce7; border: 1.5px solid #16a34a; color: #166534; padding: 0.5rem 0.75rem; border-radius: 6px;">
-                    ③ Resend Pkt 3 ──▶ <span style="color:#16a34a; font-weight:700;">[Ack 3 Received ✓]</span>
+                <div class="seq-item server-res" style="border-left-color: var(--pastel-green-dark); background: rgba(34, 197, 94, 0.08);">
+                    <span>💻 Resend Pkt 3</span> ➔ <code>Retransmitted</code> ➔ <span>🖥️ [ACK 103 ✓]</span>
+                </div>
+                <div class="seq-item client-req">
+                    <span>💻 Pkt 4 (Seq 103)</span> ➔ <code>In-Flight</code> ➔ <span>🖥️ [ACK 104 ✓]</span>
                 </div>
             </div>
 
-            <div style="margin-top: 1rem; padding: 0.75rem; background: var(--paper-bg); border-radius: 8px; font-size: 0.85rem; text-align: center;">
-                ✅ <strong>Result:</strong> All Data Delivered Without Gaps.<br />
-                <span style="color:var(--text-muted); font-size:0.8rem;">Best for: Banking, Emails, Payments, Auth</span>
+            <div class="goodnotes-card" style="border-top: 4px solid var(--pastel-blue-dark); margin-top: 1rem; padding: 0.85rem;">
+                <h4 style="color: var(--pastel-blue-dark); font-size: 0.95rem; margin-bottom: 0.3rem;">🛡️ Delivery Guarantee Outcome:</h4>
+                <ul style="font-size: 0.85rem; padding-left: 1.2rem; margin: 0; line-height: 1.6;">
+                    <li><strong>100% Data Integrity:</strong> No gaps, zero lost bytes.</li>
+                    <li><strong>Sequence Preservation:</strong> Application receives clean ordered stream.</li>
+                    <li><strong>Latency Cost:</strong> Retransmission causes a momentary latency stall (jitter).</li>
+                </ul>
             </div>
         </div>
 
-        {/* UDP Flow Card */}
-        <div class="goodnotes-card" style="border-top: 5px solid var(--pastel-pink-dark); padding: 1.25rem;">
-            <div style="font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #ec4899; margin-bottom: 0.5rem; text-align: center;">
-                ⚡ UDP: "Fast but Unreliable"
-            </div>
-            <div style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-bottom: 1rem;">
-                Source ➔ Destination Transmission Ladder
+        {/* UDP TRANSMISSION LADDER */}
+        <div class="sequence-box" style="border-top: 5px solid var(--pastel-pink-dark);">
+            <div class="sequence-header">
+                <span style="color: var(--pastel-pink-dark);">⚡ UDP: Fire-and-Forget</span>
+                <span class="planner-tag" style="background: var(--pastel-pink); color: var(--pastel-pink-dark); margin:0;">Zero Latency</span>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 0.6rem; font-family: var(--font-code); font-size: 0.85rem;">
-                <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 6px;">
-                    ① Packet 1 ──────▶ <span style="color:#16a34a; font-weight:700;">[Received ✓]</span>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Packets are blasted immediately. Lost packets are discarded without waiting.
+            </p>
+
+            <div class="sequence-flow">
+                <div class="seq-item client-req" style="border-left-color: var(--pastel-pink-dark);">
+                    <span>💻 Frame 1</span> ➔ <code>0-RTT Blast</code> ➔ <span>🖥️ [Received ✓]</span>
                 </div>
-                <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 6px;">
-                    ② Packet 2 ──────▶ <span style="color:#16a34a; font-weight:700;">[Received ✓]</span>
+                <div class="seq-item client-req" style="border-left-color: var(--pastel-pink-dark);">
+                    <span>💻 Frame 2</span> ➔ <code>0-RTT Blast</code> ➔ <span>🖥️ [Received ✓]</span>
                 </div>
-                <div style="background: #fee2e2; border: 1.5px dashed #dc2626; color: #991b1b; padding: 0.5rem 0.75rem; border-radius: 6px; font-weight: 700;">
-                    ③ Packet 3 ───❌ <strong>[Packet Loss!]</strong>
+                <div class="seq-item wasted">
+                    <span>💻 Frame 3</span> ➔ <code>Router Drop ❌</code> ➔ <span style="font-weight: 800; color: #dc2626;">[DROPPED!]</span>
                 </div>
-                <div style="background: #f1f5f9; border: 1px solid var(--border-soft); color: var(--text-muted); padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; text-align: center;">
-                    ⏩ <strong>No Resending — Stream Continues Instantly</strong>
+                <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.8rem; font-family: var(--font-code); color: var(--text-muted); text-align: center;">
+                    ⏩ <strong>No Retransmission — Stream Marches Forward Instantly</strong>
                 </div>
-                <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 6px;">
-                    ④ Packet 4 ──────▶ <span style="color:#16a34a; font-weight:700;">[Received ✓]</span>
+                <div class="seq-item client-req" style="border-left-color: var(--pastel-pink-dark);">
+                    <span>💻 Frame 4</span> ➔ <code>0-RTT Blast</code> ➔ <span>🖥️ [Received ✓]</span>
+                </div>
+                <div class="seq-item client-req" style="border-left-color: var(--pastel-pink-dark);">
+                    <span>💻 Frame 5</span> ➔ <code>0-RTT Blast</code> ➔ <span>🖥️ [Received ✓]</span>
                 </div>
             </div>
 
-            <div style="margin-top: 1rem; padding: 0.75rem; background: var(--paper-bg); border-radius: 8px; font-size: 0.85rem; text-align: center;">
-                ⚠️ <strong>Result:</strong> Some Data Dropped (Frame skip / Glitch).<br />
-                <span style="color:var(--text-muted); font-size:0.8rem;">Best for: Video Call, Gaming, Live Streams</span>
+            <div class="goodnotes-card" style="border-top: 4px solid var(--pastel-pink-dark); margin-top: 1rem; padding: 0.85rem;">
+                <h4 style="color: var(--pastel-pink-dark); font-size: 0.95rem; margin-bottom: 0.3rem;">⚡ Speed Maximization Outcome:</h4>
+                <ul style="font-size: 0.85rem; padding-left: 1.2rem; margin: 0; line-height: 1.6;">
+                    <li><strong>Ultra-Low Jitter:</strong> Zero delay spike waiting for dropped segments.</li>
+                    <li><strong>Application Tolerant:</strong> Video codec masks missing frame (pixel interpolation).</li>
+                    <li><strong>Ideal for Real-Time:</strong> Live stream continues smoothly without buffering.</li>
+                </ul>
             </div>
         </div>
 
     </div>
 </div>
 
-{/* SECTION 6: COMPARISON MATRIX */}
+{/* SECTION 6: COMPARISON MATRIX & ARCHITECTURAL CHEAT SHEET */}
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-orange);">6</span>
-        Direct Technical Comparison: TCP vs. UDP
+        Architectural Comparison Matrix & Decision Guide
     </div>
 
     <table class="table-paper">
         <thead>
             <tr>
-                <th>Feature / Metric</th>
-                <th>TCP (Transmission Control Protocol)</th>
-                <th>UDP (User Datagram Protocol)</th>
+                <th style="width: 25%;">Feature / Metric</th>
+                <th style="width: 37.5%; color: var(--pastel-blue-dark);">🛡️ TCP (Transmission Control)</th>
+                <th style="width: 37.5%; color: var(--pastel-pink-dark);">⚡ UDP (User Datagram)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td><strong>Connection Model</strong></td>
-                <td>Connection-oriented (3-Way Handshake)</td>
-                <td>Connectionless (No handshake)</td>
+                <td><mark class="hl-blue">Connection-Oriented</mark> (3-Way Handshake)</td>
+                <td><mark class="hl-pink">Connectionless</mark> (0-RTT, Fire-and-forget)</td>
             </tr>
             <tr>
                 <td><strong>Delivery Guarantee</strong></td>
-                <td>Guaranteed with ACKs & automatic retry</td>
-                <td>No guarantee (Fire-and-forget)</td>
+                <td><strong>100% Guaranteed</strong> (ACK tracking + Retries)</td>
+                <td><strong>Best Effort</strong> (No ACKs, packets may drop)</td>
             </tr>
             <tr>
                 <td><strong>Packet Ordering</strong></td>
-                <td>Strictly in-order sequence assembly</td>
-                <td>No order guarantee</td>
+                <td><strong>Strictly In-Order</strong> (Sequence numbered)</td>
+                <td><strong>No Order Guarantee</strong> (Out-of-order arrival)</td>
             </tr>
             <tr>
-                <td><strong>Header Size Overhead</strong></td>
-                <td>20 – 60 Bytes</td>
-                <td>8 Bytes fixed</td>
+                <td><strong>Header Overhead</strong></td>
+                <td><strong>20 – 60 Bytes</strong> (Heavy metadata flags)</td>
+                <td><strong>8 Bytes Fixed</strong> (Minimal lightweight header)</td>
             </tr>
             <tr>
                 <td><strong>Speed & Latency</strong></td>
-                <td>Slower due to ACKs, flow control & handshake</td>
-                <td>Blazing fast, ultra-low latency</td>
+                <td>Moderate latency (Handshake + ACKs + Head-of-Line wait)</td>
+                <td><strong>Blazing fast</strong>, minimal latency & jitter</td>
             </tr>
             <tr>
-                <td><strong>Ideal Use Cases</strong></td>
-                <td>Payments, Auth, File Transfers, Web Pages</td>
-                <td>Live Streaming, Online Gaming, Video Calls, DNS</td>
+                <td><strong>Flow & Congestion Control</strong></td>
+                <td>Yes (Sliding Window, AIMD, Slow Start)</td>
+                <td>No (Application must implement if needed)</td>
+            </tr>
+            <tr>
+                <td><strong>Broadcast / Multicast</strong></td>
+                <td>No (Strictly Point-to-Point Unicast)</td>
+                <td><strong>Yes</strong> (Unicast, Multicast, Broadcast)</td>
+            </tr>
+            <tr>
+                <td><strong>Typical Protocol Stack</strong></td>
+                <td>HTTP/1.1, HTTP/2, WebSockets, TLS, gRPC, SSH, SFTP</td>
+                <td>DNS, WebRTC, VoIP (SIP/RTP), QUIC (HTTP/3), DHCP, NTP</td>
             </tr>
         </tbody>
     </table>
+
+    {/* MODERN PROTOCOL EVOLUTION: HTTP/3 & QUIC */}
+    <div style="margin-top: 1.75rem;">
+        <StickyNote type="mint" title="🚀 Modern System Design Trend: QUIC & HTTP/3">
+            <p style="font-size: 0.92rem; line-height: 1.6;">
+                <strong>Why choose between TCP and UDP when you can have both?</strong> The latest web standard — <strong>HTTP/3 (QUIC)</strong> — runs on top of <strong>UDP</strong> in the kernel, but implements encryption (TLS 1.3), stream multiplexing, and reliability in user space. This eliminates TCP's Head-of-Line blocking while keeping 100% guaranteed delivery!
+            </p>
+        </StickyNote>
+    </div>
 </div>
+

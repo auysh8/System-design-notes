@@ -10,6 +10,8 @@ const { quote, author = 'Core System Design Philosophy', class: className = '' }
 
 <div class={`quote-callout-card ${className}`.trim()}>
   <div class="quote-mark">“</div>
-  <div class="quote-text">{quote}</div>
+  <div class="quote-text">
+    {quote ? quote : <slot />}
+  </div>
   {author && <div class="quote-author">— {author}</div>}
 </div>

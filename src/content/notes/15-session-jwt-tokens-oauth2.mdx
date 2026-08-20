@@ -22,31 +22,126 @@ import CodeSticker from '../../components/CodeSticker.astro';
         Stateful Session-Based Authentication
     </div>
 
-    <p>In traditional web applications, authentication is <mark class="hl-yellow">Stateful</mark>. The server creates and retains a session record in a centralized data store (e.g. Redis) for every logged-in user:</p>
+    <p>In traditional web applications, authentication is <mark class="hl-yellow">Stateful</mark>. The server creates and retains an active session record in a centralized fast data store (e.g., Redis) for every logged-in client:</p>
 
     {/* Session Flow Sequence Ladder */}
-    <DiagramPaper title="🪜 Session-Based Authentication 8-Step Flow">
-        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
+    <DiagramPaper title="🪜 Session-Based Authentication: 8-Step Stateful Lifecycle">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 780px; margin: 0 auto; font-family: var(--font-body);">
             
-            {/* Header */}
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800;">
-                <div><span style="background: var(--paper-card); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">👤 User</span></div>
-                <div><span style="background: var(--pastel-blue); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🖥️ Web Server</span></div>
-                <div><span style="background: var(--pastel-purple); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🗄️ Session Store (Redis)</span></div>
+            {/* Header Actors */}
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center; border-bottom: 2px dashed var(--border-soft); padding-bottom: 1rem;">
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">👤</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">User / Browser</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Client Agent</span>
+                </div>
+                <div style="background: var(--pastel-blue); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">🖥️</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Web Server</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">App Backend</span>
+                </div>
+                <div style="background: var(--pastel-purple); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">🗄️</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Session Store</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Redis Cluster</span>
+                </div>
             </div>
 
             {/* Sequence Steps */}
-            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.85;">
-                <div><strong>① User ➔ Web Server:</strong> Login with credentials (username & password).</div>
-                <div><strong>② Web Server ➔ Session Store:</strong> Generate cryptographic Session record and store in Redis.</div>
-                <div><strong>③ Session Store ➔ Web Server:</strong> Returns generated <code>Session ID</code>.</div>
-                <div><strong>④ Web Server ➔ User:</strong> Set cookie in response: <code>Set-Cookie: sessionId=xyz123; HttpOnly; Secure; SameSite=Strict</code>.</div>
-                <div style="border-top: 1px solid var(--border-soft); margin: 0.5rem 0; padding-top: 0.5rem;">
-                    <strong>⑤ User ➔ Web Server:</strong> Subsequent request to protected resource with session cookie.
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
+                {/* Phase 1: Login */}
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-yellow-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
+                            Initial Credentials Submission
+                        </span>
+                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Browser ➔ Server</span>
+                    </div>
+                    <div>User submits credentials (<code>POST /login &#123; username, password &#125;</code>) over HTTPS.</div>
                 </div>
-                <div><strong>⑥ Web Server ➔ Session Store:</strong> Query Session Store: <em>"Does session xyz123 exist?"</em></div>
-                <div><strong>⑦ Session Store ➔ Web Server:</strong> Return associated user data & permissions.</div>
-                <div><strong>⑧ Web Server ➔ User:</strong> Authorize request and return protected data.</div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
+                            Create Session Record
+                        </span>
+                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Server ➔ Redis</span>
+                    </div>
+                    <div>Server verifies password hash, generates a secure random <code>Session ID</code>, and writes user context to Redis (TTL 24h).</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-purple-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
+                            Session Persistence Confirmed
+                        </span>
+                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Redis ➔ Server</span>
+                    </div>
+                    <div>Redis confirms session persistence and returns the unique cryptographic <code>session_id: sess_98432a1</code>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
+                            Set Secure Cookie Header
+                        </span>
+                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Server ➔ Browser</span>
+                    </div>
+                    <div>Server responds: <code>Set-Cookie: sid=sess_98432a1; HttpOnly; Secure; SameSite=Strict</code>.</div>
+                </div>
+
+                {/* Divider between Login & Subsequent Requests */}
+                <div style="text-align: center; margin: 0.4rem 0; font-weight: 800; font-size: 0.82rem; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase;">
+                    ⚡ Subsequent Protected Requests Loop ⚡
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-yellow-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
+                            Automatic Cookie Attachment
+                        </span>
+                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Browser ➔ Server</span>
+                    </div>
+                    <div>Browser sends request to <code>GET /api/dashboard</code>; HTTP client attaches cookie <code>Cookie: sid=sess_98432a1</code> automatically.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-purple-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">6</span>
+                            Session Lookup Query
+                        </span>
+                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Server ➔ Redis</span>
+                    </div>
+                    <div>Server queries cache: <code>GET session:sess_98432a1</code> to fetch user roles, permissions, and status.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">7</span>
+                            Return Session State
+                        </span>
+                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Redis ➔ Server</span>
+                    </div>
+                    <div>Redis returns active session payload (e.g. <code>&#123; userId: 42, role: "admin", exp: ... &#125;</code>).</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">8</span>
+                            Authorized Payload Delivery
+                        </span>
+                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Server ➔ Browser</span>
+                    </div>
+                    <div>Server authorizes the request and returns the protected dashboard data with <code>200 OK</code>.</div>
+                </div>
             </div>
 
         </div>
@@ -60,31 +155,135 @@ import CodeSticker from '../../components/CodeSticker.astro';
         Stateless Token-Based Authentication (JWT Bearer Flow)
     </div>
 
-    <p>To scale across horizontally distributed microservices without hitting a centralized session store on every HTTP call, modern systems use <mark class="hl-blue">Stateless JWT Bearer Tokens</mark>:</p>
+    <p>To scale across horizontally distributed microservices without querying a centralized session store on every HTTP call, modern systems use <mark class="hl-blue">Stateless JWT Bearer Tokens</mark>:</p>
+
+    {/* JWT Anatomy Card */}
+    <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 14px; padding: 1.25rem; margin: 1.25rem 0; box-shadow: 3px 3px 0px var(--text-main);">
+        <div style="font-weight: 800; font-size: 1.05rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px;">
+            <span>🧩</span> The 3 Parts of a JSON Web Token (JWT)
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.85rem;">
+            <div style="background: #fee2e2; border: 1.5px solid #ef4444; border-radius: 10px; padding: 0.85rem;">
+                <div style="font-weight: 800; color: #991b1b; font-size: 0.9rem;">1. Header (Alg & Type)</div>
+                <div style="font-family: var(--font-code); font-size: 0.78rem; margin-top: 0.35rem; color: #7f1d1d;">
+                    &#123; "alg": "RS256", "typ": "JWT" &#125;
+                </div>
+                <div style="font-size: 0.75rem; color: #991b1b; margin-top: 0.35rem;">Base64URL encoded; defines signature algo.</div>
+            </div>
+
+            <div style="background: #e9d5ff; border: 1.5px solid #a855f7; border-radius: 10px; padding: 0.85rem;">
+                <div style="font-weight: 800; color: #581c87; font-size: 0.9rem;">2. Payload (Claims)</div>
+                <div style="font-family: var(--font-code); font-size: 0.78rem; margin-top: 0.35rem; color: #3b0764;">
+                    &#123; "sub": "42", "role": "admin", "exp": 171400 &#125;
+                </div>
+                <div style="font-size: 0.75rem; color: #581c87; margin-top: 0.35rem;">Base64URL encoded; carries non-sensitive claims.</div>
+            </div>
+
+            <div style="background: #bbf7d0; border: 1.5px solid #22c55e; border-radius: 10px; padding: 0.85rem;">
+                <div style="font-weight: 800; color: #14532d; font-size: 0.9rem;">3. Cryptographic Signature</div>
+                <div style="font-family: var(--font-code); font-size: 0.78rem; margin-top: 0.35rem; color: #166534;">
+                    HMACSHA256(b64(H) + "." + b64(P), secret)
+                </div>
+                <div style="font-size: 0.75rem; color: #14532d; margin-top: 0.35rem;">Guarantees integrity; prevents tampering.</div>
+            </div>
+        </div>
+    </div>
 
     {/* JWT Flow Sequence Ladder */}
-    <DiagramPaper title="⚡ Stateless JWT Bearer Authentication Flow">
-        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
+    <DiagramPaper title="⚡ Stateless JWT Bearer 6-Step Verification Flow">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 780px; margin: 0 auto; font-family: var(--font-body);">
             
-            {/* Header */}
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800;">
-                <div><span style="background: var(--paper-card); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">📱 Client</span></div>
-                <div><span style="background: var(--pastel-yellow); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🛡️ Auth Server</span></div>
-                <div><span style="background: var(--pastel-green); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🌐 API Server</span></div>
+            {/* Header Actors */}
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center; border-bottom: 2px dashed var(--border-soft); padding-bottom: 1rem;">
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">📱</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Client App</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">SPA / Mobile</span>
+                </div>
+                <div style="background: var(--pastel-yellow); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">🛡️</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Auth Server</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Issues Tokens</span>
+                </div>
+                <div style="background: var(--pastel-green); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">🌐</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">API Microservice</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Zero-DB Verifier</span>
+                </div>
             </div>
 
             {/* Sequence Steps */}
-            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.85;">
-                <div><strong>① Client ➔ Auth Server:</strong> Login request with user credentials.</div>
-                <div><strong>② Auth Server:</strong> Validate credentials against database.</div>
-                <div><strong>③ Auth Server ➔ Client:</strong> Issue digitally signed <strong>JWT Token</strong> (containing user ID, roles, and expiry).</div>
-                <div style="border-top: 1px solid var(--border-soft); margin: 0.5rem 0; padding-top: 0.5rem;">
-                    <strong>④ Client ➔ API Server:</strong> Send request with header: <code>Authorization: Bearer &lt;jwt_token&gt;</code>.
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-yellow-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
+                            Authentication Request
+                        </span>
+                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Client ➔ Auth Server</span>
+                    </div>
+                    <div>Client sends user credentials (<code>POST /auth/login</code>).</div>
                 </div>
-                <div>
-                    <strong>⑤ API Server:</strong> <span style="color: #16a34a; font-weight: 700;">Verify cryptographic signature locally</span> (using public key / secret) — <strong>zero database lookups needed!</strong>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
+                            Validate & Sign Token
+                        </span>
+                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Auth Server Internal</span>
+                    </div>
+                    <div>Auth Server verifies credentials against DB, encodes claims, and signs the JWT using its Private Key.</div>
                 </div>
-                <div><strong>⑥ API Server ➔ Client:</strong> Return requested data directly.</div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
+                            Issue Signed JWT
+                        </span>
+                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Auth Server ➔ Client</span>
+                    </div>
+                    <div>Returns JWT token payload to the client for subsequent API calls.</div>
+                </div>
+
+                {/* Sub-sequence */}
+                <div style="text-align: center; margin: 0.4rem 0; font-weight: 800; font-size: 0.82rem; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase;">
+                    ⚡ Zero-Lookup API Consumption ⚡
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-yellow-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
+                            Bearer Token Request
+                        </span>
+                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Client ➔ API Microservice</span>
+                    </div>
+                    <div>Client sends request with header: <code>Authorization: Bearer &lt;signed_jwt_token&gt;</code>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: #166534;">
+                            <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
+                            Local Signature Verification (No DB Hit!)
+                        </span>
+                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">API Microservice Internal</span>
+                    </div>
+                    <div>API Server computes cryptographic check with Public Key / Shared Secret: verifies expiry, signature, and user claims with <strong>0 database I/O</strong>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">6</span>
+                            Direct Resource Response
+                        </span>
+                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">API Microservice ➔ Client</span>
+                    </div>
+                    <div>API returns requested resource directly (<code>200 OK</code>).</div>
+                </div>
             </div>
 
         </div>
@@ -92,11 +291,11 @@ import CodeSticker from '../../components/CodeSticker.astro';
 
     <div class="card-grid" style="margin-top: 1.25rem;">
         <GoodNotesCard title="🚀 Core Advantage" accent="green">
-            <p><strong>Completely Stateless:</strong> Any API server across multiple regions can verify the token without querying a database or cache.</p>
+            <p><strong>Massive Horizontal Scalability:</strong> Any API microservice across multiple data centers can independently authenticate requests using only a cached public key.</p>
         </GoodNotesCard>
 
         <GoodNotesCard title="⚠️ Core Trade-Off" accent="pink">
-            <p><strong>Revocation Difficulty:</strong> Because verification is stateless, invalidating a leaked token before it expires requires a token blacklist or short expiration times.</p>
+            <p><strong>Revocation Difficulty:</strong> Because verification is completely stateless, invalidating a leaked token before its expiration requires maintaining a distributed blacklist or using very short TTLs.</p>
         </GoodNotesCard>
     </div>
 </div>
@@ -105,55 +304,122 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-pink);">3</span>
-        Access & Refresh Token Lifecycle
+        Access & Refresh Token Dual-Lifecycle
     </div>
 
-    <p>To balance security and user experience, systems implement a <mark class="hl-pink">Dual-Token Lifecycle</mark>:</p>
+    <p>To balance security (limiting leak damage) and user experience (avoiding frequent re-logins), modern architectures adopt a <mark class="hl-pink">Dual-Token Strategy</mark>:</p>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
-        <div style="background: #fee2e2; border: 2px solid #ef4444; border-radius: 10px; padding: 1rem; text-align: center;">
-            <div style="font-weight: 800; color: #991b1b; font-size: 1.05rem;">⚡ Access Token</div>
-            <div style="font-size: 1.5rem; font-weight: 800; color: #7f1d1d; margin: 0.35rem 0;">15 min – 1 hr</div>
-            <div style="font-size: 0.8rem; color: #991b1b;">Short-lived; sent with API calls; limits blast radius if stolen.</div>
+    {/* Token Comparison Pill Cards */}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+        <div style="background: #fee2e2; border: 2px solid #ef4444; border-radius: 14px; padding: 1.25rem; text-align: center; box-shadow: 3px 3px 0px #ef4444;">
+            <div style="font-weight: 800; color: #991b1b; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <span>⚡</span> Access Token
+            </div>
+            <div style="font-size: 1.85rem; font-weight: 800; color: #7f1d1d; margin: 0.5rem 0;">15 min – 1 hr</div>
+            <div style="font-size: 0.85rem; color: #991b1b; line-height: 1.5;">
+                Short-lived; sent with every API request via <code>Authorization: Bearer</code> header. If intercepted, attacker window is strictly minimized.
+            </div>
         </div>
 
-        <div style="background: #dcfce7; border: 2px solid #22c55e; border-radius: 10px; padding: 1rem; text-align: center;">
-            <div style="font-weight: 800; color: #166534; font-size: 1.05rem;">🔄 Refresh Token</div>
-            <div style="font-size: 1.5rem; font-weight: 800; color: #14532d; margin: 0.35rem 0;">7 to 30 days</div>
-            <div style="font-size: 0.8rem; color: #166534;">Long-lived; securely stored; used only to mint fresh access tokens.</div>
+        <div style="background: #dcfce7; border: 2px solid #22c55e; border-radius: 14px; padding: 1.25rem; text-align: center; box-shadow: 3px 3px 0px #22c55e;">
+            <div style="font-weight: 800; color: #166534; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <span>🔄</span> Refresh Token
+            </div>
+            <div style="font-size: 1.85rem; font-weight: 800; color: #14532d; margin: 0.5rem 0;">7 to 30 days</div>
+            <div style="font-size: 0.85rem; color: #166534; line-height: 1.5;">
+                Long-lived; stored exclusively in secure <code>HttpOnly</code> cookies; used only at <code>/auth/refresh</code> to mint fresh access tokens.
+            </div>
         </div>
     </div>
 
     {/* Token Renewal Ladder */}
-    <DiagramPaper title="🔄 Access & Refresh Token Renewal Sequence">
-        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
+    <DiagramPaper title="🔄 Access & Refresh Token Silent Renewal Sequence">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 780px; margin: 0 auto; font-family: var(--font-body);">
             
-            {/* Header */}
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800;">
-                <div><span style="background: var(--paper-card); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">📱 Client</span></div>
-                <div><span style="background: var(--pastel-yellow); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🛡️ Auth Server</span></div>
-                <div><span style="background: var(--pastel-green); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🌐 API Server</span></div>
+            {/* Header Actors */}
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center; border-bottom: 2px dashed var(--border-soft); padding-bottom: 1rem;">
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">📱</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Client App</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Browser Storage</span>
+                </div>
+                <div style="background: var(--pastel-yellow); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">🛡️</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Auth Server</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Issuer & Refresher</span>
+                </div>
+                <div style="background: var(--pastel-green); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">🌐</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Resource Server</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">API Service</span>
+                </div>
             </div>
 
             {/* Steps */}
-            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.85;">
-                <div><strong>① Client ➔ Auth Server:</strong> Login request with user credentials.</div>
-                <div><strong>② Auth Server ➔ Client:</strong> Issue both <strong>Access Token</strong> (15 min) and <strong>Refresh Token</strong> (30 days).</div>
-                <div><strong>③ Client ➔ API Server:</strong> Make API request with expired Access Token.</div>
-                <div><strong>④ API Server ➔ Client:</strong> Return <code>401 Unauthorized</code> (Access Token Expired).</div>
-                <div><strong>⑤ Client ➔ Auth Server:</strong> Send Refresh Token to token renewal endpoint (<code>POST /auth/refresh</code>).</div>
-                <div><strong>⑥ Auth Server ➔ Client:</strong> Validate Refresh Token & issue a <strong>New Access Token</strong>.</div>
-                <div><strong>⑦ Client ➔ API Server:</strong> Re-send original request with the new Access Token.</div>
-                <div><strong>⑧ API Server ➔ Client:</strong> Success response with requested data.</div>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-yellow-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
+                            Initial Dual-Token Issuance
+                        </span>
+                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Auth Server ➔ Client</span>
+                    </div>
+                    <div>Auth Server responds to valid login with: Access Token in JSON response body (15m) + Refresh Token in <code>HttpOnly</code> cookie (30d).</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid #ef4444; border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: #991b1b;">
+                            <span style="background: #fee2e2; border: 1.5px solid #dc2626; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
+                            Expired Access Token Rejection
+                        </span>
+                        <span style="background: #fee2e2; color: #991b1b; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Resource Server ➔ Client</span>
+                    </div>
+                    <div>Client calls API after 16 mins; Resource Server rejects expired token signature: <code>401 Unauthorized (jwt expired)</code>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-purple-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
+                            Silent Background Refresh Request
+                        </span>
+                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Client ➔ Auth Server</span>
+                    </div>
+                    <div>HTTP interceptor traps 401, pauses pending requests, and calls <code>POST /auth/refresh</code> (sending HttpOnly refresh cookie).</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
+                            Token Rotation & New Access Token
+                        </span>
+                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Auth Server ➔ Client</span>
+                    </div>
+                    <div>Auth Server checks token validity against DB/redis revocation table, rotates refresh token, and returns a fresh Access Token.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
+                            Transparent Request Replay
+                        </span>
+                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Client ➔ Resource Server</span>
+                    </div>
+                    <div>Client automatically replays the original failed request with the new access token; user experiences zero disruption!</div>
+                </div>
             </div>
 
         </div>
     </DiagramPaper>
 
-    <StickyNote type="coral" title="🚨 Essential Security Golden Rule">
+    <StickyNote type="coral" title="🚨 Essential Security Golden Rule: Cookie Flags">
         <p style="font-size:0.95rem; line-height:1.6;">
             <strong>Never store Refresh Tokens in <code>localStorage</code> or <code>sessionStorage</code>!</strong><br />
-            Any Cross-Site Scripting (XSS) vulnerability allows attackers to extract local storage tokens. Always store Refresh Tokens inside <strong><code>HttpOnly</code>, <code>Secure</code>, <code>SameSite=Strict</code> cookies</strong> so JavaScript cannot access them.
+            Any Cross-Site Scripting (XSS) vulnerability allows attackers to exfiltrate local storage items. Always store Refresh Tokens inside <strong><code>HttpOnly</code>, <code>Secure</code>, <code>SameSite=Strict</code> cookies</strong> so client-side JavaScript cannot access them.
         </p>
     </StickyNote>
 </div>
@@ -165,31 +431,125 @@ import CodeSticker from '../../components/CodeSticker.astro';
         OAuth 2.0 Authorization Code Flow (Delegation)
     </div>
 
-    <p>OAuth 2.0 is an <mark class="hl-purple">Authorization Delegation Framework</mark> enabling a third-party app to access user resources without ever seeing their credentials:</p>
+    <p>OAuth 2.0 is an <mark class="hl-purple">Authorization Delegation Framework</mark> enabling a third-party application to access user resources from an API without ever exposing user credentials:</p>
 
     {/* OAuth 2 Sequence Diagram */}
-    <DiagramPaper title="🛡️ OAuth 2 Authorization Code Flow (e.g. Google Drive Access)">
-        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 740px; margin: 0 auto; font-family: var(--font-body);">
+    <DiagramPaper title="🛡️ OAuth 2.0 Authorization Code Grant: 8-Step Delegation Flow">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 780px; margin: 0 auto; font-family: var(--font-body);">
             
-            {/* Header */}
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; text-align: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800; font-size: 0.8rem;">
-                <div><span style="background: var(--paper-card); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">👤 User</span></div>
-                <div><span style="background: var(--pastel-yellow); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">📱 Your App (Client)</span></div>
-                <div><span style="background: var(--pastel-purple); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">🔑 Google OAuth Server</span></div>
-                <div><span style="background: var(--pastel-green); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">📁 Google Drive API</span></div>
+            {/* Header Actors */}
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center; border-bottom: 2px dashed var(--border-soft); padding-bottom: 1rem;">
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 0.25rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.1rem;">👤</div>
+                    <div style="font-weight: 800; font-size: 0.82rem; color: var(--text-main);">User</div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">Resource Owner</span>
+                </div>
+                <div style="background: var(--pastel-yellow); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 0.25rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.1rem;">📱</div>
+                    <div style="font-weight: 800; font-size: 0.82rem; color: var(--text-main);">Your App</div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">OAuth Client</span>
+                </div>
+                <div style="background: var(--pastel-purple); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 0.25rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.1rem;">🔑</div>
+                    <div style="font-weight: 800; font-size: 0.82rem; color: var(--text-main);">Auth Server</div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">Google OAuth</span>
+                </div>
+                <div style="background: var(--pastel-green); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 0.25rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.1rem;">📁</div>
+                    <div style="font-weight: 800; font-size: 0.82rem; color: var(--text-main);">Resource API</div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">Google Drive API</span>
+                </div>
             </div>
 
             {/* Sequence Steps */}
-            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.85;">
-                <div><strong>① User ➔ Your App:</strong> User clicks <em>"Connect Google Drive"</em>.</div>
-                <div><strong>② Your App ➔ Google OAuth:</strong> Redirect browser to Google's consent dialog.</div>
-                <div><strong>③ Google OAuth ➔ User:</strong> Display permission prompt: <em>"App wants read-only access to your Google Drive files"</em>.</div>
-                <div><strong>④ User ➔ Google OAuth:</strong> User clicks <em>"Allow Access"</em>.</div>
-                <div><strong>⑤ Google OAuth ➔ Your App:</strong> Redirect back with temporary <strong>Authorization Code</strong> (<code>?code=auth_code_123</code>).</div>
-                <div><strong>⑥ Your App ➔ Google OAuth:</strong> Backend exchanges Authorization Code + Client Secret via secure channel (<code>POST /token</code>).</div>
-                <div><strong>⑦ Google OAuth ➔ Your App:</strong> Issues <strong>Access Token</strong> (and optional Refresh Token).</div>
-                <div><strong>⑧ Your App ➔ Google Drive API:</strong> Request files using header: <code>Authorization: Bearer &lt;access_token&gt;</code>.</div>
-                <div><strong>⑨ Google Drive API ➔ User / App:</strong> Return requested Drive files safely.</div>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-yellow-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
+                            User Initiates Third-Party Connection
+                        </span>
+                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">User ➔ Your App</span>
+                    </div>
+                    <div>User clicks <em>"Connect Google Drive"</em> inside Your App to import their cloud files.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-purple-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
+                            Browser Redirect to Consent Dialog
+                        </span>
+                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Your App ➔ Google OAuth</span>
+                    </div>
+                    <div>App redirects browser to <code>https://accounts.google.com/o/oauth2/v2/auth?client_id=...&scope=drive.readonly&redirect_uri=...&response_type=code</code>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
+                            Consent Confirmation
+                        </span>
+                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">User ➔ Google OAuth</span>
+                    </div>
+                    <div>Google prompts user: <em>"Grant Your App read-only access to Drive?"</em> User clicks <strong>Allow</strong>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-yellow-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
+                            Authorization Code Returned via Redirect
+                        </span>
+                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Google OAuth ➔ Your App</span>
+                    </div>
+                    <div>Google redirects back to App: <code>https://yourapp.com/callback?code=spl_auth_code_91823</code>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-purple-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
+                            Backend Code Exchange (Direct Server-to-Server)
+                        </span>
+                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Your Backend ➔ Google OAuth</span>
+                    </div>
+                    <div>App backend securely POSTs: <code>code=spl_auth_code_91823</code> + <code>client_secret</code> to Google token endpoint.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">6</span>
+                            Access Token Issued
+                        </span>
+                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Google OAuth ➔ Your Backend</span>
+                    </div>
+                    <div>Google authenticates client secret and returns <strong>Access Token</strong> with scope <code>drive.readonly</code>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">7</span>
+                            Scoped API Data Request
+                        </span>
+                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Your App ➔ Google Drive API</span>
+                    </div>
+                    <div>App queries Drive API with: <code>Authorization: Bearer &lt;access_token&gt;</code>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: #166534;">
+                            <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">8</span>
+                            Protected Files Returned Securely
+                        </span>
+                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Google Drive API ➔ Your App</span>
+                    </div>
+                    <div>Google Drive API validates token permissions and safely delivers user files without ever revealing Google password!</div>
+                </div>
             </div>
 
         </div>
@@ -200,35 +560,141 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-blue);">5</span>
-        OpenID Connect (OIDC): Adding Authentication to OAuth 2.0
+        OpenID Connect (OIDC): Adding Identity & Authentication
     </div>
 
-    <p><mark class="hl-blue">OpenID Connect (OIDC)</mark> is an identity layer built directly on top of OAuth 2.0 that allows clients to verify the identity of the end-user and obtain basic profile info via an <strong>ID Token</strong> (JWT format):</p>
+    <p><mark class="hl-blue">OpenID Connect (OIDC)</mark> is an identity layer built directly on top of OAuth 2.0 that allows clients to verify user identity and obtain verified profile information via a digitally signed <strong>ID Token</strong> (JWT format):</p>
+
+    {/* OIDC vs OAuth 2 Card */}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <GoodNotesCard title="🛡️ OAuth 2.0 Alone" accent="yellow">
+            <p><strong>Focus: Authorization / Delegation</strong><br />
+            Answers: <em>"What access does this app have?"</em> Returns an <strong>Access Token</strong> intended for Resource Servers (APIs).</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="🆔 OAuth 2.0 + OIDC" accent="blue">
+            <p><strong>Focus: Authentication / Identity</strong><br />
+            Answers: <em>"Who is the user?"</em> Returns an <strong>ID Token (JWT)</strong> intended for the Client to read user identity claims.</p>
+        </GoodNotesCard>
+    </div>
 
     {/* OIDC Sequence Diagram */}
-    <DiagramPaper title="🆔 OpenID Connect (OIDC) 10-Step Sign-In Flow">
-        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 740px; margin: 0 auto; font-family: var(--font-body);">
+    <DiagramPaper title="🆔 OpenID Connect (OIDC) 8-Step 'Sign in with Google' Flow">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 780px; margin: 0 auto; font-family: var(--font-body);">
             
-            {/* Header */}
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; text-align: center; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800; font-size: 0.8rem;">
-                <div><span style="background: var(--paper-card); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">👤 User</span></div>
-                <div><span style="background: var(--pastel-yellow); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">📱 Your App</span></div>
-                <div><span style="background: var(--pastel-purple); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">🔑 Google Identity (OIDC)</span></div>
-                <div><span style="background: var(--pastel-green); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1.5px solid var(--border-soft);">🖥️ Your Backend</span></div>
+            {/* Header Actors */}
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center; border-bottom: 2px dashed var(--border-soft); padding-bottom: 1rem;">
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 0.25rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.1rem;">👤</div>
+                    <div style="font-weight: 800; font-size: 0.82rem; color: var(--text-main);">User</div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">End-User</span>
+                </div>
+                <div style="background: var(--pastel-yellow); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 0.25rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.1rem;">📱</div>
+                    <div style="font-weight: 800; font-size: 0.82rem; color: var(--text-main);">Client App</div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">Frontend SPA</span>
+                </div>
+                <div style="background: var(--pastel-purple); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 0.25rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.1rem;">🔑</div>
+                    <div style="font-weight: 800; font-size: 0.82rem; color: var(--text-main);">IdP (OIDC)</div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">Google Identity</span>
+                </div>
+                <div style="background: var(--pastel-green); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 0.25rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.1rem;">🖥️</div>
+                    <div style="font-weight: 800; font-size: 0.82rem; color: var(--text-main);">App Backend</div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">Session Creator</span>
+                </div>
             </div>
 
-            {/* Sequence Steps */}
-            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.85;">
-                <div><strong>① User ➔ Your App:</strong> User clicks <em>"Sign in with Google"</em>.</div>
-                <div><strong>② Your App ➔ Google Identity:</strong> Redirect to OIDC authorization endpoint (with <code>scope=openid profile email</code>).</div>
-                <div><strong>③ Google Identity ➔ User:</strong> Display Google Sign-in screen.</div>
-                <div><strong>④ User ➔ Google Identity:</strong> Enter credentials and confirm consent.</div>
-                <div><strong>⑤ Google Identity ➔ Your App:</strong> Return <strong>Authorization Code</strong>.</div>
-                <div><strong>⑥ Your App ➔ Google Identity:</strong> Exchange code for tokens (<code>POST /token</code>).</div>
-                <div><strong>⑦ Google Identity ➔ Your App:</strong> Returns both <strong>Access Token</strong> AND <strong>ID Token</strong> (signed JWT with user profile).</div>
-                <div><strong>⑧ Your App ➔ Your Backend:</strong> Send ID Token for verification.</div>
-                <div><strong>⑨ Your Backend ➔ Your App:</strong> Identity confirmed (valid signature & claims verified).</div>
-                <div style="color: #16a34a; font-weight: 800;">⑩ User: Logged in successfully!</div>
+            {/* Steps */}
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-yellow-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
+                            User Clicks 'Sign in with Google'
+                        </span>
+                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">User ➔ Client App</span>
+                    </div>
+                    <div>User clicks social login button on your website.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-purple-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
+                            Redirect with openid Scope
+                        </span>
+                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Client App ➔ Google IdP</span>
+                    </div>
+                    <div>Redirects to Google authorization endpoint with standard scope: <code>scope=openid profile email</code>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
+                            User Authenticates & Approves
+                        </span>
+                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">User ➔ Google IdP</span>
+                    </div>
+                    <div>User logs into Google and confirms sharing profile/email details with Your App.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-yellow-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-yellow); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
+                            Authorization Code Returned
+                        </span>
+                        <span style="background: var(--pastel-yellow); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Google IdP ➔ Client App</span>
+                    </div>
+                    <div>Google redirects to application redirect URI with temporary authorization code.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-purple-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-purple); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
+                            Code Exchange for Dual Tokens
+                        </span>
+                        <span style="background: var(--pastel-purple); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">App Backend ➔ Google IdP</span>
+                    </div>
+                    <div>Backend exchanges auth code with Google token endpoint (<code>POST https://oauth2.googleapis.com/token</code>).</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">6</span>
+                            IdP Returns ID Token + Access Token
+                        </span>
+                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Google IdP ➔ App Backend</span>
+                    </div>
+                    <div>Google returns: <code>id_token</code> (signed JWT with email, name, avatar) + <code>access_token</code>.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-main);">
+                            <span style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">7</span>
+                            Verify Signature & Link User Account
+                        </span>
+                        <span style="background: var(--pastel-blue); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">App Backend Internal</span>
+                    </div>
+                    <div>Backend verifies ID token signature using Google's public JWKS certificates; extracts user profile and creates local session.</div>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: #166534;">
+                            <span style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">8</span>
+                            Authenticated Session Established
+                        </span>
+                        <span style="background: var(--pastel-green); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">App Backend ➔ Client App</span>
+                    </div>
+                    <div>User is logged in seamlessly with verified identity; welcome screen rendered!</div>
+                </div>
             </div>
 
         </div>
@@ -239,50 +705,96 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-green);">6</span>
-        Single Sign-On (SSO) & Federated Identity
+        Single Sign-On (SSO) & Federated Identity Architecture
     </div>
 
-    <QuoteBox author="Architecture Key Principle" title="SSO is a User Experience">
-        <mark class="hl-green">SSO is a User Experience</mark>, not an isolated cryptographic protocol! It allows a user to authenticate once with a trusted <strong>Identity Provider (IdP)</strong> and access multiple independent applications seamlessly.
-    </QuoteBox>
+    <QuoteBox quote="Single Sign-On (SSO) is a seamless User Experience and architectural trust pattern, not a standalone transport protocol. Users authenticate once with a central Identity Provider (IdP) to access all enterprise apps without re-entering credentials." author="Identity & Access Management (IAM) Core Principle" />
 
-    {/* SSO Architecture Diagram */}
-    <DiagramPaper title="🌐 Single Sign-On (SSO) Hub-and-Spoke Architecture">
-        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 680px; margin: 0 auto; align-items: center;">
+    {/* Redesigned Rich SSO Architecture Diagram */}
+    <DiagramPaper title="🌐 Enterprise SSO Hub-and-Spoke Federated Ecosystem">
+        <div style="display: flex; flex-direction: column; gap: 1.75rem; max-width: 780px; margin: 0 auto; align-items: center;">
             
-            <div style="display: flex; align-items: center; gap: 1.5rem; width: 100%; justify-content: center; flex-wrap: wrap;">
+            {/* Top Row: User & Central IdP Hub */}
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem; width: 100%; flex-wrap: wrap;">
                 
-                {/* User */}
-                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; font-weight: 800; box-shadow: 2px 2px 0px var(--text-main);">
-                    👤 User<br />
-                    <span style="font-size: 0.75rem; color: #16a34a; font-weight: 700;">(Login Once)</span>
+                {/* User Card */}
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 14px; padding: 1.15rem 1.75rem; text-align: center; font-weight: 800; box-shadow: 3px 3px 0px var(--text-main); min-width: 170px;">
+                    <div style="font-size: 2rem;">👤</div>
+                    <div style="font-size: 1.05rem; color: var(--text-main); margin-top: 0.25rem;">Enterprise User</div>
+                    <span style="display: inline-block; margin-top: 0.35rem; background: var(--pastel-green); color: #166534; font-size: 0.75rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 10px; border: 1px solid #16a34a;">
+                        Single Login Entry
+                    </span>
                 </div>
 
-                <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-muted);">➔</div>
-
-                {/* Identity Provider */}
-                <div style="background: var(--pastel-purple); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem 1.75rem; text-align: center; font-weight: 800; box-shadow: 3px 3px 0px var(--text-main);">
-                    🛡️ Central Identity Provider (IdP)<br />
-                    <span style="font-size: 0.8rem; color: #581c87; font-weight: 600;">(Google Workspace, Okta, Keycloak)</span>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                    <span style="font-family: var(--font-hand); font-size: 1.25rem; font-weight: 800; color: var(--pastel-purple-dark);">MFA Challenge ➔</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">SAML / OIDC Auth</span>
                 </div>
 
+                {/* Central IdP Hub Card */}
+                <div style="background: var(--pastel-purple); border: 2.5px solid var(--text-main); border-radius: 14px; padding: 1.25rem 2rem; text-align: center; font-weight: 800; box-shadow: 4px 4px 0px var(--text-main); flex: 1; min-width: 260px;">
+                    <div style="font-size: 2rem;">🛡️</div>
+                    <div style="font-size: 1.15rem; color: var(--text-main); margin-top: 0.25rem;">Central Identity Provider (IdP)</div>
+                    <div style="font-size: 0.82rem; color: #581c87; font-weight: 700; margin-top: 0.25rem;">
+                        Okta • Microsoft Entra ID (Azure AD) • Google Workspace • Keycloak
+                    </div>
+                    <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <span style="background: var(--paper-card); border: 1px solid var(--border-soft); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; font-family: var(--font-code);">SAML 2.0 Assertions</span>
+                        <span style="background: var(--paper-card); border: 1px solid var(--border-soft); padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.72rem; font-family: var(--font-code);">OIDC ID Tokens</span>
+                    </div>
+                </div>
+
+            </div>
+
+            {/* Connecting Flow Arrow */}
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; width: 100%;">
+                <div style="height: 2px; background: var(--border-soft); flex: 1;"></div>
+                <div style="font-family: var(--font-hand); font-weight: 800; font-size: 1rem; color: var(--text-muted); background: var(--paper-bg); padding: 0.3rem 0.85rem; border-radius: 20px; border: 1.5px dashed var(--border-soft);">
+                    ⬇️ Cryptographically Federated Trust (Zero Password Sharing) ⬇️
+                </div>
+                <div style="height: 2px; background: var(--border-soft); flex: 1;"></div>
             </div>
 
             {/* Downstream Service Spokes */}
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; width: 100%;">
-                <div style="background: #fee2e2; border: 1.5px solid #dc2626; color: #991b1b; padding: 0.75rem; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.88rem;">
-                    📧 Gmail
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; width: 100%;">
+                
+                {/* Spoke 1: Productivity */}
+                <div style="background: #fee2e2; border: 2px solid #dc2626; border-radius: 12px; padding: 1rem; box-shadow: 2px 2px 0px #dc2626; text-align: center;">
+                    <div style="font-size: 1.5rem;">📧</div>
+                    <div style="font-weight: 800; color: #991b1b; font-size: 0.95rem; margin-top: 0.2rem;">Google Workspace / Gmail</div>
+                    <div style="font-size: 0.75rem; color: #7f1d1d; margin-top: 0.35rem;">SAML 2.0 Web SSO Assertion</div>
+                    <span style="display: inline-block; margin-top: 0.4rem; background: #ffffff; color: #16a34a; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px;">✓ Auto Logged In</span>
                 </div>
-                <div style="background: #dbeafe; border: 1.5px solid #2563eb; color: #1e40af; padding: 0.75rem; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.88rem;">
-                    📁 Google Drive
+
+                {/* Spoke 2: Cloud Storage */}
+                <div style="background: #dbeafe; border: 2px solid #2563eb; border-radius: 12px; padding: 1rem; box-shadow: 2px 2px 0px #2563eb; text-align: center;">
+                    <div style="font-size: 1.5rem;">📁</div>
+                    <div style="font-weight: 800; color: #1e40af; font-size: 0.95rem; margin-top: 0.2rem;">Enterprise Box / Drive</div>
+                    <div style="font-size: 0.75rem; color: #1e3a8a; margin-top: 0.35rem;">OIDC JWT Identity Claims</div>
+                    <span style="display: inline-block; margin-top: 0.4rem; background: #ffffff; color: #16a34a; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px;">✓ Auto Logged In</span>
                 </div>
-                <div style="background: #fef3c7; border: 1.5px solid #d97706; color: #92400e; padding: 0.75rem; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.88rem;">
-                    ▶️ YouTube
+
+                {/* Spoke 3: Chat & Collab */}
+                <div style="background: #fef3c7; border: 2px solid #d97706; border-radius: 12px; padding: 1rem; box-shadow: 2px 2px 0px #d97706; text-align: center;">
+                    <div style="font-size: 1.5rem;">💬</div>
+                    <div style="font-weight: 800; color: #92400e; font-size: 0.95rem; margin-top: 0.2rem;">Slack / MS Teams</div>
+                    <div style="font-size: 0.75rem; color: #78350f; margin-top: 0.35rem;">SCIM User Provisioning + SAML</div>
+                    <span style="display: inline-block; margin-top: 0.4rem; background: #ffffff; color: #16a34a; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px;">✓ Auto Logged In</span>
                 </div>
+
+                {/* Spoke 4: Developer Tools */}
+                <div style="background: #f3e8ff; border: 2px solid #9333ea; border-radius: 12px; padding: 1rem; box-shadow: 2px 2px 0px #9333ea; text-align: center;">
+                    <div style="font-size: 1.5rem;">🐙</div>
+                    <div style="font-weight: 800; color: #6b21a8; font-size: 0.95rem; margin-top: 0.2rem;">GitHub Enterprise / Jira</div>
+                    <div style="font-size: 0.75rem; color: #581c87; margin-top: 0.35rem;">OIDC / OAuth 2 Federated IAM</div>
+                    <span style="display: inline-block; margin-top: 0.4rem; background: #ffffff; color: #16a34a; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px;">✓ Auto Logged In</span>
+                </div>
+
             </div>
 
-            <div style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">
-                User authenticates with the IdP once; SAML or OIDC tokens grant transparent access across all enterprise services.
+            {/* Bottom Explanatory Banner */}
+            <div style="background: var(--paper-bg); border: 1.5px solid var(--border-soft); border-radius: 10px; padding: 0.85rem 1.25rem; font-size: 0.85rem; color: var(--text-main); text-align: center; width: 100%;">
+                💡 <strong>Centralized Security Control:</strong> When an employee departs, deactivating their account at the central IdP instantly terminates access across all 200+ connected enterprise applications without individual app de-provisioning.
             </div>
 
         </div>
@@ -296,45 +808,59 @@ import CodeSticker from '../../components/CodeSticker.astro';
         Architectural Comparison: Sessions vs. JWTs vs. OAuth 2 / OIDC
     </div>
 
+    <p>Comprehensive decision matrix to select the right authentication and authorization paradigm for your system:</p>
+
     <table class="table-paper">
         <thead>
             <tr>
-                <th>Dimension</th>
-                <th>Stateful Sessions</th>
-                <th>Stateless JWT Tokens</th>
-                <th>OAuth 2 / OIDC</th>
+                <th style="min-width: 140px;">Dimension</th>
+                <th style="min-width: 180px;">Stateful Sessions</th>
+                <th style="min-width: 200px;">Stateless JWT Tokens</th>
+                <th style="min-width: 220px;">OAuth 2.0 / OIDC</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td><strong>Primary Goal</strong></td>
-                <td>User Authentication (AuthN)</td>
-                <td>User Authentication (AuthN)</td>
-                <td>Delegated Authorization + Identity</td>
+                <td><mark class="hl-yellow">User Authentication (AuthN)</mark></td>
+                <td><mark class="hl-blue">User Authentication (AuthN)</mark></td>
+                <td><mark class="hl-purple">Delegated Authorization + Identity</mark></td>
             </tr>
             <tr>
                 <td><strong>State Storage</strong></td>
-                <td>Server-side (Redis, Database)</td>
-                <td>Client-side (Signed token payload)</td>
-                <td>Token-based with IdP verification</td>
+                <td>Server-side (Redis, Database cluster)</td>
+                <td>Client-side (Signed cryptographic token payload)</td>
+                <td>Decentralized tokens with IdP key verification</td>
             </tr>
             <tr>
-                <td><strong>Verification</strong></td>
-                <td>Database / cache I/O lookup</td>
-                <td>Local cryptographic signature check</td>
-                <td>IdP public key signature verification</td>
+                <td><strong>Verification Cost</strong></td>
+                <td>Database / cache network round-trip on every call</td>
+                <td><strong>0 DB Lookups:</strong> Pure local CPU signature verification</td>
+                <td>Public key (JWKS) cached verification or token introspection</td>
             </tr>
             <tr>
-                <td><strong>Revocation</strong></td>
-                <td>Instant (delete session from Redis)</td>
-                <td>Requires blacklist or short expiry</td>
-                <td>Revoke token at IdP / token introspection</td>
+                <td><strong>Revocation Speed</strong></td>
+                <td><strong style="color: #16a34a;">Instant:</strong> Delete session key from Redis</td>
+                <td><strong style="color: #dc2626;">Hard:</strong> Requires token blacklists or short expiry TTLs</td>
+                <td>Revoke token at IdP / token introspection endpoint</td>
+            </tr>
+            <tr>
+                <td><strong>Payload Size</strong></td>
+                <td>Tiny cookie (32-byte session ID)</td>
+                <td>Medium-large (500B – 2KB HTTP header overhead)</td>
+                <td>Medium-large (Access token + ID token JWTs)</td>
+            </tr>
+            <tr>
+                <td><strong>Cross-Domain / Microservices</strong></td>
+                <td>Hard (Requires sticky sessions / shared Redis)</td>
+                <td><strong style="color: #16a34a;">Native:</strong> Passes seamlessly across microservices</td>
+                <td><strong style="color: #16a34a;">Native:</strong> Federated across independent organizations</td>
             </tr>
             <tr>
                 <td><strong>Best Suited For</strong></td>
-                <td>Monolithic SSR web apps, banking</td>
-                <td>Microservices, mobile apps, SPAs</td>
-                <td>Third-party integrations, SSO, Google login</td>
+                <td>Monolithic SSR web apps, banking & finance portals</td>
+                <td>High-scale microservices, mobile apps, SPA dashboards</td>
+                <td>Third-party integrations, enterprise SSO, Google sign-in</td>
             </tr>
         </tbody>
     </table>

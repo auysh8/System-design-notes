@@ -19,49 +19,54 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-pink);">1</span>
-        What is Authentication? (Authn vs. Authz)
+        What is Authentication? (AuthN vs. AuthZ)
     </div>
 
-    <QuoteBox author="System Design Axiom" title="Authentication in Plain English">
-        <strong>Authentication (AuthN)</strong> answers one fundamental question: <mark class="hl-pink">"Who is the user?"</mark><br />
-        By contrast, <strong>Authorization (AuthZ)</strong> answers: <mark class="hl-yellow">"What is this user allowed to do?"</mark>
-    </QuoteBox>
+    <QuoteBox quote="Authentication (AuthN) answers 'Who is the user?' whereas Authorization (AuthZ) answers 'What is this user allowed to do?'" author="System Design Axiom" />
 
     {/* Decision Diamond Flow */}
     <DiagramPaper title="🔐 The Fundamental Authentication Decision Flow">
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 1.25rem; max-width: 600px; margin: 0 auto;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 1.25rem; max-width: 620px; margin: 0 auto;">
             
             {/* Step 1: Login Request */}
-            <div style="background: var(--pastel-blue); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.6rem 1.75rem; font-weight: 800; font-size: 0.95rem; box-shadow: 2px 2px 0px var(--text-main);">
-                📥 Login Request (Credentials / Token)
+            <div style="background: var(--pastel-blue); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.75rem 2rem; font-weight: 800; font-size: 0.95rem; box-shadow: 3px 3px 0px var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
+                <span>📥</span> Login Request <code style="font-size: 0.85rem; background: var(--paper-card); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-soft);">(Credentials / Token)</code>
             </div>
 
-            <div style="font-size: 1.25rem; color: var(--text-muted); font-weight: 800;">⬇️</div>
+            <div style="font-size: 1.35rem; color: var(--text-muted); font-weight: 800;">⬇️</div>
 
-            {/* Step 2: Decision Diamond */}
-            <div style="background: var(--pastel-yellow); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; font-weight: 800; font-size: 1rem; box-shadow: 3px 3px 0px var(--text-main); width: 260px;">
-                ❓ Who is the user?<br />
-                <span style="font-size: 0.8rem; font-weight: 600; color: #78350f;">(Verify Identity & Secret)</span>
+            {/* Step 2: Decision Diamond / Question */}
+            <div style="background: var(--pastel-yellow); border: 2.5px solid var(--text-main); border-radius: 14px; padding: 1.1rem 1.75rem; text-align: center; font-weight: 800; font-size: 1.05rem; box-shadow: 4px 4px 0px var(--text-main); width: 100%; max-width: 380px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                    <span>❓</span> <span>Who is the user?</span>
+                </div>
+                <span style="font-size: 0.82rem; font-weight: 600; opacity: 0.85; display: block;">Verify Identity against Stored Hash / Credential Secret</span>
             </div>
 
             {/* Branches */}
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; width: 100%;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; width: 100%; margin-top: 0.5rem;">
                 
                 {/* Invalid Branch */}
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
-                    <div style="color: #dc2626; font-weight: 800; font-size: 0.85rem;">❌ If Invalid</div>
-                    <div style="background: #fee2e2; border: 2px solid #dc2626; color: #991b1b; border-radius: 8px; padding: 0.75rem 1rem; text-align: center; font-weight: 700; font-size: 0.85rem; width: 100%;">
-                        Reject with Status Code<br />
-                        <strong style="font-size: 1.1rem; color: #7f1d1d;">401 Unauthorized</strong>
+                    <div style="color: #ef4444; font-weight: 800; font-size: 0.88rem; display: flex; align-items: center; gap: 0.35rem;">
+                        <span>❌</span> <span>If Invalid / Unverified</span>
+                    </div>
+                    <div style="background: var(--pastel-pink); border: 2px solid var(--text-main); border-radius: 12px; padding: 0.9rem 1.1rem; text-align: center; font-weight: 700; font-size: 0.85rem; width: 100%; box-shadow: 3px 3px 0px var(--text-main);">
+                        <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.25rem;">Reject with HTTP Status</div>
+                        <strong style="font-size: 1.15rem; font-family: var(--font-code); color: var(--pastel-pink-dark); display: block;">401 Unauthorized</strong>
+                        <span style="font-size: 0.78rem; opacity: 0.85; margin-top: 0.25rem; display: block;">+ WWW-Authenticate Challenge Header</span>
                     </div>
                 </div>
 
                 {/* Valid Branch */}
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
-                    <div style="color: #16a34a; font-weight: 800; font-size: 0.85rem;">✅ If Valid</div>
-                    <div style="background: #dcfce7; border: 2px solid #16a34a; color: #14532d; border-radius: 8px; padding: 0.75rem 1rem; text-align: center; font-weight: 700; font-size: 0.85rem; width: 100%;">
-                        Grant Access<br />
-                        <strong style="font-size: 1.1rem; color: #14532d;">200 OK / Issue Session</strong>
+                    <div style="color: #22c55e; font-weight: 800; font-size: 0.88rem; display: flex; align-items: center; gap: 0.35rem;">
+                        <span>✅</span> <span>If Valid & Verified</span>
+                    </div>
+                    <div style="background: var(--pastel-green); border: 2px solid var(--text-main); border-radius: 12px; padding: 0.9rem 1.1rem; text-align: center; font-weight: 700; font-size: 0.85rem; width: 100%; box-shadow: 3px 3px 0px var(--text-main);">
+                        <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.25rem;">Establish Session / State</div>
+                        <strong style="font-size: 1.15rem; font-family: var(--font-code); color: var(--pastel-green-dark); display: block;">200 OK / Issue Session</strong>
+                        <span style="font-size: 0.78rem; opacity: 0.85; margin-top: 0.25rem; display: block;">Set-Cookie or Return Bearer JWT Token</span>
                     </div>
                 </div>
 
@@ -75,90 +80,114 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-yellow);">2</span>
-        Where Software Engineers Sometimes Get Confused
+        Where Software Engineers Get Confused (5 Pitfalls)
     </div>
 
-    <p>Handwritten notes highlight 5 critical misconceptions developers frequently encounter in system design interviews:</p>
+    <p>System design interviews frequently expose critical misunderstandings around authentication mechanisms. Here are the 5 foundational confusions disambiguated:</p>
 
     <div class="card-grid">
         <GoodNotesCard title="1. AuthN vs. AuthZ Frameworks" accent="pink">
             <p><strong>Confusion:</strong> Conflating identity verification with permissions.<br />
-            <strong>Reality:</strong> Authentication proves <em>identity</em>. Authorization grants <em>scopes & privileges</em> (RBAC, ABAC).</p>
+            <strong>Reality:</strong> <em>Authentication</em> proves <strong>identity</strong> ("Who are you?"). <em>Authorization</em> evaluates <strong>scopes & privileges</strong> (RBAC, ABAC, ACLs).</p>
         </GoodNotesCard>
 
         <GoodNotesCard title="2. Treating JWT as an Auth Type" accent="yellow">
             <p><strong>Confusion:</strong> Saying <em>"We use JWT authentication"</em>.<br />
-            <strong>Reality:</strong> JWT is a <strong>token format/carrier</strong>, not an authentication method itself.</p>
+            <strong>Reality:</strong> JWT is an open standard <strong>token format/carrier</strong> (RFC 7519), not an authentication mechanism itself. It simply carries claims.</p>
         </GoodNotesCard>
 
         <GoodNotesCard title="3. Confusing Bearer Auth & JWT" accent="blue">
-            <p><strong>Confusion:</strong> Treating Bearer tokens and JWTs as identical.<br />
-            <strong>Reality:</strong> <code>Bearer</code> is the <strong>HTTP transport scheme</strong>; a JWT is simply one kind of payload inside it.</p>
+            <p><strong>Confusion:</strong> Treating Bearer tokens and JWTs as synonymous.<br />
+            <strong>Reality:</strong> <code>Bearer</code> is the <strong>HTTP Authorization transport scheme</strong>. A JWT is one specific structured payload carried inside the header.</p>
         </GoodNotesCard>
 
         <GoodNotesCard title="4. Calling OAuth 2 an Auth Method" accent="purple">
             <p><strong>Confusion:</strong> Claiming OAuth 2 is a login system.<br />
-            <strong>Reality:</strong> OAuth 2 is a <strong>delegation & authorization protocol</strong>. OpenID Connect (OIDC) is what adds authentication.</p>
+            <strong>Reality:</strong> OAuth 2 is a <strong>delegated authorization protocol</strong>. OpenID Connect (OIDC) is the identity layer on top that provides true authentication.</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="5. Mixing Up SSO with Auth Protocols" accent="orange">
+            <p><strong>Confusion:</strong> Viewing Single Sign-On as an isolated protocol.<br />
+            <strong>Reality:</strong> <strong>Single Sign-On (SSO)</strong> is an identity management <em>architectural pattern</em> orchestrated via protocols like SAML 2.0 or OIDC.</p>
         </GoodNotesCard>
     </div>
-
-    <StickyNote type="lavender" title="💡 5. Mixing up SSO with Authentication Methods">
-        <p style="font-size:0.95rem; line-height:1.6;">
-            <strong>Single Sign-On (SSO)</strong> is an identity management <em>architecture/pattern</em> (using protocols like SAML or OIDC), not an isolated authentication protocol or credential format.
-        </p>
-    </StickyNote>
 </div>
 
 {/* SECTION 3: BASIC AUTHENTICATION */}
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-orange);">3</span>
-        1. HTTP Basic Authentication Flow
+        1. HTTP Basic Authentication Flow (RFC 7617)
     </div>
 
-    <p>The original, simplest HTTP authentication scheme defined in RFC 7617:</p>
+    <p>The earliest and simplest HTTP authentication scheme. The client transmits credentials inside the <code>Authorization</code> header using reversible Base64 encoding.</p>
 
-    {/* Basic Auth Sequence Ladder */}
-    <DiagramPaper title="🪜 Basic Authentication 5-Step Sequence Ladder">
-        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 680px; margin: 0 auto; font-family: var(--font-body);">
+    {/* Basic Auth Multi-Lane Sequence Ladder */}
+    <DiagramPaper title="🪜 Basic Authentication: Interactive Multi-Lane Message Flow">
+        <div style="display: flex; flex-direction: column; gap: 0.9rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
             
-            {/* Sequence Header */}
-            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800;">
-                <span style="background: var(--paper-card); padding: 0.3rem 1rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">📱 Client</span>
-                <span style="background: var(--paper-card); padding: 0.3rem 1rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🖥️ Server</span>
-            </div>
-
-            {/* Step 1 */}
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-                <div style="flex: 1; background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem;">
-                    <strong>①</strong> <code>GET /api/users</code> <span style="color:var(--text-muted);">(Unauthenticated)</span> ➔
+            {/* Sequence Lanes Header */}
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed var(--border-soft); padding-bottom: 0.75rem; margin-bottom: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--pastel-blue); border: 2px solid var(--text-main); padding: 0.4rem 1.1rem; border-radius: 8px; font-weight: 800; font-size: 0.9rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <span>📱</span> Client / Browser
+                </div>
+                <div style="font-family: var(--font-hand); font-weight: 800; font-size: 0.85rem; color: var(--text-muted);">
+                    HTTP Request / Response Cycle
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--pastel-purple); border: 2px solid var(--text-main); padding: 0.4rem 1.1rem; border-radius: 8px; font-weight: 800; font-size: 0.9rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <span>🖥️</span> Web Server / Proxy
                 </div>
             </div>
 
-            {/* Step 2 */}
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-                <div style="flex: 1; background: #fee2e2; border: 1px solid #dc2626; color: #991b1b; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; text-align: right;">
-                    ⬅ <strong>②</strong> <code>401 Unauthorized</code> (<code>WWW-Authenticate: Basic realm="App"</code>)
+            {/* Step 1: Initial Unauthenticated Request */}
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 4px solid var(--pastel-blue-dark); border-radius: 8px; padding: 0.75rem 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                    <span style="font-weight: 800; font-size: 0.85rem; color: var(--pastel-blue-dark);">① Client ➔ Server</span>
+                    <span style="font-size: 0.75rem; background: var(--pastel-blue); color: var(--text-main); font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px;">Initial Request</span>
+                </div>
+                <div style="font-family: var(--font-code); font-size: 0.82rem;">
+                    <code>GET /api/v1/protected/users HTTP/1.1</code> <span style="color: var(--text-muted); font-size: 0.78rem;">(No credentials provided)</span>
                 </div>
             </div>
 
-            {/* Step 3 */}
-            <div style="background: var(--pastel-yellow); border: 1px dashed #ca8a04; padding: 0.6rem 1rem; border-radius: 6px; font-size: 0.85rem; text-align: center; font-weight: 700; color: #854d0e;">
-                <strong>③</strong> Client prompts user for username & password ➔ User enters credentials
-            </div>
-
-            {/* Step 4 */}
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-                <div style="flex: 1; background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem;">
-                    <strong>④</strong> <code>GET /api/users</code> ➔<br />
-                    <code style="font-size:0.8rem; color:#0284c7;">Authorization: Basic dXNlcjpwYXNzd29yZA==</code>
+            {/* Step 2: 401 Unauthorized Challenge */}
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-right: 4px solid var(--pastel-pink-dark); border-radius: 8px; padding: 0.75rem 1rem; text-align: right;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; flex-direction: row-reverse;">
+                    <span style="font-weight: 800; font-size: 0.85rem; color: var(--pastel-pink-dark);">Server ➔ Client ②</span>
+                    <span style="font-size: 0.75rem; background: var(--pastel-pink); color: var(--text-main); font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px;">401 Challenge</span>
+                </div>
+                <div style="font-family: var(--font-code); font-size: 0.82rem;">
+                    <code>HTTP/1.1 401 Unauthorized</code><br />
+                    <code style="color: var(--pastel-pink-dark); font-size: 0.78rem;">WWW-Authenticate: Basic realm="Internal Admin Area"</code>
                 </div>
             </div>
 
-            {/* Step 5 */}
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-                <div style="flex: 1; background: #dcfce7; border: 1px solid #16a34a; color: #14532d; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; text-align: right;">
-                    ⬅ <strong>⑤</strong> <code>200 OK</code> (User data returned)
+            {/* Step 3: Browser Prompts User */}
+            <div style="background: var(--pastel-yellow); border: 2px dashed var(--pastel-yellow-dark); border-radius: 8px; padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem; font-weight: 700; color: var(--text-main);">
+                <span>🔐</span> <strong>③ Browser Modal:</strong> Native prompt asks user for <code>username</code> & <code>password</code> ➔ Encodes to Base64
+            </div>
+
+            {/* Step 4: Re-request with Basic Header */}
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 4px solid var(--pastel-blue-dark); border-radius: 8px; padding: 0.75rem 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                    <span style="font-weight: 800; font-size: 0.85rem; color: var(--pastel-blue-dark);">④ Client ➔ Server</span>
+                    <span style="font-size: 0.75rem; background: var(--pastel-yellow); color: var(--text-main); font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px;">Base64 Credentials</span>
+                </div>
+                <div style="font-family: var(--font-code); font-size: 0.82rem;">
+                    <code>GET /api/v1/protected/users HTTP/1.1</code><br />
+                    <code style="color: var(--pastel-blue-dark); font-size: 0.8rem; font-weight: 600;">Authorization: Basic YWRtaW46c2VjcmV0MTIz</code> <span style="font-size: 0.75rem; color: var(--text-muted);">(base64("admin:secret123"))</span>
+                </div>
+            </div>
+
+            {/* Step 5: 200 OK Response */}
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-right: 4px solid var(--pastel-green-dark); border-radius: 8px; padding: 0.75rem 1rem; text-align: right;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; flex-direction: row-reverse;">
+                    <span style="font-weight: 800; font-size: 0.85rem; color: var(--pastel-green-dark);">Server ➔ Client ⑤</span>
+                    <span style="font-size: 0.75rem; background: var(--pastel-green); color: var(--text-main); font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px;">Authenticated 200</span>
+                </div>
+                <div style="font-family: var(--font-code); font-size: 0.82rem;">
+                    <code>HTTP/1.1 200 OK</code><br />
+                    <span style="font-size: 0.78rem; color: var(--pastel-green-dark); font-weight: 600;">Payload returned; browser caches credentials for subsequent calls</span>
                 </div>
             </div>
 
@@ -167,10 +196,10 @@ import CodeSticker from '../../components/CodeSticker.astro';
 
     <StickyNote type="coral" title="⚠️ Major Security Flaws of Basic Auth:">
         <ul style="margin: 0.25rem 0 0 1.25rem; font-size: 0.9rem; line-height: 1.7;">
-            <li><strong>Base64 is NOT Encryption:</strong> Base64 is purely reversible encoding. Anyone inspecting the header can decode <code>username:password</code> in 1 millisecond.</li>
-            <li><strong>Only Secure over HTTPS:</strong> Plain HTTP sends plaintext credentials over the wire.</li>
-            <li><strong>Credentials on Every Call:</strong> The browser caches and re-sends user credentials with every single HTTP request.</li>
-            <li><strong>Verdict:</strong> Rarely used in modern production systems outside internal developer tooling or basic reverse proxy gates.</li>
+            <li><strong>Base64 is NOT Encryption:</strong> Base64 is a purely bidirectional encoding algorithm. Anyone intercepting the header can execute <code>atob("YWRtaW46c2VjcmV0MTIz")</code> in 1 millisecond.</li>
+            <li><strong>Mandatory TLS:</strong> Basic Auth over unencrypted HTTP exposes credentials directly to packet sniffers on shared Wi-Fi.</li>
+            <li><strong>Credential Resending:</strong> Browsers store the decoded credential pair in memory and automatically attach the header on every single subsequent request.</li>
+            <li><strong>No Fine-Grained Expiry:</strong> Cannot expire or revoke individual tokens without resetting the user's primary password.</li>
         </ul>
     </StickyNote>
 </div>
@@ -179,44 +208,85 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-blue);">4</span>
-        2. HTTP Digest Authentication Flow
+        2. HTTP Digest Authentication Flow (RFC 7616)
     </div>
 
-    <p>Digest Auth (RFC 7616) was introduced to eliminate plaintext password transmission by utilizing a <mark class="hl-blue">Challenge-Response Hashing Flow</mark>:</p>
+    <p>Digest Authentication was engineered to avoid transmitting plaintext passwords across the network through a <mark class="hl-blue">Challenge-Response Nonce Hashing Scheme</mark>:</p>
 
-    {/* Digest Auth Sequence Ladder */}
-    <DiagramPaper title="🛡️ Digest Authentication Challenge-Response Flow">
-        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 680px; margin: 0 auto; font-family: var(--font-body);">
+    {/* Digest Auth Sequence Flow */}
+    <DiagramPaper title="🛡️ Digest Challenge-Response Multi-Lane Sequence">
+        <div style="display: flex; flex-direction: column; gap: 0.9rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
             
             {/* Header */}
-            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid var(--border-soft); padding-bottom: 0.5rem; font-weight: 800;">
-                <span style="background: var(--paper-card); padding: 0.3rem 1rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">📱 Client</span>
-                <span style="background: var(--paper-card); padding: 0.3rem 1rem; border-radius: 6px; border: 1.5px solid var(--border-soft);">🖥️ Server</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed var(--border-soft); padding-bottom: 0.75rem; margin-bottom: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--pastel-blue); border: 2px solid var(--text-main); padding: 0.4rem 1.1rem; border-radius: 8px; font-weight: 800; font-size: 0.9rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <span>📱</span> Client App
+                </div>
+                <div style="font-family: var(--font-hand); font-weight: 800; font-size: 0.85rem; color: var(--text-muted);">
+                    Cryptographic Nonce Exchange
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--pastel-purple); border: 2px solid var(--text-main); padding: 0.4rem 1.1rem; border-radius: 8px; font-weight: 800; font-size: 0.9rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <span>🖥️</span> Origin Server
+                </div>
             </div>
 
-            {/* Step 1 */}
-            <div style="flex: 1; background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem;">
-                <strong>①</strong> <code>GET /api/users</code> ➔
+            {/* Step 1: Request */}
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 4px solid var(--pastel-blue-dark); border-radius: 8px; padding: 0.75rem 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                    <span style="font-weight: 800; font-size: 0.85rem; color: var(--pastel-blue-dark);">① Client ➔ Server</span>
+                    <span style="font-size: 0.75rem; background: var(--pastel-blue); color: var(--text-main); font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px;">Initial GET</span>
+                </div>
+                <div style="font-family: var(--font-code); font-size: 0.82rem;">
+                    <code>GET /api/v1/accounts HTTP/1.1</code>
+                </div>
             </div>
 
-            {/* Step 2 & 3: Challenge */}
-            <div style="flex: 1; background: #fee2e2; border: 1px solid #dc2626; color: #991b1b; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; text-align: right;">
-                ⬅ <strong>② & ③</strong> <code>401 Unauthorized</code><br />
-                <code style="font-size:0.78rem;">WWW-Authenticate: Digest realm="api", nonce="abc123", qop="auth"</code>
+            {/* Step 2: 401 Nonce Challenge */}
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-right: 4px solid var(--pastel-pink-dark); border-radius: 8px; padding: 0.75rem 1rem; text-align: right;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; flex-direction: row-reverse;">
+                    <span style="font-weight: 800; font-size: 0.85rem; color: var(--pastel-pink-dark);">Server ➔ Client ②</span>
+                    <span style="font-size: 0.75rem; background: var(--pastel-pink); color: var(--text-main); font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px;">401 + Nonce Challenge</span>
+                </div>
+                <div style="font-family: var(--font-code); font-size: 0.82rem;">
+                    <code>HTTP/1.1 401 Unauthorized</code><br />
+                    <code style="color: var(--pastel-pink-dark); font-size: 0.75rem; word-break: break-all;">WWW-Authenticate: Digest realm="users@site.com", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", qop="auth"</code>
+                </div>
             </div>
 
-            {/* Step 4: Client computes MD5 hash */}
-            <div style="flex: 1; background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem;">
-                <strong>④</strong> <code>GET /api/users</code> ➔<br />
-                <code style="font-size:0.75rem; color:#0284c7; word-break:break-all;">
-                    Authorization: Digest username="user", realm="api", nonce="abc123", response="6628fae...ef1"
-                </code><br />
-                <span style="font-size:0.75rem; color:#16a34a; font-weight:700;">★ response is an MD5 hash of (user + pass + realm + nonce), NOT plain password!</span>
+            {/* Step 3: Local Hash Calculation */}
+            <div style="background: var(--pastel-yellow); border: 2px dashed var(--pastel-yellow-dark); border-radius: 8px; padding: 0.65rem 1rem; font-size: 0.82rem; font-family: var(--font-code);">
+                <div style="font-weight: 800; color: var(--text-main); margin-bottom: 0.25rem; font-family: var(--font-body);">
+                    <span>⚙️</span> <strong>③ Client Cryptographic Computation (Password Never Sent):</strong>
+                </div>
+                <code>HA1 = MD5(username:realm:password)</code><br />
+                <code>HA2 = MD5(method:digestURI)</code><br />
+                <code>response = MD5(HA1:nonce:nc:cnonce:qop:HA2)</code>
             </div>
 
-            {/* Step 5: Server validates */}
-            <div style="flex: 1; background: #dcfce7; border: 1px solid #16a34a; color: #14532d; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; text-align: right;">
-                ⬅ <strong>⑤</strong> <code>200 OK</code> (User data returned)
+            {/* Step 4: Digest Header Sent */}
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 4px solid var(--pastel-blue-dark); border-radius: 8px; padding: 0.75rem 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                    <span style="font-weight: 800; font-size: 0.85rem; color: var(--pastel-blue-dark);">④ Client ➔ Server</span>
+                    <span style="font-size: 0.75rem; background: var(--pastel-purple); color: var(--text-main); font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px;">Computed Digest</span>
+                </div>
+                <div style="font-family: var(--font-code); font-size: 0.82rem;">
+                    <code>GET /api/v1/accounts HTTP/1.1</code><br />
+                    <code style="color: var(--pastel-purple-dark); font-size: 0.74rem; word-break: break-all;">
+                        Authorization: Digest username="Mufasa", realm="users@site.com", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="/api/v1/accounts", response="6629fae49393a05397450978507c4ef1"
+                    </code>
+                </div>
+            </div>
+
+            {/* Step 5: Verification & Success */}
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-right: 4px solid var(--pastel-green-dark); border-radius: 8px; padding: 0.75rem 1rem; text-align: right;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; flex-direction: row-reverse;">
+                    <span style="font-weight: 800; font-size: 0.85rem; color: var(--pastel-green-dark);">Server ➔ Client ⑤</span>
+                    <span style="font-size: 0.75rem; background: var(--pastel-green); color: var(--text-main); font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px;">Hash Matched (200)</span>
+                </div>
+                <div style="font-family: var(--font-code); font-size: 0.82rem;">
+                    <code>HTTP/1.1 200 OK</code><br />
+                    <span style="font-size: 0.78rem; color: var(--pastel-green-dark); font-weight: 600;">Server computes identical hash on backend; grants access</span>
+                </div>
             </div>
 
         </div>
@@ -224,11 +294,11 @@ import CodeSticker from '../../components/CodeSticker.astro';
 
     <div class="card-grid" style="margin-top:1.25rem;">
         <GoodNotesCard title="✅ Pros vs. Basic Auth" accent="green">
-            <p>Passwords are never transmitted over the wire; replay attacks are mitigated through server-issued pseudo-random <strong>nonces</strong>.</p>
+            <p><strong>Zero Plaintext Password Exposure:</strong> Passwords stay on the client. Server nonces provide robust protection against basic replay attacks.</p>
         </GoodNotesCard>
 
-        <GoodNotesCard title="⚠️ Current Status" accent="yellow">
-            <p>Relies on outdated MD5 hashing; vulnerable to MITM downgrade attacks. Largely superseded by TLS + modern Bearer token / OAuth architectures.</p>
+        <GoodNotesCard title="⚠️ Modern Deprecation" accent="yellow">
+            <p><strong>MD5 Weaknesses:</strong> Vulnerable to collision attacks and MITM downgrade attacks. Superseded everywhere by HTTPS + JWT / Bearer tokens.</p>
         </GoodNotesCard>
     </div>
 </div>
@@ -237,39 +307,75 @@ import CodeSticker from '../../components/CodeSticker.astro';
 <div class="note-section">
     <div class="section-title">
         <span class="title-badge" style="background: var(--pastel-green);">5</span>
-        3. API Key Authentication Flow
+        3. API Key Authentication Architecture
     </div>
 
-    <p>The standard pattern for <mark class="hl-green">Machine-to-Machine (M2M)</mark> communication, external developer portals, and third-party SaaS integrations:</p>
+    <p>The standard pattern for <mark class="hl-green">Machine-to-Machine (M2M)</mark> communication, developer portals, external billing gateways, and third-party SaaS integrations:</p>
 
-    {/* API Key Architecture Diagram */}
-    <DiagramPaper title="🔑 API Key Verification Architecture & Flow">
-        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 700px; margin: 0 auto; font-family: var(--font-body);">
+    {/* API Key Architecture Interactive Diagram */}
+    <DiagramPaper title="🔑 API Key Verification Architecture & M2M Flow">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 740px; margin: 0 auto; font-family: var(--font-body);">
             
-            {/* Top Components */}
-            <div style="display: flex; justify-content: space-between; gap: 1rem; align-items: center;">
-                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 1rem; font-weight: 800;">
-                    📱 Client App
+            {/* Top Components Tier */}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+                <div style="background: var(--pastel-blue); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.9rem; text-align: center; box-shadow: 3px 3px 0px var(--text-main);">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">📱</div>
+                    <div style="font-weight: 800; font-size: 0.95rem;">Client / Third-Party</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-code);">Holds API Secret Key</div>
                 </div>
-                <div style="background: var(--pastel-blue); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 1rem; font-weight: 800;">
-                    🌐 API Gateway / Server
+
+                <div style="background: var(--pastel-yellow); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.9rem; text-align: center; box-shadow: 3px 3px 0px var(--text-main);">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">🌐</div>
+                    <div style="font-weight: 800; font-size: 0.95rem;">API Gateway</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-code);">Hashes Key & Rate Limits</div>
                 </div>
-                <div style="background: var(--pastel-purple); border: 2px solid var(--text-main); border-radius: 8px; padding: 0.5rem 1rem; font-weight: 800;">
-                    🗄️ Database / Redis Cache
+
+                <div style="background: var(--pastel-purple); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.9rem; text-align: center; box-shadow: 3px 3px 0px var(--text-main);">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">🗄️</div>
+                    <div style="font-weight: 800; font-size: 0.95rem;">Redis / Key Store</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-code);">SHA-256 Hashed Keys + Scopes</div>
                 </div>
             </div>
 
-            {/* Step Ladder */}
-            <div style="background: var(--paper-bg); border: 1.5px dashed var(--border-soft); border-radius: 10px; padding: 1.1rem; font-size: 0.88rem; line-height: 1.8;">
-                <div><strong>① Client ➔ API Server:</strong> <code>GET /api/users</code> with Header:</div>
-                <div style="background: #1e1e24; color: #f1f5f9; border-radius: 6px; padding: 0.5rem 0.75rem; font-family: var(--font-code); font-size: 0.8rem; margin: 0.35rem 0;">
-                    <code>Authorization: Apikey abc123xyz...</code><br />
-                    <span style="color:#94a3b8;">or</span> <code>X-API-KEY: abc123xyz...</code>
+            {/* Sequence Flow Steps */}
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                
+                <div class="seq-item client-req" style="background: var(--paper-card); border-radius: 8px; padding: 0.75rem 1rem;">
+                    <div style="font-weight: 800; margin-bottom: 0.35rem; color: var(--pastel-blue-dark); display: flex; align-items: center; gap: 0.5rem;">
+                        <span>①</span> Client transmits request with API Key header:
+                    </div>
+                    <div style="background: var(--paper-bg); border: 1px solid var(--border-soft); border-radius: 6px; padding: 0.45rem 0.75rem; font-family: var(--font-code); font-size: 0.8rem;">
+                        <code>Authorization: Bearer sk_live_51Msz92kx8921a...</code> <span style="color: var(--text-muted);">(or <code>X-API-Key: sk_live_...</code>)</span>
+                    </div>
                 </div>
-                <div><strong>② API Server ➔ Database:</strong> Lookup hashed API Key in DB / Redis cache.</div>
-                <div><strong>③ Database ➔ API Server:</strong> Return associated client account, rate limit tiers, & role permissions.</div>
-                <div><strong>④ API Server:</strong> Authorize request against requested resource route.</div>
-                <div><strong>⑤ API Server ➔ Client:</strong> <code>200 OK</code> with requested data payload.</div>
+
+                <div class="seq-item" style="background: var(--paper-card); border-left: 4px solid var(--pastel-yellow-dark); border-radius: 8px; padding: 0.75rem 1rem;">
+                    <div style="font-weight: 800; margin-bottom: 0.25rem; color: var(--pastel-yellow-dark); display: flex; align-items: center; gap: 0.5rem;">
+                        <span>②</span> Gateway hashes incoming key & looks up in fast cache:
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-main);">
+                        <code>SHA256(raw_key)</code> is matched against <strong>Redis / Key-Value DB</strong> to retrieve Tenant ID, allowed scopes, & rate limiter tier.
+                    </div>
+                </div>
+
+                <div class="seq-item" style="background: var(--paper-card); border-left: 4px solid var(--pastel-purple-dark); border-radius: 8px; padding: 0.75rem 1rem;">
+                    <div style="font-weight: 800; margin-bottom: 0.25rem; color: var(--pastel-purple-dark); display: flex; align-items: center; gap: 0.5rem;">
+                        <span>③</span> Rate Limiting & Scope Verification:
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-main);">
+                        Gateway checks token bucket (e.g. 100 req/min for Tier 1) and validates if key has permission for the requested route (e.g. <code>write:orders</code>).
+                    </div>
+                </div>
+
+                <div class="seq-item server-res" style="background: var(--paper-card); border-radius: 8px; padding: 0.75rem 1rem;">
+                    <div style="font-weight: 800; margin-bottom: 0.25rem; color: var(--pastel-green-dark); display: flex; align-items: center; gap: 0.5rem;">
+                        <span>④</span> Downstream proxy & 200 OK Response:
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-main);">
+                        Request routed to microservice with injected <code>X-Tenant-Id</code>; JSON payload returned to client.
+                    </div>
+                </div>
+
             </div>
 
         </div>
@@ -277,18 +383,18 @@ import CodeSticker from '../../components/CodeSticker.astro';
 
     <div class="card-grid" style="margin-top: 1.25rem;">
         <GoodNotesCard title="⚠️ Issue 1: Leak Risks" accent="pink">
-            <p>If an API key is leaked (e.g. committed to public GitHub), <strong>anyone holding the key</strong> can make authorized requests on your behalf until explicitly revoked.</p>
+            <p>If an API key is leaked (e.g. committed to public GitHub), <strong>anyone possessing the key</strong> can execute authorized operations until the developer manually revokes it in the dashboard.</p>
         </GoodNotesCard>
 
-        <GoodNotesCard title="⏳ Issue 2: No Built-in Expiration" accent="yellow">
-            <p>Unlike JWTs with standard <code>exp</code> claims, raw API keys have <strong>no built-in expiration</strong> mechanism. Rotation and expiry must be manually enforced in database logic.</p>
+        <GoodNotesCard title="⏳ Issue 2: No Self-Contained Expiry" accent="yellow">
+            <p>Unlike JWTs with standard <code>exp</code> timestamp claims, raw API keys are <strong>opaque strings</strong> without self-verifying expiration. Expiration and rotation schedules must be managed server-side.</p>
         </GoodNotesCard>
     </div>
 
-    <StickyNote type="sky" title="💡 Crucial Distinction: API Keys vs. JWT">
+    <StickyNote type="sky" title="💡 Crucial Architectural Distinction: API Keys vs. JWT">
         <p style="font-size:0.95rem; line-height:1.6;">
-            <strong>API Keys</strong> might look superficially similar to tokens, but API keys are purely <strong>opaque random strings</strong> (the server must hit a DB to know who it belongs to).<br />
-            In contrast, <strong>JWTs</strong> are <strong>self-contained payloads</strong> holding signed claims and user data.
+            <strong>API Keys</strong> are <strong>opaque random identifiers</strong> requiring a server-side database/Redis lookup to identify the caller and verify permissions.<br />
+            In contrast, <strong>JWTs</strong> are <strong>cryptographically signed payloads</strong> carrying serialized claims (user ID, expiration, roles) that any downstream service can verify statelessly without querying a central database.
         </p>
     </StickyNote>
 </div>
@@ -306,7 +412,8 @@ import CodeSticker from '../../components/CodeSticker.astro';
                 <th>Authentication Scheme</th>
                 <th>Credential Format</th>
                 <th>Replay Protection</th>
-                <th>Primary Use Case</th>
+                <th>State Management</th>
+                <th>Primary Modern Use Case</th>
             </tr>
         </thead>
         <tbody>
@@ -314,19 +421,22 @@ import CodeSticker from '../../components/CodeSticker.astro';
                 <td><strong>HTTP Basic</strong></td>
                 <td>Base64 encoded <code>user:pass</code></td>
                 <td>❌ None</td>
+                <td>Stateless header; browser stores credentials in memory</td>
                 <td>Internal developer proxies, legacy appliances</td>
             </tr>
             <tr>
                 <td><strong>HTTP Digest</strong></td>
                 <td>MD5 hash with server nonce</td>
                 <td>✅ Nonce-based</td>
-                <td>Legacy embedded devices (outdated)</td>
+                <td>Server must maintain nonce state / timestamp</td>
+                <td>Legacy embedded devices (mostly deprecated)</td>
             </tr>
             <tr>
                 <td><strong>API Keys</strong></td>
-                <td>Opaque / High-entropy secret string</td>
-                <td>⚠️ Depends on HTTPS / signature</td>
-                <td>Server-to-server APIs, SaaS billing, rate limiting</td>
+                <td>Opaque high-entropy secret (e.g. <code>sk_live_...</code>)</td>
+                <td>⚠️ Requires HTTPS + optional HMAC signature</td>
+                <td>Stateful (requires DB/Redis lookup for identity & scopes)</td>
+                <td>Machine-to-Machine APIs, SaaS billing, rate limiting</td>
             </tr>
         </tbody>
     </table>
