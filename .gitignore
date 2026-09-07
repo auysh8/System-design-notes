@@ -13,8 +13,8 @@ roadmap-private.md
 Thumbs.db
 *.swp
 *.swo
-.vscode/
 .idea/
 
 # Added by ggshield
 .cache_ggshield
+config.bat
