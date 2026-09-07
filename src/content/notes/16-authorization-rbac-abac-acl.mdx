@@ -1,0 +1,650 @@
+---
+title: "Authorization Strategies: RBAC, ABAC, ACL & Token Enforcement"
+shortTitle: "16. Authorization Models"
+chapterNumber: 16
+subtitle: "What Are They Allowed to Do? RBAC Roles, ABAC Policies, Resource ACLs, OAuth 2 Delegation & JWT Enforcement"
+tag: "System Design Chapter 16"
+accentColor: "purple"
+description: "Comprehensive guide to authorization architectures: RBAC role hierarchies, ABAC attribute evaluation, Google Drive-style ACLs, OAuth 2 token delegation (Vercel to GitHub), and stateless JWT claim enforcement."
+handwrittenAnnotation: "★ Tokens only carry claims and identity! The token doesn't decide what is allowed — your backend policy engine does."
+---
+
+import StickyNote from '../../components/StickyNote.astro';
+import GoodNotesCard from '../../components/GoodNotesCard.astro';
+import DiagramPaper from '../../components/DiagramPaper.astro';
+import QuoteBox from '../../components/QuoteBox.astro';
+import CodeSticker from '../../components/CodeSticker.astro';
+
+{/* SECTION 1: CORE AUTHORIZATION PARADIGM */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-purple);">1</span>
+        The Core Paradigm: "What are they allowed to do?"
+    </div>
+
+    <QuoteBox quote="Authentication verifies identity ('Who are you?'). Authorization determines access rights ('What resources and actions are you permitted to execute?')." author="System Design Axiom" />
+
+    <p>Every secure distributed system enforces a strict boundary between <mark class="hl-pink">Identity Verification</mark> and <mark class="hl-purple">Permission Enforcement</mark>. Authentication must happen first; once the user's identity is cryptographically validated, the system queries its authorization model to evaluate whether the requested operation is permitted.</p>
+
+    {/* Visual Flow from Notes Page 1 */}
+    <DiagramPaper title="🛡️ The Complete Request Authorization Pipeline">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 1.25rem; max-width: 680px; margin: 0 auto; font-family: var(--font-body);">
+            
+            {/* Step 1: Login / Incoming Request */}
+            <div style="background: var(--pastel-blue); border: 2px solid var(--text-main); border-radius: 12px; padding: 0.75rem 2rem; font-weight: 800; font-size: 0.95rem; box-shadow: 3px 3px 0px var(--text-main); display: flex; align-items: center; gap: 0.6rem;">
+                <span>📥</span> Incoming Client Request <code style="font-size: 0.82rem; background: var(--paper-card); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-soft);">(Credentials / Bearer JWT)</code>
+            </div>
+
+            <div style="font-size: 1.35rem; color: var(--text-muted); font-weight: 800;">⬇️</div>
+
+            {/* Step 2: Authentication Box */}
+            <div style="background: var(--pastel-pink); border: 2px solid var(--text-main); border-radius: 12px; padding: 0.9rem 2.25rem; font-weight: 800; font-size: 1rem; box-shadow: 3px 3px 0px var(--text-main); text-align: center; width: 100%; max-width: 440px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span>🔑</span> <strong>Phase 1: Authentication</strong>
+                </div>
+                <span style="font-size: 0.82rem; font-weight: 600; opacity: 0.85; display: block; margin-top: 0.2rem;">Verify signature, unpack claims & resolve Subject ID (<code>sub: user_123</code>)</span>
+            </div>
+
+            <div style="font-size: 1.35rem; color: var(--text-muted); font-weight: 800;">⬇️</div>
+
+            {/* Step 3: Authorization Check Decision Box */}
+            <div style="background: var(--pastel-yellow); border: 2.5px solid var(--text-main); border-radius: 14px; padding: 1.1rem 2rem; text-align: center; font-weight: 800; font-size: 1.05rem; box-shadow: 4px 4px 0px var(--text-main); width: 100%; max-width: 460px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                    <span>⚖️</span> <strong>Phase 2: Authorization Check</strong>
+                </div>
+                <span style="font-size: 0.84rem; font-weight: 600; color: var(--text-main); display: block;">"Does <code>user_123</code> have permission to perform <code>DELETE /api/posts/99</code>?"</span>
+                <span style="font-size: 0.78rem; opacity: 0.8; margin-top: 0.35rem; display: block;">Evaluated against: RBAC roles, ABAC attributes, or Resource ACLs</span>
+            </div>
+
+            {/* Decision Branches */}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; width: 100%; margin-top: 0.5rem;">
+                
+                {/* Branch: Allowed Actions */}
+                <div style="background: var(--pastel-green); border: 2px solid var(--text-main); border-radius: 12px; padding: 1.1rem; text-align: center; box-shadow: 3px 3px 0px var(--text-main);">
+                    <div style="font-weight: 800; font-size: 1rem; color: var(--pastel-green-dark); display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 0.4rem;">
+                        <span>✅</span> Allowed Actions
+                    </div>
+                    <p style="font-size: 0.84rem; margin: 0; color: var(--text-main); line-height: 1.5;">Policy permits action ➔ Forward to Business Logic & Controller.</p>
+                    <div style="margin-top: 0.75rem;">
+                        <code style="font-size: 0.85rem; background: var(--paper-card); color: var(--pastel-green-dark); padding: 0.3rem 0.75rem; border-radius: 6px; border: 1.5px solid var(--pastel-green-dark); font-weight: 800; display: inline-block;">HTTP 200 / 204 Success</code>
+                    </div>
+                </div>
+
+                {/* Branch: Denied Actions */}
+                <div style="background: var(--pastel-pink); border: 2px solid var(--text-main); border-radius: 12px; padding: 1.1rem; text-align: center; box-shadow: 3px 3px 0px var(--text-main);">
+                    <div style="font-weight: 800; font-size: 1rem; color: var(--pastel-pink-dark); display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 0.4rem;">
+                        <span>🚫</span> Denied Actions
+                    </div>
+                    <p style="font-size: 0.84rem; margin: 0; color: var(--text-main); line-height: 1.5;">Policy rejects action ➔ Short-circuit request immediately.</p>
+                    <div style="margin-top: 0.75rem;">
+                        <code style="font-size: 0.85rem; background: var(--paper-card); color: var(--pastel-pink-dark); padding: 0.3rem 0.75rem; border-radius: 6px; border: 1.5px solid var(--pastel-pink-dark); font-weight: 800; display: inline-block;">HTTP 403 Forbidden</code>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </DiagramPaper>
+
+    <div class="card-grid" style="margin-top: 1.5rem;">
+        <StickyNote color="pink" title="💡 401 Unauthorized vs. 403 Forbidden">
+            <ul>
+                <li><strong>401 Unauthorized:</strong> "I don't know who you are (or your token is missing/expired/invalid)." <em>(Actually means unauthenticated!)</em></li>
+                <li><strong>403 Forbidden:</strong> "I know exactly who you are, but you are <strong>not allowed</strong> to touch this resource." <em>(True authorization failure!)</em></li>
+            </ul>
+        </StickyNote>
+
+        <StickyNote color="yellow" title="🔑 Real Systems Combine Models">
+            <p>Production enterprise platforms rarely use one model in isolation. Real architectures combine multiple models:</p>
+            <ul>
+                <li><strong>RBAC</strong> for organization-wide coarse baseline access (e.g. <em>Admins vs Staff vs Customers</em>).</li>
+                <li><strong>ABAC / ACL</strong> for fine-grained resource checks (e.g. <em>Can only edit documents you own or during business hours</em>).</li>
+            </ul>
+        </StickyNote>
+    </div>
+</div>
+
+{/* SECTION 2: RBAC (ROLE-BASED ACCESS CONTROL) */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-blue);">2</span>
+        Model 1: RBAC (Role-Based Access Control)
+    </div>
+
+    <p>In <mark class="hl-blue">RBAC</mark>, permissions are not assigned directly to individual users. Instead, permissions are grouped into <strong>Roles</strong> (e.g., <code>Admin</code>, <code>Editor</code>, <code>Viewer</code>), and users are assigned one or more roles.</p>
+
+    <div class="card-grid">
+        <GoodNotesCard title="👑 Admin" accent="pink">
+            <p><strong>Permissions:</strong> Full Superuser Access.</p>
+            <ul>
+                <li><strong>Create, Read, Update, Delete (CRUD)</strong> any resource.</li>
+                <li><strong>Manage Users:</strong> Invite, deactivate, assign roles, change billing settings.</li>
+            </ul>
+            <span class="seq-pill pink">All Access</span>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="✏️ Editor" accent="yellow">
+            <p><strong>Permissions:</strong> Content Operations.</p>
+            <ul>
+                <li><strong>Create, Read, Update</strong> articles, documents, media assets.</li>
+                <li>Cannot manage users, edit tenant billing, or alter global workspace security settings.</li>
+            </ul>
+            <span class="seq-pill yellow">Write & Read Content</span>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="👀 Viewer" accent="blue">
+            <p><strong>Permissions:</strong> Read-Only Access.</p>
+            <ul>
+                <li><strong>Read Only:</strong> Browse records, view dashboards, download generated reports.</li>
+                <li>Cannot create draft posts, modify records, or trigger mutation endpoints.</li>
+            </ul>
+            <span class="seq-pill blue">Read Only</span>
+        </GoodNotesCard>
+    </div>
+
+    {/* RBAC Practical Implementations & Architecture */}
+    <DiagramPaper title="🏢 Real-World RBAC Architecture in Modern Dashboards">
+        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
+            
+            <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-radius: 10px; padding: 1rem;">
+                <strong style="color: var(--text-main); font-size: 0.95rem; display: block; margin-bottom: 0.4rem;">Where RBAC is standard in industry:</strong>
+                <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.88rem; line-height: 1.6;">
+                    <li><strong>Stripe Dashboards:</strong> <code>Administrator</code>, <code>Developer</code>, <code>Analyst</code>, <code>Support Specialist</code>, <code>View-Only</code>.</li>
+                    <li><strong>CMS Platforms (WordPress, Contentful):</strong> <code>Super Admin</code>, <code>Editor</code>, <code>Author</code>, <code>Contributor</code>, <code>Subscriber</code>.</li>
+                    <li><strong>B2B SaaS Multi-Tenant Workspaces:</strong> Workspace Owner, Member, Guest.</li>
+                </ul>
+            </div>
+
+            {/* Code implementation example */}
+            <CodeSticker title="Express.js RBAC Middleware Pattern" copyLabel="Copy TypeScript">
+```typescript
+// Express.js declarative RBAC guard
+function requireRole(...allowedRoles: string[]) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user; // populated by JWT verification middleware
+    if (!user) {
+      return res.status(401).json({ error: "Unauthenticated" });
+    }
+
+    const hasRole = user.roles.some((role) => allowedRoles.includes(role));
+    if (!hasRole) {
+      return res.status(403).json({ 
+        error: "Forbidden: Insufficient privileges",
+        required: allowedRoles,
+        actual: user.roles 
+      });
+    }
+
+    next();
+  };
+}
+
+// Protected route binding
+app.delete("/api/v1/users/:id", requireRole("admin"), deleteUserHandler);
+app.post("/api/v1/posts", requireRole("admin", "editor"), createPostHandler);
+app.get("/api/v1/posts", requireRole("admin", "editor", "viewer"), listPostsHandler);
+```
+            </CodeSticker>
+
+            {/* RBAC Limitation */}
+            <div style="background: var(--pastel-yellow); border: 2px dashed var(--text-main); border-radius: 10px; padding: 0.9rem 1.25rem; font-size: 0.85rem;">
+                <strong>⚠️ The "Role Explosion" Bottleneck:</strong>
+                <p style="margin: 0.25rem 0 0 0;">As organizations grow, pure RBAC breaks down. What happens when an editor can edit documents, but <em>only</em> if the document is in draft mode, in their region, and during business hours? You are forced to invent hundreds of hyper-specific roles like <code>Editor_US_East_DraftOnly_Weekday</code>. This is where <strong>ABAC</strong> solves the problem.</p>
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 3: ABAC (ATTRIBUTE-BASED ACCESS CONTROL) */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-green);">3</span>
+        Model 2: ABAC (Attribute-Based Access Control)
+    </div>
+
+    <p>Rather than evaluating static role names, <mark class="hl-green">ABAC</mark> dynamically evaluates policies based on contextual <strong>attributes</strong> across three primary dimensions: the <strong>Subject (User)</strong>, the <strong>Resource</strong>, and the <strong>Environment</strong>.</p>
+
+    {/* The 3 Dimensions Table / Cards */}
+    <div class="card-grid">
+        <GoodNotesCard title="👤 User Attributes" accent="green">
+            <ul>
+                <li><code>department</code> (e.g. <code>"HR"</code>, <code>"Finance"</code>)</li>
+                <li><code>age</code> / <code>employmentType</code></li>
+                <li><code>clearanceLevel</code> (e.g. <code>Level-3</code>)</li>
+                <li><code>organizationId</code></li>
+            </ul>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="📄 Resource Attributes" accent="yellow">
+            <ul>
+                <li><code>confidentiality</code> (e.g. <code>"internal"</code>, <code>"top-secret"</code>)</li>
+                <li><code>ownerId</code> (e.g. <code>"user_123"</code>)</li>
+                <li><code>classification</code> / <code>projectTag</code></li>
+                <li><code>status</code> (e.g. <code>"published"</code> vs <code>"draft"</code>)</li>
+            </ul>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="🌐 Environment Attributes" accent="purple">
+            <ul>
+                <li><code>timeOfDay</code> (e.g. <code>current_time &lt; 18:00</code>)</li>
+                <li><code>ipLocation</code> / <code>geoCountry</code></li>
+                <li><code>deviceType</code> (e.g. Corporate Laptop vs Unknown Mobile)</li>
+                <li><code>tlsVersion</code> / VPN connection state</li>
+            </ul>
+        </GoodNotesCard>
+    </div>
+
+    {/* Handwritten policy breakdown */}
+    <DiagramPaper title="📜 ABAC Policy Evaluation Engine">
+        <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
+            
+            <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 12px; padding: 1.1rem; box-shadow: 3px 3px 0px var(--text-main);">
+                <div style="font-weight: 800; font-size: 0.92rem; color: var(--text-main); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>📝</span> Example Policy from Real World (Handwritten Note):
+                </div>
+                <div style="background: var(--pastel-green); border-left: 4px solid var(--pastel-green-dark); padding: 0.75rem 1rem; border-radius: 6px; font-family: var(--font-code); font-size: 0.88rem; color: var(--text-main); font-weight: 700;">
+                    allow = (user.department == "HR") && (time &lt; 18:00) && (resource.confidentiality == "internal")
+                </div>
+            </div>
+
+            {/* Architecture Flow */}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; text-align: center; font-size: 0.82rem;">
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-radius: 8px; padding: 0.75rem;">
+                    <strong>1. Request Intercepted</strong>
+                    <p style="margin: 0.25rem 0 0 0; color: var(--text-muted);">User attempts action on target object</p>
+                </div>
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-radius: 8px; padding: 0.75rem;">
+                    <strong>2. Fetch Attributes</strong>
+                    <p style="margin: 0.25rem 0 0 0; color: var(--text-muted);">Enrich with DB metadata & clock/IP info</p>
+                </div>
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-radius: 8px; padding: 0.75rem;">
+                    <strong>3. Policy Evaluator</strong>
+                    <p style="margin: 0.25rem 0 0 0; color: var(--text-muted);">Execute Boolean expression rules</p>
+                </div>
+                <div style="background: var(--pastel-green); border: 1.5px solid var(--text-main); border-radius: 8px; padding: 0.75rem;">
+                    <strong>4. Grant or Deny</strong>
+                    <p style="margin: 0.25rem 0 0 0; font-weight: 700;">200 OK or 403 Forbidden</p>
+                </div>
+            </div>
+
+            {/* ABAC Tradeoff comparison */}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+                <div style="background: var(--pastel-green); border: 1.5px solid var(--pastel-green-dark); border-radius: 8px; padding: 0.85rem;">
+                    <strong style="color: var(--pastel-green-dark); font-size: 0.88rem;">✨ Advantages</strong>
+                    <ul style="font-size: 0.82rem; margin: 0.3rem 0 0 0; padding-left: 1.1rem; line-height: 1.5; color: var(--text-main);">
+                        <li>Tremendous flexibility. No need to invent new roles for business conditions.</li>
+                        <li>Zero role explosion. Supports contextual & time-sensitive security.</li>
+                    </ul>
+                </div>
+                <div style="background: var(--pastel-pink); border: 1.5px solid var(--pastel-pink-dark); border-radius: 8px; padding: 0.85rem;">
+                    <strong style="color: var(--pastel-pink-dark); font-size: 0.88rem;">⚠️ Trade-offs</strong>
+                    <ul style="font-size: 0.82rem; margin: 0.3rem 0 0 0; padding-left: 1.1rem; line-height: 1.5; color: var(--text-main);">
+                        <li>Requires dedicated policy management engine (e.g., Open Policy Agent).</li>
+                        <li>Performance overhead: Fetching extra attributes adds latency per request.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 4: ACL (ACCESS CONTROL LISTS) */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-yellow);">4</span>
+        Model 3: ACL (Access Control Lists)
+    </div>
+
+    <p>In <mark class="hl-yellow">ACL</mark>, instead of attaching roles to users or writing broad attribute policies, <strong>each resource holds its own individual list of permitted subjects and their granted actions</strong>.</p>
+
+    {/* DiagramPaper representing note drawing page 3 */}
+    <DiagramPaper title="📁 Resource-Centric Access Control List (Google Drive Architecture)">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 700px; margin: 0 auto; font-family: var(--font-body);">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 1.25rem; align-items: center;">
+                
+                {/* Resource Box */}
+                <div style="background: var(--pastel-yellow); border: 2.5px solid var(--text-main); border-radius: 14px; padding: 1.25rem 1rem; text-align: center; box-shadow: 3px 3px 0px var(--text-main);">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.25rem;">📄</div>
+                    <strong style="font-size: 1.05rem; display: block; color: var(--text-main);">Resource</strong>
+                    <code style="font-size: 0.78rem; background: var(--paper-card); padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid var(--border-soft); display: inline-block; margin-top: 0.25rem;">document_quarterly_report.pdf</code>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0.5rem 0 0 0; font-weight: 600;">Each resource owns its permission list</p>
+                </div>
+
+                {/* Permission List Table */}
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem; box-shadow: 3px 3px 0px var(--text-main);">
+                    <div style="font-weight: 800; font-size: 0.92rem; border-bottom: 2px dashed var(--border-soft); padding-bottom: 0.5rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between;">
+                        <span>Subject (User)</span>
+                        <span>Permission</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.88rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.35rem 0.6rem; border-radius: 6px;">
+                            <span style="font-weight: 700; color: var(--text-main);">👤 Alice</span>
+                            <span class="seq-pill blue">Read Only</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.35rem 0.6rem; border-radius: 6px;">
+                            <span style="font-weight: 700; color: var(--text-main);">👤 Bob</span>
+                            <span class="seq-pill green">Read / Write</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--paper-bg); border: 1px solid var(--border-soft); padding: 0.35rem 0.6rem; border-radius: 6px;">
+                            <span style="font-weight: 700; color: var(--text-main);">👤 Carol</span>
+                            <span class="seq-pill pink">No Access (Denied)</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {/* Real World Insight & Limits */}
+            <div style="background: var(--pastel-blue); border: 1.5px solid var(--text-main); border-radius: 10px; padding: 0.9rem 1.25rem;">
+                <strong style="color: var(--text-main); font-size: 0.9rem;">🌍 Canonical Real-World Example: Google Drive & AWS S3 Object ACLs</strong>
+                <p style="font-size: 0.84rem; margin: 0.25rem 0 0 0; line-height: 1.5;">When you click <em>"Share Document"</em> in Google Drive and type a specific colleague's email with "Commenter" or "Editor" permissions, you are directly appending a row to that specific file's Access Control List.</p>
+            </div>
+
+            {/* Pros and Cons */}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div style="background: var(--pastel-green); border: 1.5px solid var(--pastel-green-dark); border-radius: 8px; padding: 0.85rem;">
+                    <strong style="color: var(--pastel-green-dark); font-size: 0.88rem;">✨ Granular Precision</strong>
+                    <p style="font-size: 0.82rem; margin: 0.25rem 0 0 0; line-height: 1.5; color: var(--text-main);">Unmatched fine-grained user-to-resource sharing capability. Ideal for multi-user file storage.</p>
+                </div>
+                <div style="background: var(--pastel-pink); border: 1.5px solid var(--pastel-pink-dark); border-radius: 8px; padding: 0.85rem;">
+                    <strong style="color: var(--pastel-pink-dark); font-size: 0.88rem;">⚠️ Hard to Scale</strong>
+                    <p style="font-size: 0.82rem; margin: 0.25rem 0 0 0; line-height: 1.5; color: var(--text-main);">Auditing is excruciating ("Show me all 100,000 files Bob can read"). Querying requires expensive joins on ACL mapping tables.</p>
+                </div>
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 5: MODEL COMPARISON MATRIX */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-pink);">5</span>
+        Authorization Models: Comparison Matrix
+    </div>
+
+    <p>Choosing the right authorization model is one of the most consequential architectural decisions in database and backend design:</p>
+
+    <div style="overflow-x: auto; margin: 1.25rem 0;">
+        <table class="notes-table" style="width: 100%; border-collapse: collapse; font-size: 0.88rem; background: var(--paper-card); border: 2px solid var(--text-main); box-shadow: 4px 4px 0px var(--text-main);">
+            <thead>
+                <tr style="background: var(--pastel-yellow); border-bottom: 2px solid var(--text-main); text-align: left;">
+                    <th style="padding: 0.75rem 1rem;">Model</th>
+                    <th style="padding: 0.75rem 1rem;">Core Concept</th>
+                    <th style="padding: 0.75rem 1rem;">Granularity</th>
+                    <th style="padding: 0.75rem 1rem;">Best Used For</th>
+                    <th style="padding: 0.75rem 1rem;">Primary Bottleneck</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border-soft);">
+                    <td style="padding: 0.75rem 1rem; font-weight: 800; color: var(--pastel-blue-dark);">RBAC</td>
+                    <td style="padding: 0.75rem 1rem;">Users ➔ Roles ➔ Permissions</td>
+                    <td style="padding: 0.75rem 1rem;"><span class="seq-pill blue">Coarse</span></td>
+                    <td style="padding: 0.75rem 1rem;">B2B SaaS dashboards, Stripe, CMS platforms</td>
+                    <td style="padding: 0.75rem 1rem;">Role explosion when nuanced business rules emerge</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-soft);">
+                    <td style="padding: 0.75rem 1rem; font-weight: 800; color: var(--pastel-green-dark);">ABAC</td>
+                    <td style="padding: 0.75rem 1rem;">Policies on User, Resource & Env attributes</td>
+                    <td style="padding: 0.75rem 1rem;"><span class="seq-pill green">Dynamic & Fine</span></td>
+                    <td style="padding: 0.75rem 1rem;">Healthcare (HIPAA), Finance, Government clearance</td>
+                    <td style="padding: 0.75rem 1rem;">Policy evaluation complexity & attribute retrieval latency</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-soft);">
+                    <td style="padding: 0.75rem 1rem; font-weight: 800; color: var(--pastel-purple-dark);">ACL</td>
+                    <td style="padding: 0.75rem 1rem;">Resource stores table of permitted subjects</td>
+                    <td style="padding: 0.75rem 1rem;"><span class="seq-pill purple">Ultra-Granular</span></td>
+                    <td style="padding: 0.75rem 1rem;">Google Drive, Dropbox, AWS S3 object sharing</td>
+                    <td style="padding: 0.75rem 1rem;">Auditing across resources & massive scale table joins</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{/* SECTION 6: OAUTH 2 DELEGATION */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-yellow);">6</span>
+        OAuth 2 Delegation: Access on Behalf of the User
+    </div>
+
+    <QuoteBox quote="OAuth 2 is an authorization delegation framework. It answers: 'How can a user let a third-party application access their resources without ever handing over their password?'" author="OAuth 2 RFC 6749" />
+
+    <p>As illustrated in page 4 of the notes, the textbook scenario is connecting <strong>Vercel</strong> to <strong>GitHub</strong> so Vercel can clone repositories and deploy code on your behalf:</p>
+
+    {/* OAuth2 Flow Diagram from Page 4 */}
+    <DiagramPaper title="🤝 The OAuth 2 Delegation Flow: Vercel & GitHub Handshake">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 740px; margin: 0 auto; font-family: var(--font-body);">
+            
+            {/* Header Actors */}
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center; border-bottom: 2px dashed var(--border-soft); padding-bottom: 1rem;">
+                <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">👤</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Resource Owner</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">The User</span>
+                </div>
+                <div style="background: var(--pastel-blue); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">▲</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Client Application</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Vercel Service</span>
+                </div>
+                <div style="background: var(--pastel-purple); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 0.5rem; box-shadow: 2px 2px 0px var(--text-main);">
+                    <div style="font-size: 1.25rem;">🐙</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Authorization Server</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">GitHub OAuth API</span>
+                </div>
+            </div>
+
+            {/* Sequence Steps */}
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
+                
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-blue-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                        <span style="font-weight: 800; color: var(--text-main);">1. User Requests Access / Connect Account</span>
+                        <span class="seq-pill blue">User ➔ Vercel</span>
+                    </div>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.82rem;">The user clicks <em>"Connect GitHub"</em> on the Vercel dashboard.</p>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-yellow-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                        <span style="font-weight: 800; color: var(--text-main);">2. Redirect to Consent Screen with Scopes</span>
+                        <span class="seq-pill yellow">Vercel ➔ GitHub Consent</span>
+                    </div>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.82rem;">GitHub presents consent modal: <em>"Vercel wants permission to <code>read:repo</code>, <code>read:user</code>"</em>. Notice it explicitly does <strong>not</strong> request <code>delete:repo</code>!</p>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-green-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                        <span style="font-weight: 800; color: var(--text-main);">3. Authorization Code Grant</span>
+                        <span class="seq-pill green">GitHub ➔ Vercel</span>
+                    </div>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.82rem;">User clicks "Authorize". GitHub redirects back with a short-lived, single-use <code>authorization_code</code>.</p>
+                </div>
+
+                <div style="background: var(--paper-card); border: 1.5px solid var(--border-soft); border-left: 5px solid var(--pastel-purple-dark); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: var(--shadow-card);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                        <span style="font-weight: 800; color: var(--text-main);">4. Secure Token Exchange (Backend-to-Backend)</span>
+                        <span class="seq-pill purple">Vercel Backend ➔ GitHub</span>
+                    </div>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.82rem;">Vercel trades the code + <code>client_secret</code> for a scoped <strong>Access Token</strong>.</p>
+                </div>
+
+            </div>
+
+            {/* Handwritten Note Callouts */}
+            <div style="background: var(--pastel-green); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.9rem 1.25rem; font-size: 0.86rem; line-height: 1.6;">
+                <strong>📌 Critical Rules from Handwritten Notes:</strong>
+                <ul style="margin: 0.4rem 0 0 0; padding-left: 1.25rem;">
+                    <li><strong>Access Token is given (Not Password):</strong> Vercel never knows your GitHub master password.</li>
+                    <li><strong>Scoped Access:</strong> The token only represents the exact permissions you approved (e.g. <code>read:repo</code>, not <code>delete:repo</code>).</li>
+                    <li><strong>GitHub never shares your password:</strong> If Vercel is compromised, your GitHub account credentials remain completely secure. Revoking access takes 1 click.</li>
+                    <li><strong>OAuth 2 defines the secure token issuance flow:</strong> It is an industry-standard authorization framework.</li>
+                </ul>
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 7: TOKEN-BASED AUTHORIZATION & JWT ENFORCEMENT */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-purple);">7</span>
+        Token-Based Authorization: JWT Claims & Enforcement
+    </div>
+
+    <p>In distributed microservices, we don't query a database for every single user privilege check. Instead, we use <mark class="hl-purple">Token-Based Authorization</mark> where cryptographically signed tokens (JWTs) carry identity claims and scopes directly to downstream services.</p>
+
+    {/* Anatomy of an Authorization JWT (Page 5) */}
+    <DiagramPaper title="📦 Anatomy of an Authorization JWT (Bearer Token)">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 720px; margin: 0 auto; font-family: var(--font-body);">
+            
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+                <div style="background: var(--pastel-blue); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 1.25rem; font-weight: 800; font-size: 0.9rem;">
+                    👤 User
+                </div>
+                <span style="font-weight: 800; color: var(--text-muted);">➔ Request with Bearer Token ➔</span>
+                <div style="background: var(--pastel-yellow); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 1.25rem; font-weight: 800; font-size: 0.9rem;">
+                    🎟️ JWT Token
+                </div>
+                <span style="font-weight: 800; color: var(--text-muted);">➔ Evaluated at ➔</span>
+                <div style="background: var(--pastel-green); border: 2px solid var(--text-main); border-radius: 10px; padding: 0.6rem 1.25rem; font-weight: 800; font-size: 0.9rem;">
+                    🖥️ Server Backend
+                </div>
+            </div>
+
+            {/* Decoded Payload Card */}
+            <div style="background: var(--paper-card); border: 2.5px solid var(--text-main); border-radius: 12px; padding: 1.25rem; box-shadow: 4px 4px 0px var(--text-main);">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px dashed var(--border-soft); padding-bottom: 0.5rem; margin-bottom: 0.75rem;">
+                    <span style="font-weight: 800; font-size: 0.95rem; color: var(--text-main); display: flex; align-items: center; gap: 0.4rem;">
+                        <span>📋</span> Decoded JWT Payload (From Handwritten Note)
+                    </span>
+                    <span class="seq-pill purple">Claims & Scopes</span>
+                </div>
+
+                <div style="background: #1e293b; color: #f8fafc; border-radius: 8px; padding: 1rem; font-family: var(--font-code); font-size: 0.88rem; line-height: 1.6;">
+                    <div><span style="color: #94a3b8;">// Subject Identity</span></div>
+                    <div><span style="color: #f472b6;">"sub"</span>: <span style="color: #38bdf8;">"user-123"</span>,</div>
+                    <div style="margin-top: 0.35rem;"><span style="color: #94a3b8;">// RBAC Roles</span></div>
+                    <div><span style="color: #f472b6;">"roles"</span>: [<span style="color: #fde047;">"admin"</span>, <span style="color: #fde047;">"editor"</span>],</div>
+                    <div style="margin-top: 0.35rem;"><span style="color: #94a3b8;">// OAuth2 Scopes</span></div>
+                    <div><span style="color: #f472b6;">"scopes"</span>: [<span style="color: #4ade80;">"read:posts"</span>, <span style="color: #4ade80;">"write:posts"</span>],</div>
+                    <div style="margin-top: 0.35rem;"><span style="color: #94a3b8;">// Expiration & Issuer</span></div>
+                    <div><span style="color: #f472b6;">"exp"</span>: <span style="color: #fb923c;">1774892400</span>, <span style="color: #64748b;">// 24 hours</span></div>
+                    <div><span style="color: #f472b6;">"iss"</span>: <span style="color: #38bdf8;">"https://auth.example.com"</span></div>
+                </div>
+            </div>
+
+            {/* The Golden Rule Quote Box */}
+            <div style="background: var(--pastel-yellow); border: 2px solid var(--text-main); border-radius: 12px; padding: 1.1rem 1.5rem; box-shadow: 3px 3px 0px var(--text-main);">
+                <div style="font-weight: 800; font-size: 1.05rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <span>⭐</span> The Key Distinction (The Golden Rule of AuthZ)
+                </div>
+                <p style="font-size: 0.95rem; font-weight: 700; line-height: 1.6; margin: 0; color: var(--text-main); font-style: italic;">
+                    "Token carries identity and claims, and authorization models define what is allowed.<br />
+                    Tokens are just the transport mechanism. They don't make decisions — your backend does."
+                </p>
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 8: ADVANCED ARCHITECTURES - PEP, PDP & ZANZIBAR */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-green);">8</span>
+        Production Scale: PEP / PDP & Google Zanzibar (ReBAC)
+    </div>
+
+    <p>In high-scale enterprise architectures, mixing authorization logic directly inside endpoint handler code creates spaghetti code. Standard engineering patterns decouple policy evaluation into dedicated architectural layers:</p>
+
+    <div class="card-grid">
+        <GoodNotesCard title="🛡️ PEP (Policy Enforcement Point)" accent="pink">
+            <p>The guard at the gate (API Gateway, reverse proxy, or HTTP middleware). It intercepts incoming requests, extracts tokens, asks the PDP for a verdict, and strictly denies (403) or permits the request.</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="🧠 PDP (Policy Decision Point)" accent="yellow">
+            <p>The brain. A dedicated engine (such as <strong>Open Policy Agent / OPA</strong>) that executes compiled declarative logic (like Rego) against attributes and inputs to return a pure Boolean <code>allow: true</code>.</p>
+        </GoodNotesCard>
+
+        <GoodNotesCard title="🕸️ ReBAC & Google Zanzibar" accent="purple">
+            <p><strong>Relationship-Based Access Control</strong>. Used by Google (Drive, YouTube, Cloud) to handle billions of ACLs. Instead of tables, permissions are modeled as graph relation tuples (e.g. <code>doc:42#viewer@user:alice</code>).</p>
+        </GoodNotesCard>
+    </div>
+
+    <DiagramPaper title="🏛️ Centralized vs Distributed Authorization Engines">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; max-width: 740px; margin: 0 auto; font-family: var(--font-body);">
+            
+            {/* OPA / Rego Sidecar */}
+            <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem; box-shadow: 2px 2px 0px var(--text-main);">
+                <div style="font-weight: 800; font-size: 0.95rem; color: var(--pastel-blue-dark); margin-bottom: 0.4rem;">
+                    🚀 OPA / Rego Sidecar Engine
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0 0 0.5rem 0;">
+                    Each microservice runs a local Open Policy Agent sidecar process in memory. Zero network hop latency when evaluating ABAC/RBAC rules!
+                </p>
+                <code style="font-size: 0.78rem; background: #1e293b; color: #38bdf8; display: block; padding: 0.5rem; border-radius: 6px; font-family: var(--font-code);">
+                    default allow = false<br/>
+                    allow {"{"}<br/>
+                    &nbsp;&nbsp;input.method == "GET"<br/>
+                    &nbsp;&nbsp;input.user.roles[_] == "viewer"<br/>
+                    {"}"}
+                </code>
+            </div>
+
+            {/* Google Zanzibar / ReBAC */}
+            <div style="background: var(--paper-card); border: 2px solid var(--text-main); border-radius: 12px; padding: 1rem; box-shadow: 2px 2px 0px var(--text-main);">
+                <div style="font-weight: 800; font-size: 0.95rem; color: var(--pastel-purple-dark); margin-bottom: 0.4rem;">
+                    🌐 Google Zanzibar Graph Store
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0 0 0.5rem 0;">
+                    Solves deep nested group memberships (e.g. <em>"Alice is in Team A which is inside Org B which has viewer rights on Folder C containing File D"</em>).
+                </p>
+                <div style="font-size: 0.78rem; background: var(--pastel-purple); padding: 0.5rem; border-radius: 6px; font-family: var(--font-code); color: var(--text-main); font-weight: 700;">
+                    Check(User, Relation, Object)<br/>
+                    ➔ Evaluates graph traversal in &lt;10ms at global scale.
+                </div>
+            </div>
+
+        </div>
+    </DiagramPaper>
+</div>
+
+{/* SECTION 9: SUMMARY CHEAT SHEET */}
+<div class="note-section">
+    <div class="section-title">
+        <span class="title-badge" style="background: var(--pastel-pink);">9</span>
+        Quick Revision & Interview Takeaways
+    </div>
+
+    <div class="card-grid">
+        <StickyNote color="pink" title="1. AuthN vs AuthZ">
+            <p><strong>AuthN:</strong> <em>Who are you?</em> (401 if missing/invalid).<br />
+            <strong>AuthZ:</strong> <em>What can you do?</em> (403 if forbidden).</p>
+        </StickyNote>
+
+        <StickyNote color="yellow" title="2. The 3 Core Models">
+            <ul>
+                <li><strong>RBAC:</strong> Roles map to permissions (Stripe, CMS).</li>
+                <li><strong>ABAC:</strong> User + Resource + Env rules (HR &lt; 6PM).</li>
+                <li><strong>ACL:</strong> Per-file subject permission lists (Google Drive).</li>
+            </ul>
+        </StickyNote>
+
+        <StickyNote color="blue" title="3. OAuth 2 Delegation">
+            <p>Never give your password to third parties. Tokens grant specific, revocable scopes (e.g. <code>read:repo</code>).</p>
+        </StickyNote>
+
+        <StickyNote color="purple" title="4. The Token Axiom">
+            <p>A JWT is just the carrier of claims. Your backend decision engine (PDP) decides whether the operation is permitted!</p>
+        </StickyNote>
+    </div>
+</div>

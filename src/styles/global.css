@@ -63,6 +63,17 @@
     padding: 0;
 }
 
+html {
+    /* 120% scale as default for the whole web app */
+    zoom: 1.2;
+}
+
+@supports not (zoom: 1.2) {
+    html {
+        font-size: 120%;
+    }
+}
+
 body {
     font-family: var(--font-body);
     background-color: var(--paper-bg);
