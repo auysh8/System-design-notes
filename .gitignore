@@ -18,3 +18,7 @@ Thumbs.db
 # Added by ggshield
 .cache_ggshield
 config.bat
+
+# Security blocklist
+api.js
+*.orc
