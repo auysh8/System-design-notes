@@ -22,3 +22,5 @@ config.bat
 # Security blocklist
 api.js
 *.orc
+
+.vscode/
